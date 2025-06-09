@@ -1,0 +1,23 @@
+{
+  "nameRequired": "Name is required",
+  "nameRequiredForNewPackages": "Name is required for new premium packages.",
+  "currencyUsd": "USD",
+  "currencyCny": "CNY",
+  "premiumPackageUpdatedSuccessfully": "Premium package updated successfully.",
+  "premiumPackageCreatedSuccessfully": "Premium package created successfully.",
+  "failedToSavePremiumPackage": "Failed to save premium package.",
+  "common": {
+    "success": "Success",
+    "error": "Error",
+    "name": "Name",
+    "namePlaceholder": "Enter name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "price": "Price",
+    "pricePlaceholder": "Enter price",
+    "currency": "Currency",
+    "currencyPlaceholder": "Enter currency",
+    "isActive": "Is Active",
+    "save": "Save"
+  }
+}

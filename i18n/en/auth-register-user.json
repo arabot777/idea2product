@@ -1,0 +1,28 @@
+{
+  "email": {
+    "invalid": "Please enter a valid email address",
+    "required": "Email is required",
+    "tooLong": "Email is too long"
+  },
+  "password": {
+    "minLength": "Password must contain at least 8 characters",
+    "uppercase": "Password must contain at least one uppercase letter",
+    "lowercase": "Password must contain at least one lowercase letter",
+    "number": "Password must contain at least one number",
+    "specialChar": "Password must contain at least one special character",
+    "tooLong": "Password is too long"
+  },
+  "name": {
+    "minLength": "Name must contain at least 2 characters",
+    "tooLong": "Name is too long"
+  },
+  "errors": {
+    "userAlreadyRegistered": "User already registered",
+    "emailAlreadyRegisteredMessage": "The email address is already registered. Please try logging in or using a different email.",
+    "registrationFailed": "Registration failed. Please try again.",
+    "noUserInfoRetrieved": "Registration failed, no user information retrieved.",
+    "profileOperationFailedPrefix": "User registration successful but Profile operation failed: ",
+    "invalidToken": "Invalid token.",
+    "emailVerificationFailed": "Email verification failed"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "queryPermissionsForRole": "Query all permission associations for a role",
+  "roleId": "Role ID",
+  "permissionAssociationsList": "Permission associations list",
+  "unauthorizedUserNotLoggedIn": "Unauthorized: User not logged in",
+  "roleNotFound": "Role not found",
+  "queryRolePermissionsFailed": "Query role permissions failed"
+}

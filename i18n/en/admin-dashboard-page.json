@@ -1,0 +1,21 @@
+{
+  "failedToFetchStats": "Failed to fetch dashboard statistics.",
+  "unexpectedErrorFetchingStats": "An unexpected error occurred while fetching statistics.",
+  "failedToFetchActivities": "Failed to fetch recent activities.",
+  "unexpectedErrorFetchingActivities": "An unexpected error occurred while fetching activities.",
+  "title": "Admin Dashboard",
+  "systemOverview": "System Overview",
+  "loadingStats": "Loading statistics...",
+  "error": "Error",
+  "totalRoles": "Total Roles",
+  "totalRolesDescription": "Number of roles configured in the system.",
+  "totalPermissions": "Total Permissions",
+  "totalPermissionsDescription": "Number of permissions available in the system.",
+  "quickAccess": "Quick Access",
+  "roleManagement": "Role Management",
+  "roleManagementDescription": "Manage user roles and their assignments.",
+  "permissionManagement": "Permission Management",
+  "permissionManagementDescription": "Configure and assign permissions to roles.",
+  "recentActivities": "Recent Activities",
+  "loadingActivities": "Loading activities..."
+}

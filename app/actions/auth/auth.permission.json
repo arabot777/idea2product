@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "module": "auth",
+    "description": "Core functional permission configuration for the user module",
+    "owner": "auth-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-06"
+  },
+  "permissions": {
+    "action": {
+      "sign_in": {
+        "title": "User Login",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "User login with email and password"
+      },
+      "oauth_sign_in": {
+        "title": "OAuth Login",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "User login with third-party OAuth"
+      },
+      "getCurrentUserProfile": {
+        "title": "Get Current User Information",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get current user information - returns empty when not logged in, simplifying initialization"
+      },
+      "listUserProfile": {
+        "title": "Get User List",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get user list information"
+      },
+      "updateAccount": {
+        "title": "Update Account Information",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update user account information"
+      },
+      "deleteAccount": {
+        "title": "Delete Account",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Delete user account"
+      },
+      "register": {
+        "title": "User Registration",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "New user account registration"
+      },
+      "verifyEmail": {
+        "title": "Verify Email",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Verify user registration email"
+      },
+      "requestPasswordReset": {
+        "title": "Request Password Reset",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Request user password reset"
+      },
+      "updatePasswordFromReset": {
+        "title": "Update Password via Reset Token",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update user password using reset token"
+      },
+      "updatePassword": {
+        "title": "Update Password",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update the current logged-in user's password"
+      }
+    },
+    "component": {}
+  }
+}

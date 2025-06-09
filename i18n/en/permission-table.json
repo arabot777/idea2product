@@ -1,0 +1,15 @@
+{
+  "key": "Key",
+  "target": "Target",
+  "scope": "Scope",
+  "authStatus": "Auth Status",
+  "activeStatus": "Active Status",
+  "rejectAction": "Reject Action",
+  "title": "Title",
+  "description": "Description",
+  "actions": "Actions",
+  "edit": "Edit",
+  "paginationSummary": "Showing {total} entries, page {currentPage} of {totalPages}",
+  "previousPage": "Previous",
+  "nextPage": "Next"
+}

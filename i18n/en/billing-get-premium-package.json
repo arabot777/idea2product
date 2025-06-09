@@ -1,0 +1,4 @@
+{
+  "premiumPackageNotFound": "Premium package with ID {id} not found.",
+  "failedToGetPremiumPackage": "Failed to get premium package."
+}

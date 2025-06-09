@@ -1,0 +1,20 @@
+{
+  "toast": {
+    "updateSuccess": "User updated successfully."
+  },
+  "table": {
+    "id": "ID",
+    "email": "Email",
+    "username": "Username",
+    "fullName": "Full Name",
+    "roles": "Roles",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions"
+  },
+  "loading": "Loading...",
+  "noUsersFound": "No users found.",
+  "actions": {
+    "edit": "Edit"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "permission_diffs_title": "Get Permission Configuration Differences List",
+  "permission_diffs_description_line1": "This is an important operation and maintenance management interface, requiring accurate comparison logic.",
+  "permission_diffs_description_line2": "The returned difference data structure should be clear and easy to read.",
+  "get_permission_diffs_failed": "Failed to get permission differences:"
+}

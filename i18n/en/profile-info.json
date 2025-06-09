@@ -1,0 +1,21 @@
+{
+  "title": "Personal Information",
+  "fullNameLabel": "Full Name",
+  "usernameLabel": "Username",
+  "avatarUrlLabel": "Avatar URL",
+  "saveButton": "Save Changes",
+  "saving": "Saving...",
+  "loading": "Loading personal information...",
+  "updateSuccessTitle": "Success!",
+  "updateSuccessDescription": "Your profile has been updated successfully.",
+  "updateErrorTitle": "Error!",
+  "updateErrorDescription": "Failed to update profile. Please try again.",
+  "noFileSelected": "No file selected for upload.",
+  "uploadSuccessTitle": "Upload Success!",
+  "uploadSuccessDescription": "Avatar uploaded successfully.",
+  "uploadErrorDescription": "Failed to upload avatar. Please try again.",
+  "currentAvatar": "Current Avatar",
+  "uploadAvatarLabel": "Upload New Avatar",
+  "fileSizeExceedsLimit": "File size exceeds the 2MB limit.",
+  "unsetValue": "Not Set"
+}

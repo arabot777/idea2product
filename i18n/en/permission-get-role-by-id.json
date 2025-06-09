@@ -1,0 +1,6 @@
+{
+  "userNotAuthenticated": "User not authenticated.",
+  "invalidRoleIdProvided": "Invalid role ID provided.",
+  "roleNotFound": "Role with ID {roleId} not found.",
+  "failedToRetrieveRole": "Failed to retrieve role by ID {roleId}."
+}

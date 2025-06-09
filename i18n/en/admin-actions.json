@@ -1,0 +1,4 @@
+{
+  "updateUserRoleLog": "[Simulated Server Action] Updating user {userId} role to {newRole}",
+  "userRoleUpdated": "User {userId} role updated to {newRole}"
+}

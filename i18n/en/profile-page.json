@@ -1,0 +1,16 @@
+{
+  "navigationTitle": "Navigation",
+  "navigation": "Navigation",
+  "personalInfo": "Personal Info",
+  "accountSecurity": "Account Security",
+  "myPlans": "My Plans",
+  "myTransactions": "Transaction History",
+  "settings": "Settings",
+  "welcomeTitle": "Welcome to your Profile Center",
+  "welcomeMessage": "You can manage your personal information and account security here.",
+  "notificationSettings": "Notification Settings",
+  "manageNotificationPreferences": "Manage your notification preferences.",
+  "languagePreference": "Language Preference",
+  "chooseYourPreferredLanguage": "Choose your preferred language.",
+  "signOut": "Sign Out"
+}

@@ -1,0 +1,4 @@
+{
+  "role_not_found": "Role to delete not found",
+  "delete_role_failed": "Failed to delete role, role might not exist"
+}

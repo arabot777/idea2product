@@ -1,0 +1,6 @@
+{
+  "typeRequired": "Type is required.",
+  "invalidAutoLoginParameters": "Invalid auto login parameters",
+  "autoLoginFailed": "Auto login failed",
+  "profileOperationFailed": "User registration successful but Profile operation failed: "
+}

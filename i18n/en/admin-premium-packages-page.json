@@ -1,0 +1,6 @@
+{
+  "title": "Premium Packages",
+  "description": "Manage premium packages offered to users.",
+  "createNewPremiumPackage": "Create New Premium Package",
+  "loadingPremiumPackages": "Loading premium packages..."
+}

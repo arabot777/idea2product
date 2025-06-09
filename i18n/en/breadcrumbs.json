@@ -1,0 +1,16 @@
+{
+  "home": "Home",
+  "admin": "Admin",
+  "users": "Users",
+  "roles": "Roles",
+  "dashboard": "Dashboard",
+  "premium-packages": "Premium Packages",
+  "permissions": "Permissions",
+  "subscriptions": "Subscriptions",
+  "settings": "Settings",
+  "profile": "Profile",
+  "test": "Test",
+  "confirm": "Confirm",
+  "register": "Register",
+  "ariaLabel": "Breadcrumb"
+}

@@ -1,0 +1,21 @@
+{
+  "errorLoadingPlans": "Failed to load subscription plans.",
+  "error": "Error",
+  "success": "Subscription plan updated successfully.",
+  "deleteSuccess": "Subscription plan deleted successfully.",
+  "errorDeletingPlan": "Failed to delete subscription plan.",
+  "loading": "Loading...",
+  "name": "Name",
+  "price": "Price",
+  "interval": "Interval",
+  "public": "Public",
+  "trial": "Trial",
+  "sortOrder": "Sort Order",
+  "actions": "Actions",
+  "noPlans": "No subscription plans found.",
+  "yes": "Yes",
+  "no": "No",
+  "notApplicable": "N/A",
+  "edit": "Edit",
+  "delete": "Delete"
+}

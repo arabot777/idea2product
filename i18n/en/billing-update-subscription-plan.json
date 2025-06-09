@@ -1,0 +1,7 @@
+{
+  "updateSubscriptionPlan": {
+    "idRequired": "Subscription plan ID is required for update.",
+    "notFound": "Subscription plan with ID {id} not found.",
+    "failedToUpdate": "Failed to update subscription plan."
+  }
+}

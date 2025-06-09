@@ -1,0 +1,15 @@
+{
+  "stripeWebhookSecretNotSet": "Stripe Webhook Secret is not set in environment variables.",
+  "stripeWebhookSecretNotConfigured": "Stripe Webhook Secret not configured.",
+  "webhookSignatureVerificationFailed": "Webhook signature verification failed: ",
+  "webhookError": "Webhook Error: ",
+  "checkoutSessionCompleted": "Checkout session completed: ",
+  "checkoutSessionMissingSessionId": "Checkout session {sessionId} is missing metadata.sessionId.",
+  "invoicePaymentSucceeded": "Invoice payment succeeded: ",
+  "chargeFailed": "Charge failed: ",
+  "chargeMissingSessionId": "Charge {chargeId} is missing metadata.sessionId.",
+  "chargeRefunded": "Charge refunded: ",
+  "chargeRefundedMissingSessionId": "Charge {chargeId} is missing metadata.sessionId.",
+  "unhandledEventType": "Unhandled event type ",
+  "ok": "OK"
+}

@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "module": "permission",
+    "description": "Page access permission configuration",
+    "owner": "permission-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-08"
+  },
+  "permissions": {
+    "page": {
+      "/login": {
+        "title": "Login",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "User login page, visible to unauthenticated users"
+      },
+      "/register": {
+        "title": "Register",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "User registration page, visible to unauthenticated users"
+      },
+
+      "/forgot-password": {
+        "title": "Forgot Password",
+        "authStatus": "anonymous",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "Forgot password page, visible to unauthenticated users"
+      },
+
+      "/dashboard": {
+        "title": "Dashboard",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "User dashboard, visible after login"
+      },
+
+      "/dashboard/profile": {
+        "title": "Profile",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "User profile page, visible after login"
+      },
+
+      "/admin": {
+        "title": "Admin Panel",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "Admin console, requires admin privileges"
+      },
+      "/history": {
+        "title": "History",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "User history page, visible after login"
+      },
+
+      "/test": {
+        "title": "Test Page",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "redirect",
+        "description": "Test page, disabled by default"
+      }
+    }
+  }
+}

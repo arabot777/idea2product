@@ -1,0 +1,9 @@
+{
+  "autoLoginTitle": "Automatic Login",
+  "loggingIn": "Logging in, please wait...",
+  "autoLoginSuccess": "Login successful! Redirecting to homepage in {count} seconds...",
+  "autoLoginFailed": "Auto-login failed. Please try again.",
+  "invalidParams": "Invalid auto login parameters.",
+  "goHome": "Go to Homepage",
+  "anErrorOccurred": "An error occurred. Please try again."
+}

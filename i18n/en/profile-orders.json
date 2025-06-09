@@ -1,0 +1,21 @@
+{
+  "myOrdersTitle": "My Orders",
+  "loading": "Loading...",
+  "error": "Error",
+  "transactionHistoryTitle": "Transaction History",
+  "transactionHistoryCaption": "A list of your recent transactions.",
+  "transactionId": "Transaction ID",
+  "itemName": "Item",
+  "amount": "Amount",
+  "type": "Type",
+  "status": "Status",
+  "transactionDate": "Date",
+  "noTransactions": "No transactions found",
+  "unknownItem": "Unknown Item",
+  "subscription": "Subscription",
+  "premium_package": "Premium Package",
+  "completed": "Completed",
+  "pending": "Pending",
+  "cancelled": "Cancelled",
+  "failed": "Failed"
+}

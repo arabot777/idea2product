@@ -1,0 +1,15 @@
+{
+  "userRole": "User Role",
+  "teamUserRole": "Team User Role",
+  "teamAdminRole": "Team Admin Role",
+  "systemAdminRole": "System Admin Role",
+  "roleName": "Role Name",
+  "roleType": "Role Type",
+  "description": "Description",
+  "actions": "Actions",
+  "managePermissions": "Manage Permissions",
+  "edit": "Edit",
+  "delete": "Delete",
+  "noRoles": "No roles found.",
+  "noDescription": "N/A"
+}

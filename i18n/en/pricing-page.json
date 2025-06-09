@@ -1,0 +1,23 @@
+{
+  "loadError": "Failed to load subscription plans. Please try again later.",
+  "loadingPlans": "Loading subscription plans...",
+  "chooseYourPlanTitle": "Choose Your",
+  "subscriptionPlan": "Subscription Plan",
+  "unlockAiCreation": "Unlock the unlimited possibilities of AI creation, choose the professional plan that best suits your needs.",
+  "mostPopular": "Most Popular",
+  "month": "month",
+  "year": "year",
+  "day": "day",
+  "contactSales": "Contact Sales",
+  "contactSalesMessage": "Please contact our sales team for enterprise solutions.",
+  "trialInfo": "All plans support a 7-day free trial, cancel anytime.",
+  "securePayment": "Secure Payment",
+  "instantActivation": "Instant Activation",
+  "customerSupport": "24/7 Customer Support",
+  "freePlanName": "Free",
+  "currentPlanButton": "Current Plan",
+  "proPlanName": "Pro",
+  "subscribeNowButton": "Subscribe Now",
+  "enterprisePlanName": "Enterprise",
+  "contactSalesButton": "Contact Sales"
+}

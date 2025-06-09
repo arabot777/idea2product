@@ -1,0 +1,7 @@
+{
+  "title": "Billing History",
+  "invoiceId": "Invoice ID",
+  "date": "Date",
+  "amount": "Amount",
+  "status": "Status"
+}

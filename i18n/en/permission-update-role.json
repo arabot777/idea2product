@@ -1,0 +1,6 @@
+{
+  "roleNotFound": "Role to update not found",
+  "unableToDetermineRoleId": "Unable to determine role ID for update",
+  "updateRoleFailed": "Failed to update role, role might not exist",
+  "failedToUpdateRole": "Failed to update role"
+}

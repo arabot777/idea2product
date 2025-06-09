@@ -1,0 +1,20 @@
+{
+  "pageTitle": "Generation History",
+  "pageDescription": "View all your AI generation records",
+  "searchPlaceholder": "Search generation records...",
+  "filter": "Filter",
+  "all": "All",
+  "completed": "Completed",
+  "failed": "Failed",
+  "noMatchingRecords": "No matching records found",
+  "noRecordsYet": "No generation records yet",
+  "tryDifferentKeywords": "Try searching with different keywords",
+  "startYourFirstCreation": "Start your first AI creation",
+  "generatedImageAlt": "Generated image",
+  "statusCompleted": "Completed",
+  "statusFailed": "Failed",
+  "download": "Download",
+  "share": "Share",
+  "delete": "Delete",
+  "noTitleOrDescription": "No title or description"
+}

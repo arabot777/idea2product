@@ -1,0 +1,8 @@
+{
+  "permission_not_found": "Permission to update not found",
+  "permission_key_prefix": "Permission key '",
+  "permission_key_suffix": "' can't be updated",
+  "update_permission_failed_db_error": "Failed to update permission, permission may not exist or database error occurred",
+  "failed_to_update_permission_log": "Failed to update permission:",
+  "failed_to_update_permission_generic": "Failed to update permission"
+}

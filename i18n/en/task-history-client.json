@@ -1,0 +1,16 @@
+{
+  "pageTitle": "Task History",
+  "pageDescription": "View your task history and manage your creations.",
+  "searchPlaceholder": "Search tasks...",
+  "search": "Search",
+  "filter": "Filter",
+  "all": "All",
+  "completed": "Completed",
+  "failed": "Failed",
+  "noMatchingRecords": "No matching records found.",
+  "noRecordsYet": "No records yet.",
+  "tryDifferentKeywords": "Try different keywords or filters.",
+  "startYourFirstCreation": "Start your first creation now!",
+  "previous": "Previous",
+  "next": "Next"
+}

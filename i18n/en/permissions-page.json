@@ -1,0 +1,16 @@
+{
+  "failedToFetchPermissions": "Failed to fetch permissions",
+  "error": "Error",
+  "failedToLoadPermissions": "Failed to load permissions.",
+  "failedToUpdatePermission": "Failed to update permission",
+  "success": "Success",
+  "permissionUpdatedSuccessfully": "Permission updated successfully.",
+  "failedToSyncPermissions": "Failed to sync permissions",
+  "permissionsSyncedSuccessfully": "Permissions synced successfully.",
+  "failedToFetchPermissionDiffs": "Failed to fetch permission diffs",
+  "failedToLoadPermissionDiffs": "Failed to load permission diffs.",
+  "permissionManagementTitle": "Permission Management",
+  "syncSystemPermissions": "Sync System Permissions",
+  "loadingPermissions": "Loading permissions...",
+  "editPermission": "Edit Permission"
+}

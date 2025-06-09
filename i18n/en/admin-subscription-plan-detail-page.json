@@ -1,0 +1,7 @@
+{
+  "createNewSubscriptionPlan": "Create New Subscription Plan",
+  "editSubscriptionPlan": "Edit Subscription Plan",
+  "loadSubscriptionPlanFailed": "Failed to load subscription plan",
+  "unknownError": "Unknown error",
+  "loadingForm": "Loading form..."
+}

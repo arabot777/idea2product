@@ -1,0 +1,8 @@
+{
+  "transactionNotFound": "Transaction with sessionId {sessionId} not found.",
+  "transactionAlreadyHasStatusNoUpdate": "Transaction {transactionId} already has status {status}. No update needed.",
+  "transactionAlreadyHasStatus": "Transaction already has status {status}.",
+  "transactionStatusUpdated": "Transaction {transactionId} status updated to {status}.",
+  "failedToUpdateTransactionStatusForSessionId": "Failed to update transaction status for sessionId {sessionId}:",
+  "failedToUpdateTransactionStatus": "Failed to update transaction status: {errorMessage}"
+}

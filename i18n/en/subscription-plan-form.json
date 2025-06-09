@@ -1,0 +1,23 @@
+{
+  "pricePositiveError": "Price must be a positive number",
+  "success": "Success",
+  "updateSuccess": "Subscription plan updated successfully.",
+  "subscriptionPlanCreated": "Subscription plan created successfully.",
+  "updateFailed": "Failed to update subscription plan.",
+  "createFailed": "Failed to create subscription plan.",
+  "error": "Error",
+  "name": "Name",
+  "namePlaceholder": "Enter plan name",
+  "description": "Description",
+  "descriptionPlaceholder": "Enter plan description",
+  "price": "Price",
+  "pricePlaceholder": "Enter price",
+  "currency": "Currency",
+  "currencyPlaceholder": "Enter currency (e.g., usd)",
+  "billingInterval": "Billing Interval",
+  "month": "Month",
+  "year": "Year",
+  "public": "Public",
+  "updateButton": "Update Plan",
+  "createButton": "Create Plan"
+}

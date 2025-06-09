@@ -1,0 +1,10 @@
+{
+  "invalidVerificationLink": "Invalid verification link. Please request a new verification email.",
+  "failedToVerifyEmail": "Failed to verify email. Please try again.",
+  "emailVerifiedSuccessfully": "Email verified successfully! You can now sign in.",
+  "unexpectedErrorOccurred": "An unexpected error occurred. Please try again.",
+  "verifyingYourEmail": "Verifying your email",
+  "verifyingYourEmailEllipsis": "Verifying your email...",
+  "backToLoginPage": "Back to login page",
+  "goToLoginPage": "Go to login page"
+}

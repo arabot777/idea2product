@@ -1,0 +1,16 @@
+{
+  "fetchHealthStatusFailed": "Failed to fetch health status:",
+  "unknownError": "Unknown error",
+  "fetchHealthStatusError": "Error fetching health status:",
+  "loadingHealthStatus": "Loading health status...",
+  "error": "Error",
+  "noHealthStatusData": "No health status data",
+  "healthy": "Healthy",
+  "unhealthy": "Unhealthy",
+  "serviceHealthStatus": "Service Health Status",
+  "unknownService": "Unknown Service",
+  "status": "Status",
+  "latency": "Latency",
+  "lastChecked": "Last Checked",
+  "details": "Details"
+}

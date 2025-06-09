@@ -1,0 +1,5 @@
+{
+  "noFileProvided": "No file provided.",
+  "fileTypeNotAllowed": "File type not allowed. Please upload a supported image, video, audio, or document file.",
+  "fileSizeExceedsLimit": "File size exceeds the 50MB limit."
+}

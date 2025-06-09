@@ -1,0 +1,15 @@
+{
+  "sidebar": {
+    "title": "Dashboard Title",
+    "overview": "Overview",
+    "settings": "Settings",
+    "reports": "Reports"
+  },
+  "footer": {
+    "copyright": "© 2024 Your Company"
+  },
+  "header": {
+    "welcome": "Welcome",
+    "user": "User Profile"
+  }
+}

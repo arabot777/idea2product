@@ -1,0 +1,4 @@
+{
+  "fetchingUserLog": "[DI Mock] LoginViewModel fetching user with ID: {userId} (mocked)",
+  "attemptingLoginLog": "[DI Mock] Attempting to log in user: {email}"
+}

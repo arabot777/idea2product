@@ -1,0 +1,13 @@
+{
+  "fullNameRequired": "Full name is required",
+  "invalidUrlFormat": "Invalid URL format",
+  "usernameRequired": "Username is required",
+  "userNotAuthenticated": "User not authenticated.",
+  "userProfileNotFound": "User profile not found.",
+  "failedToUpdateProfile": "Failed to update profile.",
+  "updatedUserProfileNotFound": "Updated user profile not found.",
+  "errorUpdatingProfile": "Error updating profile:",
+  "failedToUpdateAccount": "Failed to update account.",
+  "failedToSignOutBeforeAccountDeletion": "Failed to sign out before account deletion.",
+  "accountDeletionNotImplemented": "Account deletion not yet implemented on the server side."
+}

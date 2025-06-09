@@ -1,0 +1,12 @@
+{
+  "title": "Premium Packages Management",
+  "description": "Manage your application's premium packages.",
+  "createNewPremiumPackage": "Create New Premium Package",
+  "loadingPremiumPackages": "Loading premium packages...",
+  "editPremiumPackage": "Edit Premium Package",
+  "createNewPremiumPackageDescription": "Create a new premium package for your application.",
+  "editPremiumPackageDescription": "Edit an existing premium package.",
+  "loadPremiumPackageFailed": "Failed to load premium package",
+  "unknownError": "Unknown error",
+  "loadingForm": "Loading form..."
+}

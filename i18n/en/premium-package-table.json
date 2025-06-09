@@ -1,0 +1,23 @@
+{
+  "errorLoadingPremiumPackages": "Failed to load premium packages.",
+  "error": "Error",
+  "confirmDelete": "Are you sure you want to delete this premium package?",
+  "success": "Success",
+  "deleteSuccess": "Premium package deleted successfully.",
+  "loading": "Loading...",
+  "table": {
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "currency": "Currency",
+    "isActive": "Active",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions"
+  },
+  "noPremiumPackages": "No premium packages found.",
+  "yes": "Yes",
+  "no": "No",
+  "edit": "Edit",
+  "delete": "Delete"
+}

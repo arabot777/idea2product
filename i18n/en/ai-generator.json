@@ -1,0 +1,20 @@
+{
+  "controlPanelTitle": "Control Panel",
+  "textToImageTab": "Text to Image",
+  "imageToImageTab": "Image to Image",
+  "textToImagePromptLabel": "Text to Image Prompt",
+  "textToImagePlaceholder": "Enter your text prompt, e.g., a cat flying in space, cyberpunk style",
+  "imageToImageUploadLabel": "Upload Image",
+  "uploadedImageAlt": "Uploaded Image",
+  "imageToImageModifyPromptLabel": "Modify Prompt",
+  "imageToImageModifyPromptPlaceholder": "Enter modification prompt, e.g., add a hat",
+  "generatingText": "Generating...",
+  "startGeneratingButton": "Start Generating",
+  "resultTitle": "Result Display",
+  "generatingStatus": "Generating Image...",
+  "generatingHint": "This may take some time, please be patient.",
+  "downloadButton": "Download",
+  "shareButton": "Share",
+  "waitingForCreation": "Waiting for creation...",
+  "creationHint": "Your AI generated image will appear here."
+}

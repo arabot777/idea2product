@@ -1,0 +1,4 @@
+{
+  "roleNotFound": "Role not found",
+  "getRolePermissionsFailed": "Failed to get role permissions"
+}

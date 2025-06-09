@@ -1,0 +1,16 @@
+{
+  "title": "Welcome to My App",
+  "description": "This is a Next.js application.",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "add": "Add",
+  "submit": "Submit",
+  "loading": "Loading...",
+  "success": "Operation successful!",
+  "error": "An error occurred.",
+  "confirm": "Confirm",
+  "close": "Close"
+}

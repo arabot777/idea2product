@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "module": "permission",
+    "description": "Permission module core feature permission configuration",
+    "owner": "permission-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-06"
+  },
+  "permissions": {
+    "action": {
+      "createRole": {
+        "title": "Create role",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Create role"
+      },
+      "updateRole": {
+        "title": "Update role",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update role information"
+      },
+      "deleteRole": {
+        "title": "Delete role",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Delete role"
+      },
+      "getRoles": {
+        "title": "Get role list",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get all role list"
+      },
+      "getRoleById": {
+        "title": "Get role by ID",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get role details by role ID"
+      },
+      "getRolePermissions": {
+        "title": "Get role permissions",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get permission list for a specified role"
+      },
+      "queryPermissionsForRole": {
+        "title": "Query role permissions",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Query permissions owned by a role"
+      },
+      "rebindPermissionsToRole": {
+        "title": "Rebind role permissions",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Rebind permissions for a role"
+      },
+      "getAllPermissionConfigs": {
+        "title": "Get all permission configurations",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get all permission configurations in the system"
+      },
+      "getPagePermissionConfigs": {
+        "title": "Get paginated permission configurations",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get paginated permission configurations"
+      },
+      "getPermissionDiffs": {
+        "title": "Get permission differences",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get differences between permission configuration and database"
+      },
+      "syncPermissions": {
+        "title": "Synchronize permissions to database",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Synchronize permission configurations to database"
+      },
+      "updatePermission": {
+        "title": "Update permissions",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update permission configuration"
+      }
+    },
+    "component": {
+      
+    }
+  }
+}

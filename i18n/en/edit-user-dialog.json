@@ -1,0 +1,17 @@
+{
+  "form": {
+    "roles": {
+      "atLeastOneRequired": "At least one role is required"
+    }
+  },
+  "errors": {
+    "loadRolesFailed": "Failed to load roles",
+    "updateFailed": "Failed to update user"
+  },
+  "success": "User updated successfully",
+  "rolesLabel": "Roles",
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "save": "Save",
+  "title": "Edit User {email}"
+}

@@ -1,0 +1,11 @@
+{
+  "confirmSyncTitle": "Confirm Synchronization",
+  "confirmSyncDescription": "Please review the changes below before synchronizing permissions.",
+  "newPermissions": "New Permissions",
+  "updatedPermissions": "Updated Permissions",
+  "deletedPermissions": "Deleted Permissions",
+  "noChangesDetected": "No changes detected.",
+  "cancel": "Cancel",
+  "syncing": "Synchronizing...",
+  "confirmSync": "Confirm Sync"
+}

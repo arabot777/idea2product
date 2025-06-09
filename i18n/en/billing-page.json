@@ -1,0 +1,14 @@
+{
+  "title": "Billing Overview",
+  "revenueAnalysisTitle": "Revenue Analysis",
+  "totalRevenue": "Total Revenue",
+  "monthlyRecurringRevenue": "Monthly Recurring Revenue (MRR)",
+  "newSubscriptions": "New Subscriptions",
+  "churnRate": "Churn Rate",
+  "cannotLoadRevenueAnalysis": "Unable to load revenue analysis data.",
+  "availablePlansTitle": "Available Plans",
+  "month": "Month",
+  "year": "Year",
+  "selectPlan": "Select Plan",
+  "noAvailableBillingPlans": "No available billing plans."
+}

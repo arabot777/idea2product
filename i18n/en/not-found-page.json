@@ -1,0 +1,8 @@
+{
+  "title": "Page Not Found",
+  "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+  "backToHome": "Back to Home",
+  "notFoundHeading": "Oops! Page Not Found",
+  "notFoundMessage": "We can't seem to find the page you're looking for.",
+  "suggestedAction": "Please check the URL or go back to the homepage."
+}

@@ -1,0 +1,15 @@
+{
+  "validationError": {
+    "premiumPackageAndSubscriptionPlanRequired": "Premium package ID and subscription plan ID are required for update.",
+    "premiumPackagePriceTooLow": "Premium package price must be greater than 50.",
+    "subscriptionPlanPriceTooLow": "Subscription plan price must be greater than 50."
+  },
+  "notFound": {
+    "premiumPackageNotFound": "Premium package with ID {premiumPackageId} not found.",
+    "subscriptionPlanNotFound": "Subscription plan with ID {subscriptionPlanId} not found.",
+    "stripeProductNotFound": "Stripe product not found."
+  },
+  "databaseError": {
+    "failedToUpdatePremiumPackage": "Failed to update premium package."
+  }
+}

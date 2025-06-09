@@ -1,0 +1,5 @@
+{
+  "premium_package_id_required": "Premium package ID is required for update.",
+  "premium_package_not_found": "Premium package with ID {id} not found.",
+  "failed_to_update_premium_package": "Failed to update premium package."
+}

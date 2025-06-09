@@ -1,0 +1,11 @@
+{
+  "myPlansTitle": "My Plans",
+  "activeSubscriptionTitle": "Active Subscription",
+  "expires": "Expires",
+  "unknown": "Unknown",
+  "noActiveSubscription": "No active subscription found.",
+  "purchasedPremiumPackagesTitle": "Purchased Premium Packages",
+  "noPurchasedPremiumPackages": "No purchased premium packages found.",
+  "loading": "Loading...",
+  "error": "Error"
+}

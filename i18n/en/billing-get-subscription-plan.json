@@ -1,0 +1,4 @@
+{
+  "subscriptionPlanNotFound": "Subscription plan with ID {id} not found.",
+  "failedToGetSubscriptionPlan": "Failed to get subscription plan."
+}

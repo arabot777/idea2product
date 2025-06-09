@@ -1,0 +1,8 @@
+{
+  "roleIdRequired": "Role ID is required",
+  "permissionIdInvalidUuid": "Permission ID must be a valid UUID",
+  "atLeastOnePermissionIdRequired": "At least one permission ID is required",
+  "parameterValidationFailed": "Parameter validation failed",
+  "failedToBindPermissionsLog": "Failed to bind permissions:",
+  "failedToBindPermissions": "Failed to bind permissions"
+}

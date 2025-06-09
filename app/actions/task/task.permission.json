@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "module": "task",
+    "description": "Task module core feature permission configuration",
+    "owner": "task-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-06"
+  },
+  "permissions": {
+    "action": {
+      "getTasks": {
+        "title": "Query task list",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get task list"
+      },
+      "getTaskResults": {
+        "title": "Query task result list",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get task result list"
+      }
+    },
+    "component": {}
+  }
+}

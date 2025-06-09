@@ -1,0 +1,15 @@
+{
+  "securitySettingsTitle": "Security Settings",
+  "passwordSectionTitle": "Change Password",
+  "currentPasswordLabel": "Current Password",
+  "newPasswordLabel": "New Password",
+  "confirmNewPasswordLabel": "Confirm New Password",
+  "passwordUpdateSuccess": "Password updated successfully!",
+  "updatingPasswordButton": "Updating Password...",
+  "updatePasswordButton": "Update Password",
+  "deleteAccountSectionTitle": "Delete Account",
+  "deleteAccountWarning": "Deleting your account will permanently remove your account and all related data. This action is irreversible.",
+  "deleteAccountConfirmPasswordLabel": "Confirm Password",
+  "deletingAccountButton": "Deleting Account...",
+  "deleteAccountButton": "Delete Account"
+}

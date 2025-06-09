@@ -1,0 +1,21 @@
+{
+  "loadDataFailed": "Failed to load data.",
+  "roleUpdateSuccess": "Role updated successfully.",
+  "roleCreateSuccess": "Role created successfully.",
+  "saveRoleFailed": "Failed to save role.",
+  "confirmDeleteRole": "Are you sure you want to delete role '{roleName}'?",
+  "roleDeleteSuccess": "Role deleted successfully.",
+  "deleteRoleFailed": "Failed to delete role.",
+  "loadRolePermissionsFailed": "Failed to load role permissions.",
+  "permissionAssignmentSuccess": "Permissions assigned successfully.",
+  "assignPermissionsFailed": "Failed to assign permissions.",
+  "success": "Success",
+  "error": "Error",
+  "roleNotFound": "Role not found",
+  "loading": "Loading...",
+  "roleManagementTitle": "Role Management",
+  "roleManagementDescription": "Manage system roles and permission assignments",
+  "createRoleButton": "Create Role",
+  "editRole": "Edit Role",
+  "createNewRole": "Create New Role"
+}

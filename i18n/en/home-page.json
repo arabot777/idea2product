@@ -1,0 +1,18 @@
+{
+  "simulateUsageDataComment": "// Simulate fetching usage data",
+  "simulateDisplayUsageDataComment": "// Simulate displaying usage data",
+  "heroTitle": "Build Your SaaS",
+  "heroSubtitle": "Faster Than Ever",
+  "heroDescription": "Launch your SaaS product in record time with our powerful, ready-to-use template. Packed with modern technologies and essential integrations.",
+  "deployButton": "Deploy your own",
+  "feature1Title": "Next.js and React",
+  "feature1Description": "Leverage the power of modern web technologies for optimal performance and developer experience.",
+  "feature2Title": "Postgres and Drizzle ORM",
+  "feature2Description": "Robust database solution with an intuitive ORM for efficient data management and scalability.",
+  "feature3Title": "Stripe Integration",
+  "feature3Description": "Seamless payment processing and subscription management with industry-leading Stripe integration.",
+  "ctaTitle": "Ready to launch your SaaS?",
+  "ctaDescription": "Our template provides everything you need to get your SaaS up and running quickly. Don't waste time on boilerplate - focus on what makes your product unique.",
+  "viewCodeButton": "View the code",
+  "usageDataTitle": "Usage Data (Simulated)"
+}

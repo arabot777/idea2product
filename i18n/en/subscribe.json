@@ -1,0 +1,56 @@
+{
+  "success": {
+    "title": "Subscription Successful!",
+    "welcome": "Welcome to AI Genesis Pro",
+    "loading": "Payment Status Syncing",
+    "syncingStatus": "Syncing your payment status, please wait...",
+    "details": {
+      "title": "Your Subscription Details",
+      "plan": "Plan",
+      "price": "Price",
+      "nextBilling": "Next Billing"
+    },
+    "features": {
+      "title": "You can now enjoy:",
+      "dailyGenerations": "100 daily AI generations",
+      "hdOutput": "HD resolution output",
+      "priorityQueue": "Priority generation queue",
+      "noWatermark": "No watermark downloads"
+    },
+    "actions": {
+      "startCreating": "Start Creating",
+      "manageSubscription": "Manage Subscription"
+    },
+    "emailConfirmation": "Subscription confirmation email has been sent to your inbox",
+    "errors": {
+      "title": "Payment Processing Failed",
+      "noSessionId": "Missing session ID, unable to process payment status.",
+      "updateFailed": "Failed to update transaction status, please try again later.",
+      "networkError": "Network error or server unresponsive, please check your internet connection."
+    }
+  },
+  "failed": {
+    "title": "Subscription Failed",
+    "message": "Sorry, your subscription could not be completed.",
+    "possibleReasons": {
+      "title": "Possible Reasons",
+      "paymentInfoError": "Incorrect payment information",
+      "insufficientFunds": "Insufficient balance",
+      "networkIssue": "Network connection issue",
+      "paymentServiceUnavailable": "Payment service temporarily unavailable"
+    },
+    "suggestedSolutions": {
+      "title": "Suggested Solutions:",
+      "checkPaymentInfo": "1. Check if payment information is correct",
+      "checkBalance": "2. Confirm sufficient balance in your bank card",
+      "retryLater": "3. Retry subscription later",
+      "contactSupport": "4. Contact customer service for help"
+    },
+    "actions": {
+      "retrySubscription": "Retry Subscription",
+      "backToHomepage": "Back to Homepage"
+    },
+    "needHelp": "Need help?",
+    "contactCustomerSupport": "Contact Customer Support"
+  }
+}

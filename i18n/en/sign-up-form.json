@@ -1,0 +1,10 @@
+{
+  "title": "Sign Up",
+  "usernameLabel": "Username:",
+  "usernamePlaceholder": "Enter your username",
+  "emailLabel": "Email:",
+  "emailPlaceholder": "Enter your email",
+  "passwordLabel": "Password:",
+  "passwordPlaceholder": "Enter your password",
+  "registerButton": "Register"
+}

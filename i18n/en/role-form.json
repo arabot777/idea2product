@@ -1,0 +1,12 @@
+{
+  "roleName": "Role Name",
+  "roleType": "Role Type",
+  "userRole": "User Role",
+  "teamUserRole": "Team User Role",
+  "teamAdminRole": "Team Admin Role",
+  "systemAdminRole": "System Admin Role",
+  "description": "Description",
+  "cancel": "Cancel",
+  "update": "Update",
+  "create": "Create"
+}

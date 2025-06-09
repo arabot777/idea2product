@@ -1,0 +1,24 @@
+{
+  "userManagement": {
+    "title": "User Management",
+    "description": "Manage user profiles",
+    "table": {
+      "id": "ID",
+      "email": "Email",
+      "username": "Username",
+      "fullName": "Full Name",
+      "roles": "Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "actions": "Actions"
+    }
+  },
+  "roles": {
+    "admin": "Admin",
+    "editor": "Editor",
+    "viewer": "Viewer"
+  },
+  "simulateUpdateUserRoleLog": "Simulating update user role for user {userId} to {newRole}",
+  "userRoleUpdatedAlert": "User {userId} role updated to {newRole} successfully!",
+  "failedToLoadUsers": "Failed to load users:"
+}

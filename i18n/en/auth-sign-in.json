@@ -1,0 +1,20 @@
+{
+  "email": {
+    "invalid": "Invalid email address.",
+    "required": "Email is required",
+    "tooLong": "Email is too long"
+  },
+  "password": {
+    "tooShort": "Password must be at least 8 characters long",
+    "tooLong": "Password is too long"
+  },
+  "signIn": {
+    "failed": "Invalid email or password. Please try again.",
+    "noUser": "Registration failed, no user information retrieved.",
+    "profileCreationFailed": "User registration successful but Profile operation failed: "
+  },
+  "oauth": {
+    "signInFailed": "Failed to sign in with ",
+    "urlMissing": "Could not get OAuth URL for "
+  }
+}

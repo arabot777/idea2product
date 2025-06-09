@@ -1,0 +1,9 @@
+{
+  "createNewPremiumPackage": "Create New Premium Package",
+  "editPremiumPackage": "Edit Premium Package",
+  "createNewPremiumPackageDescription": "Create a new premium package.",
+  "editPremiumPackageDescription": "Edit an existing premium package.",
+  "loadPremiumPackageFailed": "Failed to load premium package",
+  "unknownError": "Unknown error",
+  "loadingForm": "Loading form..."
+}

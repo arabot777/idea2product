@@ -1,0 +1,10 @@
+{
+  "nameLabel": "Name",
+  "namePlaceholder": "Enter your name",
+  "emailLabel": "Email",
+  "emailPlaceholder": "Enter your email",
+  "generalSettingsTitle": "General Settings",
+  "accountInformationTitle": "Account Information",
+  "savingButton": "Saving...",
+  "saveChangesButton": "Save Changes"
+}

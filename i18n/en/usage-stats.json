@@ -1,0 +1,10 @@
+{
+  "errorLoadingUsageStats": "Failed to load usage statistics.",
+  "error": "Error",
+  "usageStatsTitle": "Usage Statistics",
+  "loading": "Loading...",
+  "cannotLoadUsageStats": "Cannot load usage statistics.",
+  "totalSubscriptions": "Total Subscriptions",
+  "activeSubscriptions": "Active Subscriptions",
+  "trialSubscriptions": "Trial Subscriptions"
+}

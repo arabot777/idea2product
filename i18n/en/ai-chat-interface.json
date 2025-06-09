@@ -1,0 +1,9 @@
+{
+  "you_prefix": "You",
+  "ai_prefix": "AI",
+  "ai_response_prefix": "Here is a simulated AI response to your message: \"",
+  "ai_response_suffix": "\"",
+  "start_chat_message": "Start chatting with the AI...",
+  "input_placeholder": "Type your message here...",
+  "send_button": "Send"
+}

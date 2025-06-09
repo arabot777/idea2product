@@ -1,0 +1,14 @@
+{
+  "title": "Account Security",
+  "oldPasswordLabel": "Current Password",
+  "newPasswordLabel": "New Password",
+  "confirmNewPasswordLabel": "Confirm New Password",
+  "resetPasswordButton": "Change Password",
+  "resetting": "Changing password...",
+  "passwordMismatchTitle": "Error!",
+  "passwordMismatchDescription": "New password and confirm new password do not match.",
+  "passwordResetSuccessTitle": "Success!",
+  "passwordResetSuccessDescription": "Your password has been changed successfully.",
+  "passwordResetErrorTitle": "Error!",
+  "passwordResetErrorDescription": "Failed to change password. Please try again."
+}
