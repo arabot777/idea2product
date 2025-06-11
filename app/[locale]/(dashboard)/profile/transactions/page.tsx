@@ -6,10 +6,8 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { useEffect, useState } from 'react';
 import { getUserTransactions } from '@/app/actions/billing/get-user-transactions';
 import { listSubscriptionPlans } from '@/app/actions/billing/list-subscription-plans';
-import { listPremiumPackages } from '@/app/actions/billing/list-premium-packages';
 import { TransactionDto } from '@/lib/types/payment/transaction.dto';
 import { SubscriptionPlanDto } from '@/lib/types/billing/subscription-plan.dto';
-import { PremiumPackageDto } from '@/lib/types/billing/premium-package.dto';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
@@ -18,7 +16,6 @@ export default function ProfileTransactionsPage() {
 
   const [transactions, setTransactions] = useState<TransactionDto[]>([]);
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlanDto[]>([]);
-  const [premiumPackages, setPremiumPackages] = useState<PremiumPackageDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,16 +25,13 @@ export default function ProfileTransactionsPage() {
         const [
           transactionsResult,
           subscriptionPlansData,
-          premiumPackagesData
         ] = await Promise.all([
           getUserTransactions({ page: 1, pageSize: 100 }),
           listSubscriptionPlans(),
-          listPremiumPackages()
         ]);
 
         setTransactions(transactionsResult.data || []);
         setSubscriptionPlans(subscriptionPlansData || []);
-        setPremiumPackages(premiumPackagesData || []);
 
       } catch (err: any) {
         setError(err.message || 'An unexpected error occurred.');
@@ -54,10 +48,6 @@ export default function ProfileTransactionsPage() {
     const subscription = subscriptionPlans.find(plan => plan.id === productId);
     if (subscription) {
       return subscription.name;
-    }
-    const premiumPackage = premiumPackages.find(pkg => pkg.id === productId);
-    if (premiumPackage) {
-      return premiumPackage.name;
     }
     return t('unknownItem');
   };

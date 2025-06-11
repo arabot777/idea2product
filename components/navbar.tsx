@@ -52,12 +52,6 @@ export default function Navbar() {
           >
             {t('subscribePlan')}
           </Link>
-          <Link
-            href="/premium-package"
-            className="text-slate-300 hover:text-white transition-colors duration-200 font-medium"
-          >
-            {t('premiumPackage')}
-          </Link>
         </div>
 
         <div className="flex items-center space-x-4">

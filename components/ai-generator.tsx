@@ -17,7 +17,7 @@ export default function AIGenerator() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [textPrompt, setTextPrompt] = useState("")
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  const t = useTranslations('AIGenerator'); // Assuming an 'AIGenerator' namespace for translations
+  const t = useTranslations('AiGenerator'); // Assuming an 'AIGenerator' namespace for translations
 
   const handleGenerate = async () => {
     setIsGenerating(true)

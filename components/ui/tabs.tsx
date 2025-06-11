@@ -2,13 +2,10 @@
 
 import * as React from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
-import { useTranslations } from 'next-intl';
 
 import { cn } from "@/lib/utils"
 
 const Tabs = TabsPrimitive.Root
-
-const t = useTranslations('Tabs');
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,

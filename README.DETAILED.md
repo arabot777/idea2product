@@ -101,8 +101,6 @@ The following are the pages implemented in this project and their corresponding 
 *   `/admin`: Admin dashboard home
 *   `/admin/dashboard`: Admin dashboard page
 *   `/admin/permissions`: Admin permission management page
-*   `/admin/premium-packages`: Admin premium package management page
-*   `/admin/premium-packages/[id]`: Admin specific premium package details page
 *   `/admin/roles`: Admin role management page
 *   `/admin/subscription-plan`: Admin subscription plan management page
 *   `/admin/subscription-plan/[id]`: Admin specific subscription plan details page
@@ -130,7 +128,7 @@ The following are the pages implemented in this project and their corresponding 
 5. Generate and use frontend pages under /app/[locale]/{module}/{page}
 
 ## Account and Usage Billing Explanation
-1. There are two subscription+payment models: subscription-plan and premium-package. Subscription information is separated from payment platforms, with platform product prices dynamically created (and recorded) only during subscription
+1. There are two subscription+payment models: subscription-plan Subscription information is separated from payment platforms, with platform product prices dynamically created (and recorded) only during subscription
 2. Generate corresponding plans information in OpenMeter as the standard basis for usage billing
 3. First create Meters in OpenMeter to measure usage through system-specific event keys (by count, by token). Then create features by packaging a billing method into a functionality
 4. Add features to plans in OpenMeter to bind specific functionalities to subscriptions

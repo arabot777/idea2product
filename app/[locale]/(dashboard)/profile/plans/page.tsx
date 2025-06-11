@@ -5,10 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { getUserTransactions } from '@/app/actions/billing/get-user-transactions';
 import { listSubscriptionPlans } from '@/app/actions/billing/list-subscription-plans';
-import { listPremiumPackages } from '@/app/actions/billing/list-premium-packages';
 import { TransactionDto } from '@/lib/types/payment/transaction.dto';
 import { SubscriptionPlanDto } from '@/lib/types/billing/subscription-plan.dto';
-import { PremiumPackageDto } from '@/lib/types/billing/premium-package.dto';
 import { format } from 'date-fns';
 
 export default function ProfilePlansPage() {
@@ -16,7 +14,6 @@ export default function ProfilePlansPage() {
 
   const [transactions, setTransactions] = useState<TransactionDto[]>([]);
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlanDto[]>([]);
-  const [premiumPackages, setPremiumPackages] = useState<PremiumPackageDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,16 +23,13 @@ export default function ProfilePlansPage() {
         const [
           transactionsResult,
           subscriptionPlansData,
-          premiumPackagesData
         ] = await Promise.all([
           getUserTransactions({ page: 1, pageSize: 100 }),
           listSubscriptionPlans(),
-          listPremiumPackages()
         ]);
 
         setTransactions(transactionsResult.data || []);
         setSubscriptionPlans(subscriptionPlansData || []);
-        setPremiumPackages(premiumPackagesData || []);
 
       } catch (err: any) {
         setError(err.message || 'An unexpected error occurred.');
@@ -52,12 +46,6 @@ export default function ProfilePlansPage() {
     (tx) => tx.type === 'subscription' && tx.status === 'completed' && tx.currentPeriodEnd && new Date(tx.currentPeriodEnd) > new Date()
   );
   const activeSubscriptionPlan = activeSubscription ? subscriptionPlans.find(plan => plan.id === activeSubscription.associatedId) : null;
-
-  // Find purchased premium packages
-  const purchasedPremiumPackages = transactions
-    .filter((tx) => tx.type === 'premium_package' && tx.status === 'completed')
-    .map((tx) => premiumPackages.find((pkg) => pkg.id === tx.associatedId))
-    .filter(Boolean) as PremiumPackageDto[];
 
   if (loading) {
     return (
@@ -103,22 +91,6 @@ export default function ProfilePlansPage() {
           </div>
         ) : (
           <p className="text-slate-400 mb-6">{t('noActiveSubscription')}</p>
-        )}
-
-        {/* Purchased Premium Packages Area */}
-        <h3 className="text-lg font-semibold mb-4">{t('purchasedPremiumPackagesTitle')}</h3>
-        {purchasedPremiumPackages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {purchasedPremiumPackages.map((pkg) => (
-              <div key={pkg.id} className="p-4 border border-slate-600 rounded-md">
-                <p className="text-lg font-medium">{pkg.name}</p>
-                <p className="text-slate-400">{pkg.description}</p>
-                {/* Premium Package Validity */}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-slate-400 mb-6">{t('noPurchasedPremiumPackages')}</p>
         )}
       </CardContent>
     </Card>

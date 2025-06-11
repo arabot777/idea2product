@@ -15,9 +15,9 @@ To start developing with this project, follow these steps:
 
 2. **Environment Variable Configuration**:
     ```bash
-    cp .env.local.example .env.local
+    cp .env.local.example .env
     ```
-    Then edit the .env.local file and fill in the necessary environment variables.
+    Then edit the .env file and fill in the necessary environment variables.
     Required environment variables and their purposes are as follows:
     * POSTGRES_URL: Required - Database connection string, can be copied from supabase Connect>ORM, remember to replace the database password
     * STRIPE_SECRET_KEY: Required - Stripe secret key

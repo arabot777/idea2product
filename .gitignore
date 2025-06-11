@@ -40,7 +40,9 @@ next-env.d.ts
 postgres_data/
 .env*.local
 
+
 .design
+.prompts
 .prompts-zh
 i18n/zh-CN.json
 i18n/en.json

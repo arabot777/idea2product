@@ -127,6 +127,7 @@
     "prettier": "^3.0.3",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "4.1.7",
+    "ts-jest": "^29.3.4",
     "typescript": "^5.8.3"
   }
 }
