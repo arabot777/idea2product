@@ -16,12 +16,12 @@ export const userPremiumPackages = pgTable("user_premium_packages", {
   name: text("name").notNull(), // Premium package name
   description: text("description").notNull(), // Premium package description
   price: doublePrecision("price").notNull(), // Premium package price
-  status: billingStatusEnum("status").notNull(), // Premium package status (e.g., active, canceled)
+  status: text("status").notNull(), // Premium package status (e.g., active, canceled)
   currentPeriodStart: timestamp("current_period_start").notNull(), // Start time of the current billing period
   currentPeriodEnd: timestamp("current_period_end"), // End time of the current billing period
   canceledAt: timestamp("canceled_at"), // Time when the premium package was canceled
   endedAt: timestamp("ended_at"), // Time when the premium package ended
-  currency: currencyEnum("currency").notNull(), // Premium package currency
+  currency: text("currency").notNull(), // Premium package currency
   isActive: boolean("is_active").notNull().default(true), // Whether enabled
   metadata: jsonb("metadata"), // Additional metadata
   createdAt: timestamp("created_at").notNull().defaultNow(), // Record creation time

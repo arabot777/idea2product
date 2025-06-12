@@ -3,21 +3,11 @@ import { relations } from "drizzle-orm";
 import { profiles } from "../auth/profile";
 import { currencyEnum } from "../billing/enum";
 
-// Transaction status enum
-export const transactionStatusEnum = [
-  "pending", // In progress
-  "completed", // Completed
-  "failed", // Failed
-  "refunded", // Refunded
-  "canceled", // Canceled
-] as const;
-export type TransactionStatus = (typeof transactionStatusEnum)[number];
-
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => profiles.id),
   externalId: text("external_id"), // External payment system ID (e.g., Stripe payment_intent ID)
-  associatedId: uuid("associated_id").notNull(), // ID of the associated purchased subscription plan or premium package
+  associatedId: uuid("associated_id").notNull(), // ID of the associated purchased subscription plan
   type: text("type").notNull(), // Transaction type: subscription, premium_package
   amount: doublePrecision("amount").notNull(), // Transaction amount
   currency: currencyEnum("currency").notNull().default("usd"), // Currency type

@@ -103,7 +103,6 @@ The following are the pages implemented in this project and their corresponding 
 *   `/admin/permissions`: Admin permission management page
 *   `/admin/roles`: Admin role management page
 *   `/admin/subscription-plan`: Admin subscription plan management page
-*   `/admin/subscription-plan/[id]`: Admin specific subscription plan details page
 *   `/admin/users`: Admin user management page
 *   `/history`: History page
 *   `/test`: Test page

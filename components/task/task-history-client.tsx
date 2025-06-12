@@ -15,6 +15,8 @@ import ReactPaginate from "react-paginate";
 import { TaskDto } from "@/lib/types/task/task.dto";
 
 interface TaskHistoryClientProps {
+  isLoading: boolean;
+  error: string;
   tasks: TaskDto[];
   total: number;
   currentPage: number;
@@ -23,7 +25,7 @@ interface TaskHistoryClientProps {
   itemsPerPage: number;
 }
 
-export function TaskHistoryClient({ tasks, total, currentPage, currentStatus, currentSearch, itemsPerPage }: TaskHistoryClientProps) {
+export function TaskHistoryClient({ isLoading, error, tasks, total, currentPage, currentStatus, currentSearch, itemsPerPage }: TaskHistoryClientProps) {
   const t = useTranslations("TaskHistoryClient");
   const locale = useLocale();
   const router = useRouter();
@@ -107,13 +109,23 @@ export function TaskHistoryClient({ tasks, total, currentPage, currentStatus, cu
         </div>
       </div>
 
-      <div className="space-y-4">
-        {tasks.map((item) => (
-          <HistoryListItem key={item.id} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="text-center py-16">
+          <p className="text-gray-400">{t("loading")}</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-16">
+          <p className="text-red-500">{error}</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {tasks.map((item) => (
+            <HistoryListItem key={item.id} item={item} />
+          ))}
+        </div>
+      )}
 
-      {tasks.length === 0 && (
+      {!isLoading && !error && tasks.length === 0 && (
         <div className="text-center py-16">
           <ImageIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-400 mb-2">{searchTerm ? t("noMatchingRecords") : t("noRecordsYet")}</h3>

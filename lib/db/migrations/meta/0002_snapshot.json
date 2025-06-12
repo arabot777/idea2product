@@ -1,6 +1,6 @@
 {
-  "id": "401cc03f-37e8-4aef-ae0b-c3acaed69b7a",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c972532b-7327-49f2-b34f-c9c7a4adf7c4",
+  "prevId": "8743d17c-bf36-4649-b4ae-ad6ce5f0effb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -233,10 +233,10 @@
         },
         "external_id": {
           "name": "external_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": 0
+          "default": "''"
         },
         "external_checkout_url": {
           "name": "external_checkout_url",
@@ -324,8 +324,7 @@
         },
         "status": {
           "name": "status",
-          "type": "billing_status",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },

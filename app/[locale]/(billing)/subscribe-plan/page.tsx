@@ -3,10 +3,9 @@
 import Navbar from "@/components/navbar"
 import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
-import { stripeCheckoutSession } from '@/app/actions/billing/stripe-checkout-session';
-import { listSubscriptionPlans } from '@/app/actions/billing/list-subscription-plans';
+import { useRouter } from 'next/navigation';
+import { unibeeCheckoutUrl } from '@/app/actions/billing/unibee-checkout-url';
+import { listActiveSubscriptionPlans } from '@/app/actions/billing/list-active-subscription-plans';
 import { SubscriptionPlanDto } from '@/lib/types/billing/subscription-plan.dto';
 import { toast } from 'sonner';
 import { Check, Zap, Crown, Rocket, LucideIcon } from "lucide-react"; // Import icons and LucideIcon type
@@ -55,6 +54,7 @@ const mapSubscriptionPlanDtoToPlan = (dto: SubscriptionPlanDto, t: ReturnType<ty
 };
 
 const SubscribePage: React.FC = () => {
+  const router = useRouter();
   const t = useTranslations('BillingSubscribePlanPage'); // Use subscribePage's internationalization key
   const [plans, setPlans] = useState<ExtendedPlan[]>([]); // Use ExtendedPlan
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,7 @@ const SubscribePage: React.FC = () => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const fetchedPlansDto = await listSubscriptionPlans();
+        const fetchedPlansDto = await listActiveSubscriptionPlans();
         const mappedPlans = fetchedPlansDto.map(planDto => mapSubscriptionPlanDtoToPlan(planDto, t));
         setPlans(mappedPlans);
       } catch (err) {
@@ -86,12 +86,7 @@ const SubscribePage: React.FC = () => {
     }
     setSubmittingPlanId(planId); // Set to current planId when starting subscription operation
     try {
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-      if (!stripe) {
-        console.error('stripeLoadError');
-        return;
-      }
-
+     
       const selectedPlan = plans.find(plan => plan.id === planId);
       if (!selectedPlan) {
         console.error(`planNotFound ${planId}`);
@@ -104,17 +99,11 @@ const SubscribePage: React.FC = () => {
         return;
       }
 
-      const { sessionId } = await stripeCheckoutSession({
-        premiumPackageId: undefined,
-        subscriptionPlanId: selectedPlan.id,
-      });
+      const { checkoutUrl, transactionId } = await unibeeCheckoutUrl(selectedPlan.id);
 
-      if (sessionId) {
-        const { error } = await stripe.redirectToCheckout({ sessionId });
-        if (error) {
-          console.error('Stripe redirect failed:', error);
-        }
-      }
+      // Redirect to the checkout URL in a new tab
+      window.open(checkoutUrl, '_blank');
+      router.push('/subscribe-plan/confirm?planId=' + selectedPlan.id + '&transactionId=' + transactionId);
     } catch (error: any) {
       toast.error(`${t('subscriptionFailed')} ${error?.message || error}`);
     } finally {

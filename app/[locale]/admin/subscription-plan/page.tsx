@@ -1,28 +1,44 @@
-import { Suspense } from 'react';
-import Link from 'next/link';
-import { SubscriptionPlanList } from '@/components/subscription/subscription-plan-list';
-import { UsageStats } from '@/components/subscription/usage-stats';
-import { useTranslations } from 'next-intl';
-import { CreateSubscriptionPlanDialog } from '@/components/subscription/create-subscription-plan-dialog';
+"use client";
+
+import { Suspense, useTransition } from "react";
+import { SubscriptionPlanList } from "@/components/subscription/subscription-plan-list";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { unibeeSyncSubscriptionPlan } from "@/app/actions/billing/unibee-sync-subscription-plan";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SubscriptionAdminPage() {
-  const t = useTranslations('SubscriptionAdminPage');
+  const t = useTranslations("SubscriptionAdminPage");
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleSync = () => {
+    startTransition(async () => {
+      try {
+        const success = await unibeeSyncSubscriptionPlan();
+        if (!success) {
+          toast(t("syncFailed"));
+        } else {
+          toast(t("syncSuccess"));
+          router.refresh();
+        }
+      } catch (error: any) {
+        toast(`${t("syncFailed")},${error?.message || "unknown error"}`);
+      }
+    });
+  };
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
-
-      <div className="mb-8">
-        <Suspense fallback={<div>{t('loadingUsageStats')}</div>}>
-          <UsageStats />
-        </Suspense>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <Button onClick={handleSync} disabled={isPending}>
+          {isPending ? t("syncing") : t("syncSubscriptionButton")}
+        </Button>
       </div>
 
-      <div className="flex justify-end mb-4">
-        <CreateSubscriptionPlanDialog />
-      </div>
-
-      <Suspense fallback={<div>{t('loadingSubscriptionPlanList')}</div>}>
+      <Suspense fallback={<div>{t("loadingSubscriptionPlanList")}</div>}>
         <SubscriptionPlanList />
       </Suspense>
     </div>

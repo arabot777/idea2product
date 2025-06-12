@@ -41,7 +41,7 @@ export const PremiumPackageForm: React.FC<PremiumPackageFormProps> = ({
     name: z.string().min(1, t("nameRequired")),
     description: z.string(),
     price: z.number(),
-    currency: z.enum(["usd", "cny"]),
+    currency: z.string(),
     isActive: z.boolean(),
     metadata: z.record(z.any()).nullable(),
     id: z.string().uuid().optional(),

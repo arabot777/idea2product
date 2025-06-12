@@ -108,20 +108,6 @@ export function SubscriptionPlanList() {
                 <TableCell>{plan.isActive ? t('yes') : t('no')}</TableCell>
                 <TableCell>{plan.metadata?.isTrial ? t('yes') : t('no')}</TableCell>
                 <TableCell>{plan.metadata?.sortOrder || t('notApplicable')}</TableCell>
-                <TableCell className="text-right">
-                  <Link href={`/admin/subscription/${plan.id}`}>
-                    <Button variant="outline" size="sm" className="mr-2">
-                      {t('edit')}
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDisable(plan.id)}
-                  >
-                    {t('delete')}
-                  </Button>
-                </TableCell>
               </TableRow>
             ))
           )}

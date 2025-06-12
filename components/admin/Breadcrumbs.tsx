@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 
 interface BreadcrumbItem {
   label: string;
@@ -12,13 +11,12 @@ interface BreadcrumbItem {
 
 const Breadcrumbs: React.FC = () => {
   const pathname = usePathname();
-  const t = useTranslations('Breadcrumbs'); // Assuming breadcrumb translations are also in AdminLayout
 
   const pathSegments = pathname.split('/').filter(segment => segment !== '');
   const breadcrumbItems: BreadcrumbItem[] = [];
 
   // Add homepage breadcrumb
-  breadcrumbItems.push({ label: t('home'), href: '/' });
+  breadcrumbItems.push({ label:"Home", href: '/' });
 
   // Dynamically generate breadcrumbs based on path
   let currentPath = '';
@@ -27,14 +25,14 @@ const Breadcrumbs: React.FC = () => {
     // Exclude route groups like (admin)
     if (!segment.startsWith('(') || !segment.endsWith(')')) {
       breadcrumbItems.push({
-        label: t(segment) || segment, // Try to get from translations, otherwise use segment name directly
+        label: segment, // Try to get from translations, otherwise use segment name directly
         href: currentPath,
       });
     }
   });
 
   return (
-    <nav className="flex" aria-label={t('ariaLabel')}>
+    <nav className="flex" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         {breadcrumbItems.map((item, index) => (
           <li key={item.href} className="inline-flex items-center">

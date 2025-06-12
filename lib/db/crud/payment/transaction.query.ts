@@ -1,6 +1,6 @@
 import { db } from '../../drizzle';
 import { transactions, Transaction } from '../../schemas/payment/transaction';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull, or, notInArray } from 'drizzle-orm';
 import { DrizzlePageUtils, PageParams, PaginationResult } from '@/utils/drizzle.page';
 
 export class TransactionQuery {
@@ -15,6 +15,25 @@ export class TransactionQuery {
 
   static async getByUserId(userId: string): Promise<Transaction[]> {
     return db.select().from(transactions).where(eq(transactions.userId, userId));
+  }
+
+  static async getUnfinishedTransactionsByUserId(userId: string): Promise<Transaction[]> {
+    const finalStatuses = ['completed', 'failed', 'canceled', 'refunded'];
+    return db
+      .select()
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          or(
+            // Case 1: Pending and not yet linked to an external transaction
+            and(eq(transactions.status, 'pending'), isNull(transactions.externalId)),
+            // Case 2: Already linked but not in a final state
+            and(notInArray(transactions.status, finalStatuses))
+          )
+        )
+      )
+      .orderBy(transactions.createdAt);
   }
 
   static async getPagination(params: PageParams<Transaction>): Promise<PaginationResult<Transaction>> {

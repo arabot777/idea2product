@@ -1,6 +1,7 @@
 export const Currency = {
   USD: "usd",
   CNY: "cny",
+  EUR: "eur",
 } as const;
 
 export type CurrencyType = (typeof Currency)[keyof typeof Currency];
@@ -13,12 +14,15 @@ export const BillingCycle = {
 export type BillingCycleType = (typeof BillingCycle)[keyof typeof BillingCycle];
 
 export const BillingStatus = {
-  ACTIVE: "active",
-  CANCELED: "canceled",
-  PAST_DUE: "past_due",
-  INCOMPLETE: "incomplete",
-  INCOMPLETE_EXPIRED: "incomplete_expired",
-  TRIALING: "trialing",
+  PENDING: "pending",           // Pending
+  ACTIVE: "active",             // Active
+  PENDING_INACTIVE: "pending_inactive", // Pending inactive
+  CANCELED: "canceled",         // Canceled
+  EXPIRED: "expired",           // Expired
+  PAUSED: "paused",             // Paused
+  INCOMPLETE: "incomplete",     // Incomplete
+  PROCESSING: "processing",     // Processing
+  FAILED: "failed",             // Failed
 } as const;
 
 export type BillingStatusType = (typeof BillingStatus)[keyof typeof BillingStatus];

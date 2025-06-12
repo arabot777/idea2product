@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, timestamp, boolean, uuid, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const profiles = pgTable("profiles", {
@@ -11,6 +11,7 @@ export const profiles = pgTable("profiles", {
   email_verified: boolean("email_verified").notNull().default(false),
   active_2fa: boolean("active_2fa").notNull().default(false),
   subscription: text("subscription").array().notNull().default([]),
+  unibeeExternalId: text("unibee_external_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),

@@ -92,15 +92,15 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="hover:bg-slate-700/50">
-                  <Link href="/history" className="flex items-center text-white">
+                  <Link href="/task/history" className="flex items-center text-white">
                     <History className="mr-3 h-4 w-4" />
                     {t('history')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="hover:bg-slate-700/50">
-                  <Link href="/subscribe" className="flex items-center text-white">
+                  <Link href="/profile/plans" className="flex items-center text-white">
                     <Settings className="mr-3 h-4 w-4" />
-                    {t('subscriptionManagement')}
+                    {t('myPlans')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="hover:bg-slate-700/50 text-red-400">

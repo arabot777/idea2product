@@ -1,6 +1,6 @@
 CREATE TYPE "public"."billing_cycle" AS ENUM('monthly', 'annual');--> statement-breakpoint
 CREATE TYPE "public"."billing_status" AS ENUM('active', 'canceled', 'past_due', 'incomplete', 'incomplete_expired', 'trialing');--> statement-breakpoint
-CREATE TYPE "public"."currency" AS ENUM('usd', 'cny');--> statement-breakpoint
+CREATE TYPE "public"."currency" AS ENUM('usd', 'cny', 'eur');--> statement-breakpoint
 CREATE TYPE "public"."role_type" AS ENUM('user', 'team_user', 'team_admin', 'system_admin');--> statement-breakpoint
 CREATE TYPE "public"."active_status" AS ENUM('inactive', 'active', 'active_2fa');--> statement-breakpoint
 CREATE TYPE "public"."auth_status" AS ENUM('anonymous', 'authenticated');--> statement-breakpoint
@@ -27,6 +27,7 @@ CREATE TABLE "profiles" (
 	"email_verified" boolean DEFAULT false NOT NULL,
 	"active_2fa" boolean DEFAULT false NOT NULL,
 	"subscription" text[] DEFAULT '{}' NOT NULL,
+	"unibee_external_id" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
@@ -34,41 +35,17 @@ CREATE TABLE "profiles" (
 	CONSTRAINT "profiles_username_unique" UNIQUE("username")
 );
 --> statement-breakpoint
-CREATE TABLE "premium_packages" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" text NOT NULL,
-	"description" text NOT NULL,
-	"price" double precision NOT NULL,
-	"currency" "currency" NOT NULL,
-	"is_active" boolean DEFAULT true NOT NULL,
-	"metadata" jsonb,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "stripe_products" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"source_id" text NOT NULL,
-	"source_type" text NOT NULL,
-	"stripe_account_id" text NOT NULL,
-	"product_id" text NOT NULL,
-	"product_name" text NOT NULL,
-	"product_description" text,
-	"price_id" text NOT NULL,
-	"price_unit_amount" integer NOT NULL,
-	"price_currency" text NOT NULL,
-	"price_interval" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "subscription_plans" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
 	"price" double precision NOT NULL,
-	"currency" "currency" NOT NULL,
+	"currency" text NOT NULL,
 	"billing_cycle" "billing_cycle" NOT NULL,
+	"billing_count" integer DEFAULT 1 NOT NULL,
+	"billing_type" integer DEFAULT 1 NOT NULL,
+	"external_id" integer DEFAULT 0 NOT NULL,
+	"external_checkout_url" text DEFAULT '' NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"metadata" jsonb,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -78,7 +55,6 @@ CREATE TABLE "subscription_plans" (
 CREATE TABLE "user_subscription_plans" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"external_id" text,
 	"source_id" uuid NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
@@ -89,28 +65,12 @@ CREATE TABLE "user_subscription_plans" (
 	"cancel_at_period_end" boolean DEFAULT false,
 	"canceled_at" timestamp,
 	"ended_at" timestamp,
-	"currency" "currency" NOT NULL,
+	"currency" text NOT NULL,
 	"billing_cycle" "billing_cycle" NOT NULL,
-	"is_active" boolean DEFAULT true NOT NULL,
-	"metadata" jsonb,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "user_premium_packages" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"billing_count" integer DEFAULT 1 NOT NULL,
+	"billing_type" integer DEFAULT 1 NOT NULL,
 	"external_id" text,
-	"source_id" uuid NOT NULL,
-	"name" text NOT NULL,
-	"description" text NOT NULL,
-	"price" double precision NOT NULL,
-	"status" "billing_status" NOT NULL,
-	"current_period_start" timestamp NOT NULL,
-	"current_period_end" timestamp,
-	"canceled_at" timestamp,
-	"ended_at" timestamp,
-	"currency" "currency" NOT NULL,
+	"external_checkout_url" text DEFAULT '' NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"metadata" jsonb,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -208,11 +168,23 @@ CREATE TABLE "task_results" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "billable_metrics" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"unibee_external_id" text,
+	"code" text NOT NULL,
+	"metric_name" text NOT NULL,
+	"metric_description" text,
+	"aggregation_property" text,
+	"aggregation_type" integer NOT NULL,
+	"type" integer NOT NULL,
+	"feature_calculator" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "activity_logs" ADD CONSTRAINT "activity_logs_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_subscription_plans" ADD CONSTRAINT "user_subscription_plans_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_subscription_plans" ADD CONSTRAINT "user_subscription_plans_source_id_subscription_plans_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."subscription_plans"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_premium_packages" ADD CONSTRAINT "user_premium_packages_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_premium_packages" ADD CONSTRAINT "user_premium_packages_source_id_premium_packages_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."premium_packages"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_role_id_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permission_id_permission_configs_id_fk" FOREIGN KEY ("permission_id") REFERENCES "public"."permission_configs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -228,4 +200,5 @@ CREATE INDEX "task_data_task_id_idx" ON "task_data" USING btree ("task_id");--> 
 CREATE INDEX "task_result_user_id_idx" ON "task_results" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "task_result_task_id_idx" ON "task_results" USING btree ("task_id");--> statement-breakpoint
 CREATE INDEX "task_result_type_idx" ON "task_results" USING btree ("type");--> statement-breakpoint
-CREATE INDEX "task_result_status_idx" ON "task_results" USING btree ("status");
+CREATE INDEX "task_result_status_idx" ON "task_results" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "billable_metrics_code_idx" ON "billable_metrics" USING btree ("code");

@@ -1,67 +1,45 @@
-// lib/auth/session-cache.ts
+"use server";
+
 import { SupabaseClient, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { ProfileQuery } from "@/lib/db/crud/auth/profile.query";
 import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-config.dto";
-
-// Dynamically import cache module only in server environment
-// CacheKeys type is not imported here to avoid naming conflicts
-
-// Define in-memory cache for middleware environment
-const memoryCache = new Map<string, { value: any; expires: number }>();
-
-// Detect if running in a middleware environment
-const isMiddlewareRuntime = typeof process === "undefined" || process.env.NEXT_RUNTIME === "edge";
-
-// Simple caching utility for middleware environment
-const simpleCache = {
-  async get<T>(key: string): Promise<T | undefined> {
-    const item = memoryCache.get(key);
-    if (!item) return undefined;
-
-    if (item.expires && item.expires < Date.now()) {
-      memoryCache.delete(key);
-      return undefined;
-    }
-
-    return item.value as T;
-  },
-  async set(key: string, value: any, ttl: number): Promise<void> {
-    const expires = ttl ? Date.now() + ttl : 0;
-    memoryCache.set(key, { value, expires });
-  },
-  async del(key: string): Promise<void> {
-    memoryCache.delete(key);
-  },
-};
-
-// Initialize cache and cache keys
-let cache: typeof simpleCache;
-let CacheKeys: any;
-
-// Import actual cache implementation only in non-middleware environments
-if (!isMiddlewareRuntime) {
-  const cacheImport = require("@/lib/cache");
-  const keysImport = require("@/lib/cache/keys");
-  cache = cacheImport.cache;
-  CacheKeys = keysImport.CacheKeys;
-} else {
-  // Middleware environment uses simplified implementation
-  cache = simpleCache;
-  CacheKeys = {
-    USER_PROFILE: (id: string) => `user_profile:${id}`,
-  };
-}
+import { cookies } from "next/headers";
+import { cache } from "@/lib/cache";
+import { CacheKeys, CacheTags } from "@/lib/cache/keys";
+import crypto from "crypto";
 
 // Cache time (5 minutes)
-const SESSION_CACHE_TTL = 5 * 60 * 1000;
+const SESSION_CACHE_TTL = 30 * 60 * 1000;
 const UN_USER_CONTEXT = {
   id: null,
   roles: [],
   authStatus: AuthStatus.ANONYMOUS,
   activeStatus: ActiveStatus.INACTIVE,
 };
+
+function calculateMD5(data: string) {
+  const hash = crypto.createHash("md5");
+  hash.update(data);
+  return hash.digest("hex");
+}
+
+async function calculateCookieMD5(supabase: SupabaseClient) {
+  const cookieStore = await cookies();
+  // Extract the subdomain from the Supabase URL
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const subdomain = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || "";
+  // Get all subdomain cookies and sort them
+  const subdomainCookies = Array.from(cookieStore.getAll())
+    .filter((cookie) => cookie.name.startsWith(`sb-${subdomain}`))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  // Combine into key-value string for MD5 calculation
+  const cookieString = subdomainCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("&");
+
+  return cookieString ? calculateMD5(cookieString) : null;
+}
 
 // Get user information from session
 export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userContext: UserContext; user: Session["user"] | null }> {
@@ -73,19 +51,30 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
     // to get a new access token and session details.
     // If successful, the Supabase client (if configured with auth-helpers)
     // should automatically update the cookies with the new session information.
+    const cookieMD5 = await calculateCookieMD5(supabaseClient);
+    const cookieMD5Key = CacheKeys.COOKIE_MD5(cookieMD5 || "");
+    const cookieMD5Value = await cache.get(cookieMD5Key);
 
-    // Get current session information
-    const {
-      data: { session: currentSession },
-    } = await supabaseClient.auth.getSession();
+    let refreshedSession: any = null;
+    let refreshError = null;
 
+    if (cookieMD5Value) {
+      refreshedSession = cookieMD5Value;
+    } else {
+      // Get current session information
+      const {
+        data: { session: currentSession },
+      } = await supabaseClient.auth.getSession();
+      refreshedSession = currentSession;
+      await cache.set(cookieMD5Key, {
+        expires_at: refreshedSession.expires_at,
+        user: refreshedSession.user,
+      }, SESSION_CACHE_TTL);
+    }
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
-    const needsRefresh = !currentSession || (currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000);
-
-    // Refresh session only when needed
-    let refreshedSession = currentSession;
-    let refreshError = null;
+    const needsRefresh =
+      !refreshedSession || (refreshedSession.expires_at && new Date(refreshedSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000);
 
     if (needsRefresh) {
       const refreshResult = await supabaseClient.auth.refreshSession();
@@ -96,6 +85,7 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
         console.warn(`Session refresh failed: ${refreshError.message}. User will be treated as unauthenticated.`);
         return { userContext: UN_USER_CONTEXT, user: null };
       }
+      await cache.set(cookieMD5Key, refreshedSession, SESSION_CACHE_TTL);
     }
 
     if (!refreshedSession) {
@@ -141,6 +131,7 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
         activeStatus: userProfile?.active_2fa ? ActiveStatus.ACTIVE_2FA : userProfile?.email_verified ? ActiveStatus.ACTIVE : ActiveStatus.INACTIVE,
         email: userProfile?.email || refreshedSession.user.email,
         subscription: userProfile?.subscription || [], // Matches original logic for subscription
+        unibeeExternalId: userProfile?.unibeeExternalId || undefined,
       };
       const userContext: UserContext = userContextData;
 

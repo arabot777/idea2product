@@ -13,4 +13,5 @@ export interface UserContext {
   subscription?: string[]; // Subscription type
   email?: string;
   teamId?: string;
+  unibeeExternalId?: string;
 }

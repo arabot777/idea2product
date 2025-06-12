@@ -14,6 +14,11 @@ export class UserSubscriptionPlanQuery {
     return userSubscriptionPlan || null;
   }
 
+  static async getByExternalId(externalId: string): Promise<UserSubscriptionPlan | null> {
+    const [userSubscriptionPlan] = await db.select().from(userSubscriptionPlans).where(and(eq(userSubscriptionPlans.externalId, externalId))).limit(1);
+    return userSubscriptionPlan || null;
+  }
+
   static async getAll(): Promise<UserSubscriptionPlan[]> {
     const allUserSubscriptionPlans = await db.select().from(userSubscriptionPlans);
     return allUserSubscriptionPlans;
