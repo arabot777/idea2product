@@ -6,37 +6,11 @@ import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.q
 import { AppError } from "@/lib/types/app.error";
 import { NewSubscriptionPlan } from "@/lib/db/schemas/billing/subscription-plan";
 import { CurrencyType, BillingCycleType } from "@/lib/types/billing/enum.bean";
-// Define the Unibee API response type
-interface UnibeePlan {
-  id: string;
-  planName: string;
-  description: string;
-  amount: number;
-  currency: string;
-  intervalUnit: string;
-  intervalCount: number;
-  checkoutUrl: string;
-  status: number; // 1-Editing, 2-Active, 3-InActive, 4-SoftArchive, 5-HardArchive
-  type: number; // 1-main plan, 2-addon plan, 3-onetime
-  createTime: number; // timestamp
-}
-
-interface UnibeePlanListResponse {
-  code: number;
-  data: {
-    plans: {
-      plan: UnibeePlan;
-    }[];
-    total: number;
-  };
-  message: string;
-  redirect: string;
-  requestId: string;
-}
+import { UnibeePlanListResponse } from "@/lib/types/unibee";
 
 export const unibeeSyncSubscriptionPlan = withPermission("unibeeSyncSubscriptionPlan", async (): Promise<boolean> => {
   try {
-    const response = await UnibeanClient.getInstance().request<UnibeePlanListResponse>("GET", "/merchant/plan/list", { page: 0, count: 99 });
+    const response = await UnibeanClient.getInstance().getPlanList({ page: 0, count: 99 });
 
     if (response.code !== 0) {
       throw new AppError("UNIBEE_API_ERROR", "Failed to fetch Unibee plans", response.message);

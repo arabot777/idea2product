@@ -53,9 +53,7 @@ export const unibeeCheckoutUrl = dataActionWithPermission(
         metadata: {},
       });
 
-      const sessionResponse: { code: number; message: string; data: { clientSession: string; userId: string } } = await UnibeanClient.getInstance().request(
-        "POST",
-        "/merchant/session/new_session",
+      const sessionResponse = await UnibeanClient.getInstance().createClientSession(
         {
           email: userContext.email,
           externalUserId: userContext.id,

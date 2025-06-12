@@ -16,71 +16,7 @@ import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.q
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
-
-// Define the Unibee API response type for user subscription detail
-interface UnibeeUserSubscription {
-  addonData: string;
-  amount: number;
-  billingCycleAnchor: number;
-  cancelAtPeriodEnd: number; // 123
-  cancelOrExpireTime: number; // 123
-  cancelReason: string;
-  countryCode: string;
-  createTime: number; // 123
-  currency: string;
-  currentPeriodEnd: number; // 123
-  currentPeriodPaid: number; // 123
-  currentPeriodStart: number; // 123
-  defaultPaymentMethodId: string;
-  dunningTime: number; // 123
-  externalSubscriptionId: string;
-  features: string;
-  firstPaidTime: number; // 123
-  gasPayer: string;
-  gatewayId: number; // 123
-  gatewayStatus: string;
-  id: number; // 123
-  lastUpdateTime: number; // 123
-  latestInvoiceId: string;
-  link: string;
-  merchantId: number; // 123
-  metadata: Record<string, any>;
-  originalPeriodEnd: number; // 123
-  pendingUpdateId: string;
-  planId: number; // 123
-  productId: number; // 123
-  quantity: number; // 123
-  returnUrl: string;
-  status: number; // 123 (e.g., 1-active, 2-canceled)
-  subscriptionId: string; // This is the actual Unibee subscription ID
-  taskTime: string;
-  taxPercentage: number; // 123
-  testClock: number; // 123
-  trialEnd: number; // 123
-  type: number; // 123
-  userId: number; // 123 (Unibee's internal user ID)
-  vatNumber: string;
-}
-
-interface UnibeeUserSubscriptionResponse {
-  code: number;
-  data: {
-    subscription: UnibeeUserSubscription;
-    plan: {
-      planName: string;
-      description: string;
-      amount: number;
-      currency: string;
-      intervalUnit: string;
-      intervalCount: number;
-      checkoutUrl: string;
-      type: number;
-    };
-  };
-  message: string;
-  redirect: string;
-  requestId: string;
-}
+import { UnibeeUserSubscription, UnibeeUserSubscriptionResponse } from "@/lib/types/unibee";
 
 // Helper function to map Unibee status number to BillingStatusType
 const mapUnibeeStatusToBillingStatusType = (unibeeStatus: number): BillingStatusType => {
@@ -115,8 +51,7 @@ async function syncUserSubscriptionWithUnibee(userContext: UserContext, t: any) 
       return false;
     }
 
-    // Use POST request as per user's feedback
-    const response = await UnibeanClient.getInstance().request<UnibeeUserSubscriptionResponse>("POST", "/merchant/subscription/user_subscription_detail", {
+    const response = await UnibeanClient.getInstance().getUserSubscriptionDetail({
       userId: userContext.unibeeExternalId, // Use userId as parameter for POST request
     });
 

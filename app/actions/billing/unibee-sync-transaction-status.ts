@@ -17,104 +17,7 @@ import { UserSubscriptionPlanEdit } from "@/lib/db/crud/billing/user-subscriptio
 import { BillingStatus } from "@/lib/types/billing/enum.bean";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
-
-interface UnibeePaymentTimeline {
-  autoCharge: boolean;
-  createTime: number;
-  currency: string;
-  externalTransactionId: string;
-  fullRefund: number;
-  gatewayId: number;
-  id: number;
-  invoiceId: string;
-  merchantId: number;
-  payment: {
-    authorizeComment: string;
-    authorizeReason: string;
-    authorizeStatus: number;
-    autoCharge: boolean;
-    automatic: number;
-    balanceAmount: number;
-    billingReason: string;
-    cancelTime: number;
-    countryCode: string;
-    createTime: number;
-    currency: string;
-    externalPaymentId: string;
-    failureReason: string;
-    gasPayer: string;
-    gatewayCurrencyExchange: {
-      exchange_amount: number;
-      exchange_rate: number;
-      from_currency: string;
-      to_currency: string;
-    };
-    gatewayId: number;
-    gatewayPaymentId: string;
-    gatewayPaymentType: string;
-    invoiceId: string;
-    lastError: string;
-    link: string;
-    merchantId: number;
-    metadata: Record<string, any>;
-    paidTime: number;
-    paymentAmount: number;
-    paymentId: string;
-    refundAmount: number;
-    returnUrl: string;
-    status: number; // Unibee payment status
-    subscriptionId: string;
-    totalAmount: number;
-    userId: number;
-  };
-  paymentId: string;
-  refund: {
-    countryCode: string;
-    createTime: number;
-    currency: string;
-    externalRefundId: string;
-    gatewayCurrencyExchange: {
-      exchange_amount: number;
-      exchange_rate: number;
-      from_currency: string;
-      to_currency: string;
-    };
-    gatewayId: number;
-    gatewayRefundId: string;
-    invoiceId: string;
-    merchantId: number;
-    metadata: Record<string, any>;
-    paymentId: string;
-    refundAmount: number;
-    refundComment: string;
-    refundCommentExplain: string;
-    refundId: string;
-    refundTime: number;
-    returnUrl: string;
-    status: number; // Unibee refund status
-    subscriptionId: string;
-    type: number;
-    userId: number;
-  };
-  refundId: string;
-  status: number; // Unibee timeline status
-  subscriptionId: string;
-  timelineType: number;
-  totalAmount: number;
-  transactionId: string;
-  userId: number;
-}
-
-interface UnibeePaymentTimelineListResponse {
-  code: number;
-  data: {
-    paymentTimeLines: UnibeePaymentTimeline[];
-    total: number;
-  };
-  message: string;
-  redirect: string;
-  requestId: string;
-}
+import { UnibeePaymentTimeline, UnibeePaymentTimelineListResponse } from "@/lib/types/unibee";
 
 // Maps Unibee's status to our internal transaction status.
 const mapUnibeeStatusToLocal = (unibeeTimeline: UnibeePaymentTimeline): string | undefined => {
@@ -148,9 +51,7 @@ async function syncUnibeeTransactionsInBackground(userContext: UserContext): Pro
     const createTimeStart = Math.floor(firstTransactionTime.getTime() / 1000);
 
     // 3. Fetch payment timelines from Unibee since the earliest transaction.
-    const unibeeResponse = await UnibeanClient.getInstance().request<UnibeePaymentTimelineListResponse>(
-      "GET",
-      "/merchant/payment/timeline/list",
+    const unibeeResponse = await UnibeanClient.getInstance().getPaymentTimelineList(
       { userId: userContext.unibeeExternalId, createTimeStart, page: 0, count: 100 }
     );
 

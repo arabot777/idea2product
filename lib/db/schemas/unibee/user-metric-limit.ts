@@ -8,7 +8,6 @@ export const userMetricLimits = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }), // Associated user ID
-    metricId: integer("metric_id").notNull(), // Metric ID
     code: text("code").notNull(), // Metric code
     metricName: text("metric_name").notNull(), // Metric name
     totalLimit: doublePrecision("total_limit").notNull(), // Total limit for the metric
@@ -21,7 +20,6 @@ export const userMetricLimits = pgTable(
   },
   (table) => [
     index("user_metric_limits_user_id_idx").on(table.userId),
-    index("user_metric_limits_metric_id_idx").on(table.metricId),
     index("user_metric_limits_code_idx").on(table.code)
   ]
 );
