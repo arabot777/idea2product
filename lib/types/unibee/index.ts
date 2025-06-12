@@ -622,3 +622,17 @@ export interface UnibeeUserMetricResponse {
   redirect: string;
   requestId: string;
 }
+
+export interface UnibeeDeleteMetricRequest {
+  metricId: number;
+}
+
+export interface UnibeeDeleteMetricResponse {
+  code: number;
+  data: {
+    merchantMetric: UnibeeMerchantMetric;
+  };
+  message: string;
+  redirect: string;
+  requestId: string;
+}

@@ -2,5 +2,11 @@
   "title": "Subscription Plan Management",
   "loadingUsageStats": "Loading usage statistics...",
   "createNewSubscriptionPlan": "Create New Subscription Plan",
-  "loadingSubscriptionPlanList": "Loading subscription plan list..."
+  "loadingSubscriptionPlanList": "Loading subscription plan list...",
+  "syncSubscriptionButton": "Sync Subscription Plans",
+  "syncing": "Syncing...",
+  "syncSuccess": "Sync successful",
+  "syncSuccessDescription": "Subscription plans have been successfully synced.",
+  "syncFailed": "Sync failed",
+  "syncFailedDescription": "Failed to sync subscription plans. Please try again later."
 }

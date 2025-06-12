@@ -9,6 +9,8 @@ import {
   UnibeeNewMetricEventResponse,
   UnibeeUserMetricRequest,
   UnibeeUserMetricResponse,
+  UnibeeDeleteMetricRequest,
+  UnibeeDeleteMetricResponse,
 } from "@/lib/types/unibee";
 
 /**
@@ -163,5 +165,14 @@ export class UnibeanClient {
    */
   public async getUserMetric(params: UnibeeUserMetricRequest): Promise<UnibeeUserMetricResponse> {
     return this.request<UnibeeUserMetricResponse>("GET", "/merchant/metric/user/metric", params);
+  }
+
+  /**
+   * Deletes a metric in Unibee.
+   * @param data The request body for deleting a metric.
+   * @returns A promise that resolves to UnibeeDeleteMetricResponse.
+   */
+  public async deleteMetric(data: UnibeeDeleteMetricRequest): Promise<UnibeeDeleteMetricResponse> {
+    return this.request<UnibeeDeleteMetricResponse>("POST", "/merchant/metric/delete", data);
   }
 }

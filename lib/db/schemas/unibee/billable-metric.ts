@@ -15,6 +15,8 @@ export const billableMetrics = pgTable(
     // the system needs to convert to a relatively uniform pricing basis,
     // featureCalculator is a tool used within the system to calculate the basis through parameter adjustment or return parameters
     featureCalculator: text("feature_calculator").notNull(),
+    // displayDescription is used for display in the UI
+    displayDescription: text("display_description"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

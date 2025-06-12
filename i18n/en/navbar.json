@@ -7,8 +7,9 @@
   "premiumPackage": "Premium Package",
   "userAvatarAlt": "User Avatar",
   "profile": "Profile",
-  "subscriptionManagement": "Subscription Management",
+  "myPlans": "My Plans",
   "logout": "Logout",
   "login": "Login",
-  "subscribe": "Subscribe"
+  "subscribe": "Subscribe",
+  "billable-metrics": "Billable Metrics"
 }

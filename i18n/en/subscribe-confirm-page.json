@@ -1,0 +1,71 @@
+{
+  "status": {
+    "success": {
+      "title": "Subscription Successful!",
+      "welcome": "Welcome to AI Genesis Pro",
+      "confirmationEmail": "Subscription confirmation email has been sent to your inbox"
+    },
+    "pending": {
+      "title": "Payment Processing",
+      "message": "We're processing your payment. This may take a few moments..."
+    },
+    "failed": {
+      "title": "Subscription Failed",
+      "message": "Sorry, we couldn't complete your subscription.",
+      "errorTitle": "Payment Processing Failed"
+    },
+    "canceled": {
+      "title": "Subscription Canceled",
+      "message": "Your subscription has been canceled."
+    },
+    "refunded": {
+      "title": "Subscription Refunded",
+      "message": "Your transaction has been refunded."
+    }
+  },
+  "transaction": {
+    "syncSuccess": "Payment status updated successfully",
+    "syncCanceled": "Subscription has been canceled",
+    "syncRefunded": "Subscription has been refunded",
+    "noPlanId": "Missing plan ID, unable to process payment status",
+    "updateFailed": "Failed to update transaction status, please try again later",
+    "networkError": "Network error, please check your internet connection"
+  },
+  "subscriptionDetails": {
+    "title": "Your Subscription Details",
+    "plan": "Plan",
+    "price": "Price",
+    "nextBilling": "Next Billing Date",
+    "featuresTitle": "You now have access to:",
+    "features": {
+      "dailyGenerations": "100 daily AI generations",
+      "hdOutput": "HD resolution output",
+      "priorityQueue": "Priority generation queue",
+      "noWatermark": "No watermark downloads"
+    }
+  },
+  "payment": {
+    "reasonsTitle": "Possible Reasons",
+    "reasons": {
+      "invalidInfo": "Incorrect payment information",
+      "insufficientFunds": "Insufficient funds",
+      "networkIssue": "Network connection issue",
+      "serviceUnavailable": "Payment service temporarily unavailable"
+    },
+    "solutionsTitle": "Suggested Solutions",
+    "solutions": {
+      "verifyInfo": "1. Verify your payment information",
+      "checkBalance": "2. Confirm sufficient balance in your account",
+      "retryLater": "3. Try again in a few minutes",
+      "contactSupport": "4. Contact customer support for assistance"
+    }
+  },
+  "actions": {
+    "startCreating": "Start Creating",
+    "manageSubscription": "Manage Subscription",
+    "retryPayment": "Retry Payment",
+    "backToHome": "Back to Homepage",
+    "cancel": "Cancel",
+    "contactSupport": "Contact Support"
+  }
+}

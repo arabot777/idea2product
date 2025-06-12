@@ -15,6 +15,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = () => {
     { name: t('roles'), href: '/admin/roles' },
     { name: t('permissions'), href: '/admin/permissions' },
     { name: t('subscription-plan'), href: '/admin/subscription-plan' },
+    { name: t('billable-metrics'), href: '/admin/billable-metrics' },
     { name: t('settings'), href: '/admin/settings' },
   ];
 

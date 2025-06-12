@@ -5,5 +5,6 @@
   "permissions": "Permissions",
   "premium-packages": "Premium Packages",
   "subscription-plan": "Subscription Plan",
-  "settings": "Settings"
+  "settings": "Settings",
+  "billable-metrics": "Billable Metrics"
 }
