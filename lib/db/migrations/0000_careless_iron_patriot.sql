@@ -1,5 +1,5 @@
 CREATE TYPE "public"."billing_cycle" AS ENUM('monthly', 'annual');--> statement-breakpoint
-CREATE TYPE "public"."billing_status" AS ENUM('active', 'canceled', 'past_due', 'incomplete', 'incomplete_expired', 'trialing');--> statement-breakpoint
+CREATE TYPE "public"."billing_status" AS ENUM('pending', 'active', 'pending_inactive', 'canceled', 'expired', 'paused', 'incomplete', 'processing', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."currency" AS ENUM('usd', 'cny', 'eur');--> statement-breakpoint
 CREATE TYPE "public"."role_type" AS ENUM('user', 'team_user', 'team_admin', 'system_admin');--> statement-breakpoint
 CREATE TYPE "public"."active_status" AS ENUM('inactive', 'active', 'active_2fa');--> statement-breakpoint
@@ -44,7 +44,7 @@ CREATE TABLE "subscription_plans" (
 	"billing_cycle" "billing_cycle" NOT NULL,
 	"billing_count" integer DEFAULT 1 NOT NULL,
 	"billing_type" integer DEFAULT 1 NOT NULL,
-	"external_id" integer DEFAULT 0 NOT NULL,
+	"external_id" text DEFAULT '' NOT NULL,
 	"external_checkout_url" text DEFAULT '' NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"metadata" jsonb,
@@ -59,7 +59,7 @@ CREATE TABLE "user_subscription_plans" (
 	"name" text NOT NULL,
 	"description" text NOT NULL,
 	"price" double precision NOT NULL,
-	"status" "billing_status" NOT NULL,
+	"status" text NOT NULL,
 	"current_period_start" timestamp NOT NULL,
 	"current_period_end" timestamp,
 	"cancel_at_period_end" boolean DEFAULT false,
@@ -178,6 +178,19 @@ CREATE TABLE "billable_metrics" (
 	"aggregation_type" integer NOT NULL,
 	"type" integer NOT NULL,
 	"feature_calculator" text NOT NULL,
+	"feature_once_max" double precision,
+	"display_description" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "user_metric_limits" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"code" text NOT NULL,
+	"metric_name" text NOT NULL,
+	"total_limit" double precision NOT NULL,
+	"current_used_value" double precision NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -192,6 +205,7 @@ ALTER TABLE "tasks" ADD CONSTRAINT "tasks_user_id_profiles_id_fk" FOREIGN KEY ("
 ALTER TABLE "task_data" ADD CONSTRAINT "task_data_task_id_tasks_id_fk" FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "task_results" ADD CONSTRAINT "task_results_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "task_results" ADD CONSTRAINT "task_results_task_id_tasks_id_fk" FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_metric_limits" ADD CONSTRAINT "user_metric_limits_user_id_profiles_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "task_user_id_idx" ON "tasks" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "task_status_idx" ON "tasks" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "task_type_idx" ON "tasks" USING btree ("type");--> statement-breakpoint
@@ -201,4 +215,6 @@ CREATE INDEX "task_result_user_id_idx" ON "task_results" USING btree ("user_id")
 CREATE INDEX "task_result_task_id_idx" ON "task_results" USING btree ("task_id");--> statement-breakpoint
 CREATE INDEX "task_result_type_idx" ON "task_results" USING btree ("type");--> statement-breakpoint
 CREATE INDEX "task_result_status_idx" ON "task_results" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "billable_metrics_code_idx" ON "billable_metrics" USING btree ("code");
+CREATE INDEX "billable_metrics_code_idx" ON "billable_metrics" USING btree ("code");--> statement-breakpoint
+CREATE INDEX "user_metric_limits_user_id_idx" ON "user_metric_limits" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "user_metric_limits_code_idx" ON "user_metric_limits" USING btree ("code");

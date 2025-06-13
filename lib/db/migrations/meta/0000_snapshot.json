@@ -1,5 +1,5 @@
 {
-  "id": "401cc03f-37e8-4aef-ae0b-c3acaed69b7a",
+  "id": "ce9d875f-9ca8-4a1a-b990-a2b4138c3ac8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -233,10 +233,10 @@
         },
         "external_id": {
           "name": "external_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": 0
+          "default": "''"
         },
         "external_checkout_url": {
           "name": "external_checkout_url",
@@ -324,8 +324,7 @@
         },
         "status": {
           "name": "status",
-          "type": "billing_status",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1308,6 +1307,18 @@
           "primaryKey": false,
           "notNull": true
         },
+        "feature_once_max": {
+          "name": "feature_once_max",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "display_description": {
+          "name": "display_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1346,6 +1357,115 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.user_metric_limits": {
+      "name": "user_metric_limits",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metric_name": {
+          "name": "metric_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_limit": {
+          "name": "total_limit",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "current_used_value": {
+          "name": "current_used_value",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_metric_limits_user_id_idx": {
+          "name": "user_metric_limits_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_metric_limits_code_idx": {
+          "name": "user_metric_limits_code_idx",
+          "columns": [
+            {
+              "expression": "code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_metric_limits_user_id_profiles_id_fk": {
+          "name": "user_metric_limits_user_id_profiles_id_fk",
+          "tableFrom": "user_metric_limits",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -1361,12 +1481,15 @@
       "name": "billing_status",
       "schema": "public",
       "values": [
+        "pending",
         "active",
+        "pending_inactive",
         "canceled",
-        "past_due",
+        "expired",
+        "paused",
         "incomplete",
-        "incomplete_expired",
-        "trialing"
+        "processing",
+        "failed"
       ]
     },
     "public.currency": {
