@@ -17,7 +17,7 @@ import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
 import { UnibeeUserSubscription, UnibeeUserSubscriptionResponse } from "@/lib/types/unibee";
-
+import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 // Helper function to map Unibee status number to BillingStatusType
 const mapUnibeeStatusToBillingStatusType = (unibeeStatus: number): BillingStatusType => {
   switch (unibeeStatus) {
@@ -46,6 +46,7 @@ const mapUnibeeStatusToBillingStatusType = (unibeeStatus: number): BillingStatus
 
 async function syncUserSubscriptionWithUnibee(userContext: UserContext, t: any) {
   try {
+    await unibeeSyncUser(userContext);
     if (!userContext.unibeeExternalId) {
       console.warn("User does not have a Unibee external ID. Skipping user subscription sync.");
       return false;
@@ -114,27 +115,26 @@ async function syncUserSubscriptionWithUnibee(userContext: UserContext, t: any) 
     console.error("Error syncing user subscription in background:", error);
   }
 }
-export const getUserSubscriptionPlan = actionWithPermission(
-  "getUserSubscriptionPlan",
-  async (userContext: UserContext): Promise<UserSubscriptionPlanDto> => {
-    const t = await getTranslations("BillingGetUserSubscriptionPlan");
+export const getUserSubscriptionPlan = actionWithPermission("getUserSubscriptionPlan", async (userContext: UserContext): Promise<UserSubscriptionPlanDto> => {
+  const t = await getTranslations("BillingGetUserSubscriptionPlan");
 
-    // Asynchronously trigger Unibee user subscription sync without blocking the current task
-    Promise.resolve().then(() => syncUserSubscriptionWithUnibee(userContext, t));
+  // Asynchronously trigger Unibee user subscription sync without blocking the current task
+  Promise.resolve()
+    .then(() => syncUserSubscriptionWithUnibee(userContext, t))
+    .catch((err) => console.error("Execution error:", err));
 
-    const userSubscriptionPlan = await UserSubscriptionPlanQuery.getByUserIdAndStatus(userContext.id || "", BillingStatus.ACTIVE);
-    if (!userSubscriptionPlan) {
-      throw new AppError("NOT_FOUND", t("notFound.userSubscriptionPlanNotFound"));
-    }
-
-    const userSubscriptionPlanDto = UserSubscriptionPlanMapper.toDTO(userSubscriptionPlan);
-    // Check and update userContext.subscription
-    // Assuming userContext.subscription stores a list of IDs for the user's active subscriptions
-    if (userContext?.subscription?.[0] !== userSubscriptionPlanDto.name) {
-      await ProfileEdit.update(userContext.id!, { subscription: [userSubscriptionPlanDto.name] });
-      await cache.del(CacheKeys.USER_PROFILE(userContext.id!));
-    }
-
-    return userSubscriptionPlanDto;
+  const userSubscriptionPlan = await UserSubscriptionPlanQuery.getByUserIdAndStatus(userContext.id || "", BillingStatus.ACTIVE);
+  if (!userSubscriptionPlan) {
+    throw new AppError("NOT_FOUND", t("notFound.userSubscriptionPlanNotFound"));
   }
-);
+
+  const userSubscriptionPlanDto = UserSubscriptionPlanMapper.toDTO(userSubscriptionPlan);
+  // Check and update userContext.subscription
+  // Assuming userContext.subscription stores a list of IDs for the user's active subscriptions
+  if (userContext?.subscription?.[0] !== userSubscriptionPlanDto.name) {
+    await ProfileEdit.update(userContext.id!, { subscription: [userSubscriptionPlanDto.name] });
+    await cache.del(CacheKeys.USER_PROFILE(userContext.id!));
+  }
+
+  return userSubscriptionPlanDto;
+});

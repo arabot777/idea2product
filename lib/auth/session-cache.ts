@@ -57,7 +57,6 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
 
     let refreshedSession: any = null;
     let refreshError = null;
-
     if (cookieMD5Value) {
       refreshedSession = cookieMD5Value;
     } else {
@@ -66,10 +65,16 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
         data: { session: currentSession },
       } = await supabaseClient.auth.getSession();
       refreshedSession = currentSession;
-      await cache.set(cookieMD5Key, {
-        expires_at: refreshedSession.expires_at,
-        user: refreshedSession.user,
-      }, SESSION_CACHE_TTL);
+      if (refreshedSession) {
+        await cache.set(
+          cookieMD5Key,
+          {
+            expires_at: refreshedSession.expires_at,
+            user: refreshedSession.user,
+          },
+          SESSION_CACHE_TTL
+        );
+      }
     }
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
@@ -82,7 +87,6 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
       refreshError = refreshResult.error;
 
       if (refreshError) {
-        console.warn(`Session refresh failed: ${refreshError.message}. User will be treated as unauthenticated.`);
         return { userContext: UN_USER_CONTEXT, user: null };
       }
       await cache.set(cookieMD5Key, refreshedSession, SESSION_CACHE_TTL);

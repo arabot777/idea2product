@@ -1,5 +1,6 @@
 {
-  "signInTitle": "Sign in to your account",
+  "welcomeBack": "Welcome back",
+  "signInToAccount": "Sign in to your account",
   "userLoggedIn": "User already logged in, redirecting...",
   "emailLabel": "Email address",
   "emailPlaceholder": "Email address",

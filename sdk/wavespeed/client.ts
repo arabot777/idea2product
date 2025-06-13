@@ -1,6 +1,6 @@
 import * as https from "https";
 import { URL } from "url";
-import { WaveSpeedAPIError, WaveSpeedClientOptions, RequestOptions } from "./types";
+import { WaveSpeedAPIError, WaveSpeedClientOptions, RequestOptions, WaveSpeedResponse, ModelResult } from "./types";
 import { BaseRequest } from "./base";
 
 export class WaveSpeedClient {
@@ -21,25 +21,34 @@ export class WaveSpeedClient {
   /**
    * Make a GET request
    */
-  public async get<T = any>(path: string, options: RequestOptions = {}): Promise<T> {
+  public async get<T = any>(path: string, options: RequestOptions = {}): Promise<WaveSpeedResponse<T>> {
     return this._request("GET", path, undefined, options);
   }
 
   /**
    * Make a POST request
    */
-  public async post<T = any>(path: string, data?: BaseRequest<any>, options: RequestOptions = {}): Promise<T> {
+  public async post<T = any>(path: string, data?: BaseRequest<any>, options: RequestOptions = {}): Promise<WaveSpeedResponse<T>> {
     return this._request("POST", path, data, options);
   }
 
-  public async postModelCall(data: BaseRequest<any>, options: RequestOptions = {}): Promise<any> {
+  public async postModelCall(data: BaseRequest<any>, options: RequestOptions = {}): Promise<WaveSpeedResponse<ModelResult>> {
     return this.post(`/api/v3/${data.getModelUuid()}`, data, options);
+  }
+
+  public async getTaskStatus(taskId: string): Promise<WaveSpeedResponse<ModelResult>> {
+    return this.get(`/api/v3/predictions/${taskId}/result`);
   }
 
   /**
    * Make an HTTP request to the API
    */
-  private async _request<T = any>(method: string, endpoint: string, requestData?: BaseRequest<any>, options: RequestOptions = {}): Promise<T> {
+  private async _request<T = any>(
+    method: string,
+    endpoint: string,
+    requestData?: BaseRequest<any>,
+    options: RequestOptions = {}
+  ): Promise<WaveSpeedResponse<T>> {
     // Validate request data if provided
     if (requestData) {
       const { success, error } = requestData.safeValidate();

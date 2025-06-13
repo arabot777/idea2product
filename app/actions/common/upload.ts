@@ -52,8 +52,8 @@ export const uploadFile = dataActionWithPermission("uploadFile", async (formData
   const year = now.getFullYear();
   const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Month starts from 0, so add 1 and pad with two digits
 
-  // Construct new file path: userContext.id/fileTypeFolder/YYYY/MM/fileName
-  const filePath = `${userContext.id}/${fileTypeFolder}/${year}${month}/${fileName}`;
+  // Construct new file path: userContext.id/upload/fileTypeFolder/YYYY/MM/fileName
+  const filePath = `${userContext.id}/upload/${fileTypeFolder}/${year}${month}/${fileName}`;
 
   try {
     const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file, {

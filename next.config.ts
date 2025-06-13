@@ -32,6 +32,9 @@ import { resolve } from 'path';
 })();
 
 const nextConfig = {
+  images: {
+    domains: ['d2p7pge43lyniu.cloudfront.net'],
+  },
   experimental: {
     ppr: true,
     clientSegmentCache: true,

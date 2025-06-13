@@ -18,6 +18,7 @@ import { BillingStatus } from "@/lib/types/billing/enum.bean";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
 import { UnibeePaymentTimeline, UnibeePaymentTimelineListResponse } from "@/lib/types/unibee";
+import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 // Maps Unibee's status to our internal transaction status.
 const mapUnibeeStatusToLocal = (unibeeTimeline: UnibeePaymentTimeline): string | undefined => {
@@ -39,6 +40,7 @@ const mapUnibeeStatusToLocal = (unibeeTimeline: UnibeePaymentTimeline): string |
  */
 async function syncUnibeeTransactionsInBackground(userContext: UserContext): Promise<void> {
   try {
+    await unibeeSyncUser(userContext);
     // 1. Fetch all local transactions that are not in a final state.
     const localTransactions = await TransactionQuery.getUnfinishedTransactionsByUserId(userContext.id || "");
     if (localTransactions.length === 0) {

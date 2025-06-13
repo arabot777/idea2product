@@ -9,6 +9,11 @@ export class TaskResultsQuery {
     return result[0];
   }
 
+  static async getByTaskId(taskId: string): Promise<TaskResult[] | undefined> {
+    const result = await db.select().from(taskResults).where(eq(taskResults.taskId, taskId));
+    return result;
+  }
+
   static async list(limit: number = 10, offset: number = 0, taskId?: string): Promise<TaskResult[]> {
     if (taskId) {
       return db.select().from(taskResults).where(eq(taskResults.taskId, taskId)).limit(limit).offset(offset);

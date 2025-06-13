@@ -13,6 +13,7 @@ import { NewUserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
+import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 interface ToolCallParams {
   // Definition of tool call parameters
@@ -43,6 +44,7 @@ export async function taskCallCheck(
   currentRequestAmount?: number;
   error?: string;
 }> {
+  await unibeeSyncUser(userContext);
   const cacheKey = CacheKeys.USER_METRIC_LIMIT(userContext.id || "", code);
   const cacheData: CacheData | undefined = await cache.get(cacheKey);
   if (cacheData && cacheData.cachedUserMetricLimit && cacheData.billableMetric) {
