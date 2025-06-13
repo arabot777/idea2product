@@ -1,5 +1,6 @@
 export const CacheKeys = {
   COOKIE_MD5: (md5: string) => `cookie:md5:${md5}`,
+  USER_METRIC_LIMIT: (userId: string, code: string) => `user:${userId}:metric_limit:${code}`,
   USER_PROFILE: (userId: string) => `user:${userId}:profile`,
   TEAM_DETAILS: (teamId: string) => `team:${teamId}:details`,
   PRODUCT_LIST: "product:list",

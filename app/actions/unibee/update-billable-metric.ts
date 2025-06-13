@@ -15,7 +15,10 @@ export const updateBillableMetric = dataActionWithPermission(
   "updateBillableMetric",
   async (metricData: Omit<BillableMetricDto, "createdAt" | "updatedAt" | "unibeeExternalId">): Promise<{ success: boolean; message: string }> => {
     try {
-      await BillableMetricsEdit.update(metricData.id, metricData);
+      await BillableMetricsEdit.update(metricData.id, {
+        ...metricData,
+        featureOnceMax: metricData.featureOnceMax,
+      });
       return { success: true, message: "Billable metric updated successfully." };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";

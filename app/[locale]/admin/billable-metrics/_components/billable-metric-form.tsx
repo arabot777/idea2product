@@ -136,6 +136,7 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
       aggregationProperty: metric?.aggregationProperty || '',
       type: metric?.type || 1,
       featureCalculator: metric?.featureCalculator || '',
+      featureOnceMax: metric?.featureOnceMax || 1,
       displayDescription: metric?.displayDescription || '',
     },
   });
@@ -160,9 +161,26 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
     }
   }
 
+  function onErrors(errors: any) {
+    let errorMessage = "Form validation failed:\n";
+    for (const fieldName in errors) {
+      if (errors[fieldName] && errors[fieldName].message) {
+        errorMessage += `- ${fieldName}: ${errors[fieldName].message}\n`;
+      } else if (errors[fieldName] && typeof errors[fieldName] === 'object') {
+        // Handle nested errors for complex objects if any
+        for (const nestedFieldName in errors[fieldName]) {
+          if (errors[fieldName][nestedFieldName] && errors[fieldName][nestedFieldName].message) {
+            errorMessage += `- ${fieldName}.${nestedFieldName}: ${errors[fieldName][nestedFieldName].message}\n`;
+          }
+        }
+      }
+    }
+    toast.error(errorMessage);
+  }
+
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onErrors)} className="space-y-8">
         <FormField
           control={form.control}
           name="metricName"
@@ -271,6 +289,25 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
               <FormLabel>Feature Calculator</FormLabel>
               <FormControl>
                 <Input placeholder="e.g. default" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="featureOnceMax"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Feature Once Max</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="e.g. 100"
+                  {...field}
+                  onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                  value={field.value ?? ''}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

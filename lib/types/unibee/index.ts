@@ -231,7 +231,6 @@ export interface UnibeeNewMetricEventRequest {
   externalEventId: string;
   metricCode: string;
   metricProperties?: Record<string, any>;
-  productId?: number;
   userId: number;
 }
 
@@ -357,11 +356,7 @@ export interface UnibeeAddonPlan {
   type: number;
 }
 
-export interface UnibeeAddon {
-  addonPlan: UnibeeAddonPlan;
-  quantity: number;
-}
-
+ 
 export interface UnibeeMetricLimit {
   MerchantId: number;
   MetricId: number;
@@ -420,79 +415,6 @@ export interface UnibeeMeteredChargeStat {
   totalChargeAmount: number;
 }
 
-export interface UnibeePlanDetail {
-  amount: number;
-  bindingAddonIds: string;
-  bindingOnetimeAddonIds: string;
-  cancelAtTrialEnd: number;
-  checkoutUrl: string;
-  createTime: number;
-  currency: string;
-  description: string;
-  disableAutoCharge: number;
-  externalPlanId: string;
-  extraMetricData: string;
-  gasPayer: string;
-  homeUrl: string;
-  id: number;
-  imageUrl: string;
-  internalName: string;
-  intervalCount: number;
-  intervalUnit: string;
-  merchantId: number;
-  metadata: Record<string, any>;
-  metricLimits: {
-    metricId: number;
-    metricLimit: number;
-  }[];
-  metricMeteredCharge: {
-    chargeType: number;
-    graduatedAmounts: {
-      endValue: number;
-      flatAmount: number;
-      perAmount: number;
-      startValue: number;
-    }[];
-    metricId: number;
-    standardAmount: number;
-    standardStartValue: number;
-  }[];
-  metricRecurringCharge: {
-    chargeType: number;
-    graduatedAmounts: {
-      endValue: number;
-      flatAmount: number;
-      perAmount: number;
-      startValue: number;
-    }[];
-    metricId: number;
-    standardAmount: number;
-    standardStartValue: number;
-  }[];
-  planName: string;
-  productId: number;
-  publishStatus: number;
-  status: number;
-  taxPercentage: number;
-  trialAmount: number;
-  trialDemand: string;
-  trialDurationTime: number;
-  type: number;
-}
-
-export interface UnibeeProduct {
-  createTime: number;
-  description: string;
-  homeUrl: string;
-  id: number;
-  imageUrl: string;
-  isDeleted: number;
-  merchantId: number;
-  metaData: string;
-  productName: string;
-  status: number;
-}
-
 export interface UnibeeRecurringChargeStat {
   CurrentUsedValue: number;
   chargePricing: UnibeeChargePricing;
@@ -504,113 +426,12 @@ export interface UnibeeRecurringChargeStat {
   totalChargeAmount: number;
 }
 
-export interface UnibeeSubscription {
-  addonData: string;
-  amount: number;
-  billingCycleAnchor: number;
-  cancelAtPeriodEnd: number;
-  cancelOrExpireTime: number;
-  cancelReason: string;
-  countryCode: string;
-  createTime: number;
-  currency: string;
-  currentPeriodEnd: number;
-  currentPeriodPaid: number;
-  currentPeriodStart: number;
-  defaultPaymentMethodId: string;
-  dunningTime: number;
-  externalSubscriptionId: string;
-  features: string;
-  firstPaidTime: number;
-  gasPayer: string;
-  gatewayId: number;
-  gatewayStatus: string;
-  id: number;
-  lastUpdateTime: number;
-  latestInvoiceId: string;
-  link: string;
-  merchantId: number;
-  metadata: Record<string, any>;
-  originalPeriodEnd: number;
-  pendingUpdateId: string;
-  planId: number;
-  productId: number;
-  quantity: number;
-  returnUrl: string;
-  status: number;
-  subscriptionId: string;
-  taskTime: string;
-  taxPercentage: number;
-  testClock: number;
-  trialEnd: number;
-  type: number;
-  userId: number;
-  vatNumber: string;
-}
-
-export interface UnibeeUser {
-  address: string;
-  avatarUrl: string;
-  billingType: number;
-  birthday: string;
-  city: string;
-  companyName: string;
-  countryCode: string;
-  countryName: string;
-  createTime: number;
-  custom: string;
-  email: string;
-  externalUserId: string;
-  facebook: string;
-  firstName: string;
-  gatewayId: number;
-  gatewayPaymentType: string;
-  gender: string;
-  id: number;
-  isRisk: number;
-  isSpecial: number;
-  language: string;
-  lastLoginAt: number;
-  lastName: string;
-  linkedIn: string;
-  merchantId: number;
-  metadata: Record<string, any>;
-  mobile: string;
-  otherSocialInfo: string;
-  paymentMethod: string;
-  phone: string;
-  profession: string;
-  recurringAmount: number;
-  registrationNumber: string;
-  school: string;
-  status: number;
-  subscriptionId: string;
-  subscriptionName: string;
-  subscriptionStatus: number;
-  taxPercentage: number;
-  telegram: string;
-  tikTok: string;
-  timeZone: string;
-  type: number;
-  userName: string;
-  vATNumber: string;
-  version: number;
-  weChat: string;
-  whatsAPP: string;
-  zipCode: string;
-}
-
 export interface UnibeeUserMetric {
-  addons: UnibeeAddon[];
   description: string;
   isPaid: boolean;
   limitStats: UnibeeLimitStat[];
   meteredChargeStats: UnibeeMeteredChargeStat[];
-  plan: UnibeePlanDetail;
-  product: UnibeeProduct;
   recurringChargeStats: UnibeeRecurringChargeStat[];
-  subscription: UnibeeSubscription;
-  user: UnibeeUser;
 }
 
 export interface UnibeeUserMetricResponse {

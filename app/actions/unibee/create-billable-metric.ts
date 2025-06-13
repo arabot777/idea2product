@@ -20,7 +20,7 @@ export const createBillableMetric = dataActionWithPermission(
   async (metricData: Omit<BillableMetricDto, "id" | "createdAt" | "updatedAt" | "unibeeExternalId">): Promise<{ success: boolean; message: string }> => {
     try {
       const unibeanClient = UnibeanClient.getInstance();
-
+      
       const newMetricRequest: UnibeeNewMetricRequest = {
         metricName: metricData.metricName,
         metricDescription: metricData.metricDescription || undefined,
@@ -39,6 +39,7 @@ export const createBillableMetric = dataActionWithPermission(
       const dbMetricData: NewBillableMetric = {
         ...metricData,
         unibeeExternalId: String(unibeeResponse.data.merchantMetric.id),
+        featureOnceMax: metricData.featureOnceMax,
       };
 
       await BillableMetricsEdit.create(dbMetricData);
