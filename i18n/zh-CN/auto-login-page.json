@@ -1,0 +1,9 @@
+{
+  "autoLoginTitle": "自动登录",
+  "loggingIn": "正在登录，请稍候...",
+  "autoLoginSuccess": "登录成功！{count} 秒后跳转到首页...",
+  "autoLoginFailed": "自动登录失败。请重试。",
+  "invalidParams": "自动登录参数无效。",
+  "goHome": "返回首页",
+  "anErrorOccurred": "发生错误。请重试。"
+}
