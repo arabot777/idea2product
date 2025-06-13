@@ -1,5 +1,5 @@
 {
-  "id": "ce9d875f-9ca8-4a1a-b990-a2b4138c3ac8",
+  "id": "ba0ebcd6-17b7-4a70-bd30-e0702f65ebb1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -847,6 +847,25 @@
         },
         "message": {
           "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_request_amount": {
+          "name": "current_request_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_metric_event_id": {
+          "name": "external_metric_event_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false

@@ -134,6 +134,9 @@ CREATE TABLE "tasks" (
 	"checked_at" timestamp,
 	"check_interval" integer DEFAULT 5 NOT NULL,
 	"message" text,
+	"current_request_amount" integer DEFAULT 0 NOT NULL,
+	"external_id" text,
+	"external_metric_event_id" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
