@@ -18,6 +18,9 @@ export const tasks = pgTable("tasks", {
   checkedAt: timestamp("checked_at"), // Check status time, set only if the task times out and is not completed for further processing
   checkInterval: integer("check_interval").notNull().default(5), // Check interval in seconds
   message: text("message"), // Task message
+  currentRequestAmount: integer("current_request_amount").notNull().default(0), // Current request amount
+  externalId: text("external_id"), // External task ID
+  externalMetricEventId: text("external_metric_event_id"), // External task result
   createdAt: timestamp("created_at").notNull().defaultNow(), // Creation time
   updatedAt: timestamp("updated_at")
     .notNull()
