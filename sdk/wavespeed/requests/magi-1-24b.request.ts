@@ -49,4 +49,15 @@ export class Magi124bRequest extends BaseRequest<typeof Magi124bSchema> {
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_frames: 81,
+      frames_per_second: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

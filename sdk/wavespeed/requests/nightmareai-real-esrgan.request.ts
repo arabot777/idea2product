@@ -24,4 +24,13 @@ export class NightmareaiRealEsrganRequest extends BaseRequest<typeof Nightmareai
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

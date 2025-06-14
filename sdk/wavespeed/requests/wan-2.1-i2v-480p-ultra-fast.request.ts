@@ -31,4 +31,14 @@ export class Wan21I2v480pUltraFastRequest extends BaseRequest<typeof Wan21I2v480
   getModelType(): string {
     return "image-to-video";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+      duration: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

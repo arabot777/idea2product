@@ -70,4 +70,15 @@ export class SdxlLoraRequest extends BaseRequest<typeof SdxlLoraSchema> {
   getModelType(): string {
     return "text-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+      num_images: 1,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "num_images";
+  }
 }

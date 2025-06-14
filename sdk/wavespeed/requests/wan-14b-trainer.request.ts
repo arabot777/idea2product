@@ -34,4 +34,13 @@ export class Wan14bTrainerRequest extends BaseRequest<typeof Wan14bTrainerSchema
   getModelType(): string {
     return "training";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      steps: 2000,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "steps";
+  }
 }

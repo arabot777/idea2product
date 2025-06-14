@@ -54,4 +54,15 @@ export class FramepackRequest extends BaseRequest<typeof FramepackSchema> {
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_frames: 180,
+      num_inference_steps: 25,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

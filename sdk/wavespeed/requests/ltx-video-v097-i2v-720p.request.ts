@@ -26,4 +26,14 @@ export class LtxVideoV097I2v720pRequest extends BaseRequest<typeof LtxVideoV097I
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

@@ -59,4 +59,14 @@ export class FluxSchnellRequest extends BaseRequest<typeof FluxSchnellSchema> {
   getModelType(): string {
     return "text-to-image";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 4,
+      num_images: 1,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "num_images";
+  }
 }

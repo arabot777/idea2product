@@ -42,4 +42,14 @@ export class FluxKontextProMultiRequest extends BaseRequest<typeof FluxKontextPr
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+       
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

@@ -30,4 +30,16 @@ export class VideoUpscalerRequest extends BaseRequest<typeof VideoUpscalerSchema
   getModelType(): string {
     return "video-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      video: "",
+      target_resolution: undefined,
+      copy_audio: undefined,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

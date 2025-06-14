@@ -49,4 +49,14 @@ export class Hunyuan3dV2MultiViewRequest extends BaseRequest<typeof Hunyuan3dV2M
   getModelType(): string {
     return "image-to-3d";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 50,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

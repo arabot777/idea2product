@@ -32,4 +32,14 @@ export class RealEsrganRequest extends BaseRequest<typeof RealEsrganSchema> {
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

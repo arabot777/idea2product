@@ -38,4 +38,14 @@ export class FluxKontextMaxMultiRequest extends BaseRequest<typeof FluxKontextMa
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+    
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

@@ -24,4 +24,12 @@ export class DiaTTSRequest extends BaseRequest<typeof DiaTTSSchema> {
   getModelType(): string {
     return "text-to-audio";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return { }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

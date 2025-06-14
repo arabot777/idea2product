@@ -49,4 +49,14 @@ export class HunyuanCustomRef2v720pRequest extends BaseRequest<typeof HunyuanCus
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+   
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

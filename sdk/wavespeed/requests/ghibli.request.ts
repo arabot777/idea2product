@@ -32,4 +32,13 @@ export class GhibliRequest extends BaseRequest<typeof GhibliSchema> {
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1"; // Assuming 1 unit per image generation
+  }
 }

@@ -45,7 +45,6 @@ export * from './sdxl-lora.request';
 export * from './sdxl.request';
 export * from './sky-reels-v1.request';
 export * from './step1x-edit.request';
-export * from './test-test-model.request';
 export * from './uno.request';
 export * from './veo2-i2v.request';
 export * from './veo2-t2v.request';

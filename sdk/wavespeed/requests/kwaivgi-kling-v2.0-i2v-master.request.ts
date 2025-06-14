@@ -41,4 +41,14 @@ export class KwaivgiKlingV20I2vMasterRequest extends BaseRequest<typeof KwaivgiK
   getModelType(): string {
     return "text-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

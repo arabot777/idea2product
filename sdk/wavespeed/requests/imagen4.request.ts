@@ -42,4 +42,14 @@ export class Imagen4Request extends BaseRequest<typeof Imagen4Schema> {
   getModelType(): string {
     return "text-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_images: 1,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "num_images";
+  }
 }

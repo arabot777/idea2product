@@ -38,4 +38,14 @@ export class HidreamE1FullRequest extends BaseRequest<typeof HidreamE1FullSchema
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+  
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

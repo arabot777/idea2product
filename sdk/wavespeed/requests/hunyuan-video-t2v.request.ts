@@ -40,4 +40,14 @@ export class HunyuanVideoT2vRequest extends BaseRequest<typeof HunyuanVideoT2vSc
   getModelType(): string {
     return "text-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

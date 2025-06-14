@@ -26,4 +26,14 @@ export class KwaivgiKlingV16I2vStandardRequest extends BaseRequest<typeof Kwaivg
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

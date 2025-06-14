@@ -34,4 +34,14 @@ export class Veo2T2vRequest extends BaseRequest<typeof Veo2T2vSchema> {
   getModelType(): string {
     return "text-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: "5s",
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return `duration=="5s"?1:duration=="6s"?2:duration=="7s"?3:4`;
+  }
 }

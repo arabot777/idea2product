@@ -44,4 +44,15 @@ export class HunyuanVideoI2vRequest extends BaseRequest<typeof HunyuanVideoI2vSc
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+      duration: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

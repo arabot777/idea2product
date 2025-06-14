@@ -47,4 +47,15 @@ export class MmaudioV2Request extends BaseRequest<typeof MmaudioV2Schema> {
   getModelType(): string {
     return "video-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 8,
+      num_inference_steps: 25,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

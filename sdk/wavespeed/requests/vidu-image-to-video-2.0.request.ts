@@ -38,4 +38,14 @@ export class ViduImageToVideo20Request extends BaseRequest<typeof ViduImageToVid
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 4,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/4";
+  }
 }

@@ -50,4 +50,15 @@ export class UnoRequest extends BaseRequest<typeof UnoSchema> {
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_images: 1,
+      num_inference_steps: 28,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "num_images";
+  }
 }

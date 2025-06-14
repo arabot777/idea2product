@@ -34,4 +34,16 @@ export class Wan2114bVaceRequest extends BaseRequest<typeof Wan2114bVaceSchema> 
   getModelType(): string {
     return "image-to-video";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      enable_fast_mode: false,
+      num_inference_steps: 30,
+      size: "832*480",
+      task: "depth",
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

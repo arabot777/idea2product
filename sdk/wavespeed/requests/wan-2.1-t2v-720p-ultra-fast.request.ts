@@ -40,4 +40,14 @@ export class Wan21T2v720pUltraFastRequest extends BaseRequest<typeof Wan21T2v720
   getModelType(): string {
     return "text-to-video";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+      num_inference_steps: 30,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

@@ -37,4 +37,14 @@ export class KwaivgiKlingV20T2vMasterRequest extends BaseRequest<typeof KwaivgiK
   getModelType(): string {
     return "text-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

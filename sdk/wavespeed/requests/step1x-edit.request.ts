@@ -44,4 +44,14 @@ export class Step1xEditRequest extends BaseRequest<typeof Step1xEditSchema> {
   getModelType(): string {
     return "text-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

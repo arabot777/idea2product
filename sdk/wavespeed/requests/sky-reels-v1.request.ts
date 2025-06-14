@@ -44,4 +44,14 @@ export class SkyReelsV1Request extends BaseRequest<typeof SkyReelsV1Schema> {
   getModelType(): string {
     return "image-to-video";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "1";
+  }
 }

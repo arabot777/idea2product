@@ -26,4 +26,14 @@ export class FluxDevLoraTrainerRequest extends BaseRequest<typeof FluxDevLoraTra
   getModelType(): string {
     return "training";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      steps: 1000,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "steps/1000";
+  }
 }

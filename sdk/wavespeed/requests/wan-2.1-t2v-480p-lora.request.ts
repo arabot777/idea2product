@@ -58,4 +58,14 @@ export class Wan21T2v480pLoraRequest extends BaseRequest<typeof Wan21T2v480pLora
   getModelType(): string {
     return "text-to-video";
   }
+  static getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+      num_inference_steps: 30,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "duration/5";
+  }
 }

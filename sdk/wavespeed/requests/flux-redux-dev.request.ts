@@ -44,4 +44,15 @@ export class FluxReduxDevRequest extends BaseRequest<typeof FluxReduxDevSchema> 
   getModelType(): string {
     return "image-to-image";
   }
+
+  static getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 28,
+      num_images: 1,
+    }
+  }
+
+  static getFeatureCalculator(): string {
+    return "num_images";
+  }
 }
