@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,26 +29,9 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar';
-
-// 证件照规格定义
-const photoSpecs = [
-  { id: '1inch', width: 295, height: 413, name: '1 Inch Photo', description: '25×35mm', usage: 'ID Card, Passport', mmWidth: 25, mmHeight: 35 },
-  { id: '2inch', width: 413, height: 579, name: '2 Inch Photo', description: '35×49mm', usage: 'Resume, Documents', mmWidth: 35, mmHeight: 49 },
-  { id: 'small1inch', width: 260, height: 378, name: 'Small 1 Inch', description: '22×32mm', usage: 'Student ID, Work ID', mmWidth: 22, mmHeight: 32 },
-  { id: 'small2inch', width: 390, height: 567, name: 'Small 2 Inch', description: '33×48mm', usage: 'Driver License', mmWidth: 33, mmHeight: 48 },
-  { id: 'large1inch', width: 390, height: 567, name: 'Large 1 Inch', description: '33×48mm', usage: 'Resume, Documents', mmWidth: 33, mmHeight: 48 },
-  { id: 'passport', width: 390, height: 567, name: 'Passport Photo', description: '33×48mm', usage: 'Passport, Visa', mmWidth: 33, mmHeight: 48 },
-];
-
-// 背景颜色选项
-const backgroundColors = [
-  { name: 'White', value: '#FFFFFF', textColor: '#000000' },
-  { name: 'Blue', value: '#2072B8', textColor: '#FFFFFF' },
-  { name: 'Red', value: '#E30E19', textColor: '#FFFFFF' },
-  { name: 'Gray', value: '#CCCCCC', textColor: '#000000' },
-  { name: 'Green', value: '#009944', textColor: '#FFFFFF' },
-  { name: 'Pink', value: '#FFC0CB', textColor: '#000000' },
-];
+import { generateIdPhoto, IdPhotoGeneratorParams, IdPhotoTaskInfo, getIdPhotoTaskStatus } from './id-photo-generator';
+import { ID_PHOTO_SPECS, ID_PHOTO_BACKGROUNDS } from './constants';
+import { TaskStatus } from '@/lib/types/task/enum.bean';
 
 // 简化的水印组件
 const Watermark = ({ children }: { children: React.ReactNode }) => (
@@ -81,7 +64,7 @@ export default function IdPhotoPage() {
   const t = useTranslations('HomePage');
   const router = useRouter();
   const [activeFunction, setActiveFunction] = useState('create');
-  const [selectedSpec, setSelectedSpec] = useState(photoSpecs[0]);
+  const [selectedSpec, setSelectedSpec] = useState(ID_PHOTO_SPECS[0]);
   const [backgroundColor, setBackgroundColor] = useState('#FFFFFF');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
@@ -91,8 +74,84 @@ export default function IdPhotoPage() {
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
   const [cropScale, setCropScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [taskInfo, setTaskInfo] = useState<IdPhotoTaskInfo | null>(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const stopPollingRef = useRef<(() => void) | null>(null);
+
+  // 轮询函数 - 客户端实现
+  const startIdPhotoPolling = useCallback((
+    taskId: string,
+    callbacks: {
+      onProgress?: (progress: number) => void;
+      onSuccess?: (result: string[]) => void;
+      onError?: (message: string) => void;
+      onStatusUpdate?: (taskInfo: IdPhotoTaskInfo) => void;
+    }
+  ): (() => void) => {
+    let pollingInterval: NodeJS.Timeout | null = null;
+
+    // 开始轮询
+    const startPolling = () => {
+      // 清除现有轮询
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+
+      // 设置轮询间隔
+      pollingInterval = setInterval(async () => {
+        try {
+          const taskInfo = await getIdPhotoTaskStatus(taskId);
+          
+          // 更新状态回调
+          callbacks.onStatusUpdate?.(taskInfo);
+
+          // 更新进度回调
+          if (taskInfo.progress !== undefined) {
+            callbacks.onProgress?.(taskInfo.progress);
+          }
+
+          // 检查任务是否完成
+          if (taskInfo.status === TaskStatus.COMPLETED || taskInfo.status === TaskStatus.FAILED || taskInfo.status === TaskStatus.CANCELLED) {
+            // 停止轮询
+            if (pollingInterval) {
+              clearInterval(pollingInterval);
+              pollingInterval = null;
+            }
+
+            if (taskInfo.status === TaskStatus.COMPLETED && taskInfo.result) {
+              // 处理成功结果
+              callbacks.onSuccess?.(taskInfo.result as string[]);
+            } else if (taskInfo.status === TaskStatus.FAILED) {
+              // 处理失败
+              callbacks.onError?.(taskInfo.message || "证件照生成失败，请重试");
+            } else if (taskInfo.status === TaskStatus.CANCELLED) {
+              // 处理取消
+              callbacks.onError?.(taskInfo.message || "证件照生成已取消，请重试");
+            }
+          }
+        } catch (error) {
+          console.error("轮询任务状态失败:", error);
+          // 不停止轮询，继续等待状态更新
+          callbacks.onError?.(`获取生成状态失败: ${error instanceof Error ? error.message : "未知错误"}`);
+        }
+      }, 2000); // 每2秒轮询一次
+    };
+
+    // 立即开始轮询
+    startPolling();
+
+    // 返回停止轮询的函数
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+    };
+  }, []);
 
   // 功能选项
   const functions = [
@@ -113,6 +172,16 @@ export default function IdPhotoPage() {
       bgColor: 'from-purple-50/80 to-purple-100/80'
     }
   ];
+
+  // 清理轮询
+  useEffect(() => {
+    return () => {
+      if (stopPollingRef.current) {
+        stopPollingRef.current();
+        stopPollingRef.current = null;
+      }
+    };
+  }, []);
 
   // 处理文件上传
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,23 +245,57 @@ export default function IdPhotoPage() {
   // 处理图片处理
   const handleProcess = async () => {
     if (!uploadedImage) {
-      toast.error('Please upload an image first');
+      toast.error('请先上传图片');
       return;
     }
 
     setIsProcessing(true);
+    setProcessedImage(null);
+    setGenerationProgress(0);
     
     try {
-      // 模拟处理过程
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // 这里应该调用实际的API
-      setProcessedImage(uploadedImage); // 临时使用原图
-      toast.success('ID photo generated successfully!');
+      // 构建生成参数
+      const params: IdPhotoGeneratorParams = {
+        image: uploadedImage,
+        photoSpec: selectedSpec,
+        backgroundColor: backgroundColor,
+        enhanceQuality: activeFunction === 'enhance'
+      };
+
+      // 调用ID照片生成服务
+      const taskInfo = await generateIdPhoto(params);
+      console.log("generateIdPhoto", taskInfo);
+      if (taskInfo.id) {
+        setTaskId(taskInfo.id);
+        console.log("taskInfo.id", taskInfo.id);
+        // 开始轮询任务状态
+        console.log("startPolling start", taskInfo.id);
+        stopPollingRef.current = startIdPhotoPolling(taskInfo.id, {
+          onProgress: (progress: number) => {
+            setGenerationProgress(progress);
+          },
+          onSuccess: (result: string[]) => {
+            setProcessedImage(result[0]);
+            setIsProcessing(false);
+            toast.success('证件照生成成功！');
+          },
+          onError: (message: string) => {
+            setIsProcessing(false);
+            toast.error(message || '生成失败，请重试');
+          },
+          onStatusUpdate: (taskInfo: IdPhotoTaskInfo) => {
+            setTaskInfo(taskInfo);
+          }
+        });
+        console.log("startPolling end", taskInfo.id);
+      } else {
+        setIsProcessing(false);
+        toast.error(taskInfo.message || '提交证件照生成请求失败');
+      }
     } catch (error) {
-      toast.error('Processing failed, please try again');
-    } finally {
+      console.error('生成证件照错误:', error);
       setIsProcessing(false);
+      toast.error('发送生成请求失败，请稍后重试');
     }
   };
 
@@ -302,7 +405,7 @@ export default function IdPhotoPage() {
                           <div className="space-y-3">
                             <Label className="text-sm font-medium text-gray-700">Photo Specifications</Label>
                             <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-                              {photoSpecs.map((spec) => (
+                              {ID_PHOTO_SPECS.map((spec) => (
                                 <div
                                   key={spec.id}
                                   onClick={() => setSelectedSpec(spec)}
@@ -333,7 +436,7 @@ export default function IdPhotoPage() {
                           <div className="space-y-4">
                             <Label className="text-sm font-medium text-gray-700">Background Color</Label>
                             <div className="grid grid-cols-3 gap-3">
-                              {backgroundColors.map((color) => (
+                              {ID_PHOTO_BACKGROUNDS.map((color) => (
                                 <div key={color.value} className="space-y-2">
                                   <div
                                     onClick={() => setBackgroundColor(color.value)}
@@ -543,9 +646,29 @@ export default function IdPhotoPage() {
                         </Label>
                         <div className="aspect-square bg-gradient-to-br from-gray-100/60 to-gray-200/60 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/40 overflow-hidden">
                           {isProcessing ? (
-                            <div className="text-center">
-                              <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                              <p className="text-sm text-gray-600">AI Processing...</p>
+                            <div className="text-center space-y-4">
+                              <div className="relative">
+                                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-xs font-medium text-blue-600">{generationProgress}%</span>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium text-gray-700">AI正在生成证件照...</p>
+                                <p className="text-xs text-gray-500">
+                                  {generationProgress < 20 ? '正在分析图片...' :
+                                   generationProgress < 60 ? '正在处理背景...' :
+                                   generationProgress < 90 ? '正在优化质量...' : '即将完成...'}
+                                </p>
+                                {generationProgress > 0 && (
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div 
+                                      className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300"
+                                      style={{ width: `${generationProgress}%` }}
+                                    ></div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           ) : processedImage ? (
                             <Watermark>
@@ -597,12 +720,12 @@ export default function IdPhotoPage() {
                         {isProcessing ? (
                           <>
                             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Processing...
+                            生成中... {generationProgress > 0 && `${generationProgress}%`}
                           </>
                         ) : (
                           <>
                             <Wand2 className="w-5 h-5 mr-2" />
-                            Generate ID Photo
+                            生成证件照
                           </>
                         )}
                       </Button>

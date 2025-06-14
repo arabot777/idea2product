@@ -183,7 +183,7 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
             // 6. Record task call - consume user quota
             const recordResult = await taskCallRecord(
               checkResult.currentRequestAmount!,
-              CODE.FluxDevUltraFast,
+              CODE.FluxDev,
               checkResult.billableMetric as BillableMetric,
               userContext
             );
@@ -319,7 +319,7 @@ export const wsFluxDevUltraFastStatus = dataActionWithPermission(
                   mimeType: "image/jpeg",
                 };
               }) || [];
-            taskResultMigration(newResults, userContext);
+            // taskResultMigration(newResults, userContext);
           }
         });
       } else {
