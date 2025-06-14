@@ -1,0 +1,219 @@
+{
+  "hero": {
+    "badge": "AI智能证件照制作",
+    "title": {
+      "smart": "智能证件照",
+      "generate": "一键生成"
+    },
+    "description": "上传照片，AI智能抠图换背景，支持各种证件照规格",
+    "features": "3秒生成 • 高清下载 • 专业品质",
+    "startButton": "立即制作证件照",
+    "viewExamples": "查看示例"
+  },
+  "stats": {
+    "users": "用户选择",
+    "formats": "证件照规格", 
+    "speed": "快速生成"
+  },
+  "features": {
+    "highQuality": "高清输出",
+    "aiSmart": "AI智能",
+    "instantPreview": "即时预览",
+    "title": "为什么选择我们？",
+    "subtitle": "专业的证件照制作工具，让您的证件照更加完美",
+    "smartCutout": "AI智能抠图",
+    "smartCutoutDesc": "先进的AI技术，自动识别人像，精准抠图",
+    "multipleColors": "多种背景色",
+    "multipleColorsDesc": "支持红、蓝、白等多种背景色，满足不同需求",
+    "privacy": "隐私保护",
+    "privacyDesc": "照片本地处理，不上传服务器，保护隐私安全",
+    "fastGeneration": "极速生成",
+    "fastGenerationDesc": "3秒快速生成，即时预览，高效便捷",
+    "aiCutout": "AI智能抠图",
+    "multipleBackgrounds": "多种背景颜色",
+    "standardSize": "标准证件照规格",
+    "instantGeneration": "即时生成预览"
+  },
+  "idTypes": {
+    "oneInch": {
+      "name": "一寸照",
+      "description": "标准一寸证件照"
+    },
+    "twoInch": {
+      "name": "二寸照",
+      "description": "标准二寸证件照"
+    },
+    "smallTwoInch": {
+      "name": "小二寸",
+      "description": "小二寸证件照"
+    },
+    "bigOneInch": {
+      "name": "大一寸",
+      "description": "大一寸证件照"
+    }
+  },
+  "categories": {
+    "title": "证件照类型",
+    "subtitle": "满足各种场景需求，一键生成专业证件照",
+    "professional": "专业品质",
+    "classic": {
+      "name": "经典证件照",
+      "description": "标准规格证件照，适用于身份证、护照等各类证件"
+    },
+    "academic": {
+      "name": "学历考试照",
+      "description": "符合高考、考研等学历考试的证件照要求"
+    },
+    "professional": {
+      "name": "职业形象照",
+      "description": "适合求职、简历等专业场合使用的形象照"
+    },
+    "marriage": {
+      "name": "结婚登记照",
+      "description": "符合婚姻登记处要求的结婚证件照"
+    },
+    "family": {
+      "name": "亲子照",
+      "description": "适合家庭、亲子关系证明的证件照"
+    }
+  },
+  "steps": {
+    "title": "三步制作证件照",
+    "subtitle": "简单三步，快速生成专业证件照",
+    "upload": {
+      "title": "1. 上传照片",
+      "description": "选择清晰的正面照片，支持JPG、PNG格式"
+    },
+    "process": {
+      "title": "2. AI智能处理",
+      "description": "AI自动抠图，选择证件照规格和背景颜色"
+    },
+    "download": {
+      "title": "3. 下载使用",
+      "description": "高清下载证件照，可直接用于各种证件申请"
+    }
+  },
+  "products": {
+    "title": "更多AI创意工具",
+    "subtitle": "探索我们的其他AI产品，释放您的创意潜能",
+    "viewAll": "查看全部产品",
+    "avatar": {
+      "title": "AI头像生成",
+      "description": "上传照片，一键生成各种风格的AI头像，展现独特个性"
+    },
+    "background": {
+      "title": "AI背景生成",
+      "description": "智能替换照片背景，创造完美场景，让照片更加生动"
+    },
+    "enhance": {
+      "title": "AI图像增强",
+      "description": "提升照片质量，修复模糊、噪点，让照片更加清晰锐利"
+    }
+  },
+  "testimonials": {
+    "title": "用户信赖，数据说话",
+    "subtitle": "已有百万用户选择我们的AI证件照服务",
+    "user1": {
+      "name": "李先生",
+      "role": "公务员",
+      "comment": "制作速度很快，效果很专业，比传统照相馆方便多了！"
+    },
+    "user2": {
+      "name": "张同学",
+      "role": "在校学生",
+      "comment": "考试报名需要证件照，这个工具太方便了，质量也很好。"
+    },
+    "user3": {
+      "name": "王女士",
+      "role": "白领",
+      "comment": "求职简历用的，AI抠图很精准，背景很干净！"
+    }
+  },
+  "stats": {
+    "totalUsers": "用户数量",
+    "rating": "用户评分",
+    "successRate": "成功率",
+    "countries": "国家地区"
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "解答您可能遇到的问题",
+    "q1": {
+      "question": "支持哪些证件照规格？",
+      "answer": "我们支持50+种证件照规格，包括一寸照、二寸照、小二寸、大一寸等各种标准规格，满足身份证、护照、签证、考试报名等各种需求。"
+    },
+    "q2": {
+      "question": "上传的照片有什么要求？",
+      "answer": "建议上传正面免冠照片，光线均匀、表情自然，分辨率不低于300x400像素，支持JPG、PNG格式。"
+    },
+    "q3": {
+      "question": "生成的证件照能否直接使用？",
+      "answer": "是的，我们生成的证件照完全符合官方标准，可直接用于各种证件申请、考试报名等正式场合。"
+    },
+    "q4": {
+      "question": "照片隐私安全如何保障？",
+      "answer": "我们采用本地处理技术，照片不会上传到服务器，处理完成后自动清除，完全保护您的隐私安全。"
+    }
+  },
+  "cta": {
+    "title": "立即体验AI智能证件照",
+    "subtitle": "3秒生成专业证件照，让每一张照片都完美",
+    "startButton": "免费制作证件照",
+    "learnMore": "了解更多功能"
+  },
+  "footer": {
+    "company": "AI证件照",
+    "email": "您的电子邮件地址",
+    "renewal": "续费",
+    "aiTools": {
+      "title": "AI画质增强工具",
+      "photoRepair": "破损照片修复",
+      "qualityEnhance": "专业级画质增强",
+      "textEnhance": "文本增强",
+      "pngEnhance": "PNG图片增强",
+      "colorize": "黑白照片上色",
+      "animeRestore": "动漫修复"
+    },
+    "aiEcommerce": {
+      "title": "AI电商",
+      "cutout": "AI抠图",
+      "eraser": "在线消除笔",
+      "logo": "AI LOGO",
+      "poster": "AI海报",
+      "inpainting": "区域重绘",
+      "backgroundCompose": "AI背景合成"
+    },
+    "otherTools": {
+      "title": "其他工具",
+      "scratchRemoval": "去划痕",
+      "sharpen": "AI图像锐化",
+      "avatarCutout": "头像抠图",
+      "aiDrawing": "AI绘画",
+      "aiPortrait": "AI写真",
+      "aiFilter": "AI滤镜",
+      "compress": "图片压缩",
+      "formatConvert": "图片格式转换",
+      "deblur": "去抖动"
+    },
+    "api": {
+      "title": "API",
+      "aiImage": "AI图片",
+      "aiVideo": "AI视频"
+    },
+    "support": {
+      "title": "支持中心",
+      "qa": "Q&A",
+      "about": "关于我们",
+      "terms": "条款",
+      "userAgreement": "用户协议",
+      "privacy": "隐私政策",
+      "cookie": "Cookie政策"
+    },
+    "copyright": "© 2025 AI证件照 版权所有",
+    "language": "语言"
+  },
+  "common": {
+    "error": "发生错误，请重试",
+    "startNow": "立即制作"
+  }
+} 

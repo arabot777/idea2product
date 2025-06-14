@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl"
 import { signOut } from "@/app/actions/auth/sign-out"
 import useSWR from "swr"
 import { getCurrentUserProfile } from "@/app/actions/auth/get-user-info"
+import LanguageSwitcher from "@/components/language-switcher"
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -55,6 +56,9 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+          
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"

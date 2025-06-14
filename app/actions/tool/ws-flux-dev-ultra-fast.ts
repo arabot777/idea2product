@@ -97,7 +97,7 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
 
     try {
       // 1. Pre-check the task - check if the user has permission to call this function
-      const checkResult = await taskCallCheck(params, defaultParams, CODE.FluxDevUltraFast, userContext);
+      const checkResult = await taskCallCheck(params, defaultParams, CODE.FluxDev, userContext);
 
       if (!checkResult.allow) {
         checkResult.error && console.error(checkResult.error);
