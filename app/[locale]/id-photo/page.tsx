@@ -764,7 +764,7 @@ export default function IdPhotoPage() {
                     {/* 原图预览 - 开始处理后移到上方并缩小 */}
                     {hasStartedProcessing ? (
                       <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-md rounded-lg border border-white/60">
-                        <div className="w-20 h-24 bg-gradient-to-br from-gray-100/80 to-gray-200/80 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div className="w-20 h-24 bg-gradient-to-br from-gray-100/80 to-gray-200/80 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
                           {(croppedImage || uploadedImage) ? (
                             <Image
                               src={croppedImage || uploadedImage || ''}
@@ -844,17 +844,20 @@ export default function IdPhotoPage() {
                             </div>
                           )}
                         </div>
-                        <div className="h-96 bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden">
+                        <div className="min-h-96 max-h-[500px] bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden">
                           {(croppedImage || uploadedImage) ? (
-                            <Image
-                              src={croppedImage || uploadedImage || ''}
-                              alt="Original Image"
-                              width={400}
-                              height={500}
-                              className="w-full h-full object-contain"
-                            />
+                            <div className="w-full h-full p-4 flex items-center justify-center">
+                              <Image
+                                src={croppedImage || uploadedImage || ''}
+                                alt="Original Image"
+                                width={400}
+                                height={500}
+                                className="max-w-full max-h-full object-contain rounded-lg shadow-md"
+                                priority
+                              />
+                            </div>
                           ) : (
-                            <div className="text-center text-gray-500">
+                            <div className="text-center text-gray-500 py-8">
                               <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">{t('noImage')}</p>
                             </div>
@@ -876,9 +879,9 @@ export default function IdPhotoPage() {
                           {t('idPhotoResult')}
                         </Label>
                         <div className="relative">
-                          <div className="w-full h-96 bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden relative">
+                          <div className="w-full min-h-96 max-h-[600px] bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden relative">
                             {isProcessing ? (
-                              <div className="text-center space-y-4">
+                              <div className="text-center space-y-4 py-8">
                                 <div className="relative">
                                   <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
                                   <div className="absolute inset-0 flex items-center justify-center">
@@ -905,19 +908,22 @@ export default function IdPhotoPage() {
                                 </div>
                               </div>
                             ) : processedImage ? (
-                              <>
+                              <div className="w-full h-full p-4 flex items-center justify-center">
                                 <Watermark>
-                                  <Image
-                                    src={processedImage || ''}
-                                    alt="Processing Result"
-                                    width={400}
-                                    height={500}
-                                    className="w-full h-full object-cover"
-                                  />
+                                  <div className="relative max-w-full max-h-full flex items-center justify-center">
+                                    <Image
+                                      src={processedImage || ''}
+                                      alt="Processing Result"
+                                      width={400}
+                                      height={500}
+                                      className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                                      priority
+                                    />
+                                  </div>
                                 </Watermark>
-                              </>
+                              </div>
                             ) : (
-                              <div className="text-center text-gray-500">
+                              <div className="text-center text-gray-500 py-8">
                                 <Wand2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
                                 <p className="text-sm">{t('waitingForProcess')}</p>
                               </div>

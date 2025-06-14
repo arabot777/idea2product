@@ -1,6 +1,6 @@
 "use server";
 
-import { wsFluxDevUltraFast, wsFluxDevUltraFastStatus, FluxDevUltraFastParams, TaskInfo } from "@/app/actions/tool/ws-flux-dev-ultra-fast";
+import { wsKcontext, wsKcontextStatus, WSKcontextParams, TaskInfo } from "@/app/actions/tool/ws-kcontext";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { TaskStatus } from "@/lib/types/task/enum.bean";
 import { ID_PHOTO_SPECS, ID_PHOTO_BACKGROUNDS } from "./constants";
@@ -25,48 +25,59 @@ export interface IdPhotoGeneratorParams {
 // 任务信息接口 - 直接复用原有的TaskInfo
 export interface IdPhotoTaskInfo extends TaskInfo {}
 
-// 证件照专用prompt生成器
+// 证件照专用prompt生成器 - 针对Kcontext模型优化
 const generateIdPhotoPrompt = (params: IdPhotoGeneratorParams): string => {
   const { photoSpec, backgroundColor, enhanceQuality } = params;
   
-  // 基础证件照prompt
-  let basePrompt = `Professional ID photo, passport photo style, formal portrait, clean background, high quality, sharp focus, professional lighting, centered composition, straight posture, neutral expression, looking directly at camera`;
+  // 基础证件照prompt - 强调保持面部特征不变
+  let basePrompt = `Create a professional ID photo from this person's face. IMPORTANT: Keep all facial features, face shape, skin tone, and facial characteristics exactly the same as the original person. Only change the background and photo composition.
+
+The photo should have:
+- PRESERVE all original facial features, expressions, and characteristics
+- Professional portrait style with clean composition
+- Formal appearance suitable for official documents
+- Sharp focus and professional lighting
+- Centered composition with straight posture
+- Neutral facial expression looking directly at camera
+- High quality and detailed rendering
+- DO NOT alter face shape, skin color, facial features, or any personal characteristics`;
   
   // 根据背景颜色调整prompt
   const colorMap: { [key: string]: string } = {
-    '#FFFFFF': 'white background',
-    '#2072B8': 'blue background', 
-    '#E30E19': 'red background',
-    '#CCCCCC': 'gray background',
-    '#009944': 'green background',
-    '#FFC0CB': 'pink background'
+    '#FFFFFF': 'pure white background',
+    '#2072B8': 'solid blue background', 
+    '#E30E19': 'solid red background',
+    '#CCCCCC': 'light gray background',
+    '#009944': 'solid green background',
+    '#FFC0CB': 'light pink background'
   };
   
-  const backgroundDesc = colorMap[backgroundColor] || 'white background';
-  basePrompt += `, ${backgroundDesc}`;
+  const backgroundDesc = colorMap[backgroundColor] || 'pure white background';
+  basePrompt += `\n- Replace ONLY the background with ${backgroundDesc}, keep the person's face unchanged`;
   
   // 根据照片规格调整prompt
   if (photoSpec.usage.toLowerCase().includes('passport')) {
-    basePrompt += ', passport photo requirements, official document photo';
+    basePrompt += '\n- Meet passport photo requirements and standards while maintaining original facial features';
   } else if (photoSpec.usage.toLowerCase().includes('id card')) {
-    basePrompt += ', ID card photo requirements, government document photo';
+    basePrompt += '\n- Meet ID card photo requirements and standards while maintaining original facial features';
   } else if (photoSpec.usage.toLowerCase().includes('visa')) {
-    basePrompt += ', visa photo requirements, immigration document photo';
+    basePrompt += '\n- Meet visa photo requirements and standards while maintaining original facial features';
   }
   
   // 质量增强
   if (enhanceQuality) {
-    basePrompt += ', ultra high quality, professional photography, studio lighting, 4K resolution';
+    basePrompt += '\n- Ultra high quality with professional photography standards, preserving original identity';
   }
   
-  // 添加技术参数
-  basePrompt += ', photorealistic, detailed, crisp, no blur, professional headshot';
+  // 添加技术参数 - 强调身份保持
+  basePrompt += '\n- Photorealistic, detailed, crisp, no blur, professional headshot quality';
+  basePrompt += '\n- CRITICAL: Maintain the exact same person identity, do not change any facial characteristics';
   
   return basePrompt;
 };
 
-// 证件照参数预处理 - 将业务参数转换为FluxDev参数
-const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams): FluxDevUltraFastParams => {
+// 证件照参数预处理 - 将业务参数转换为Kcontext参数
+const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams): WSKcontextParams => {
   // 生成优化的prompt
   const optimizedPrompt = generateIdPhotoPrompt(params);
   
@@ -74,14 +85,9 @@ const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams): FluxDevUltraFa
   return {
     prompt: optimizedPrompt,
     image: params.image, // 原始图片
-    strength: 0.7, // 图像到图像的强度，保持人物特征
-    size: `${params.photoSpec.width}*${params.photoSpec.height}`, // 根据证件照规格设置尺寸
-    num_inference_steps: 35, // 增加步数以获得更好的质量
     seed: -1,
     guidance_scale: 4.0, // 适中的引导比例
-    num_images: 1, // 证件照通常只需要一张
-    enable_base64_output: false,
-    enable_safety_checker: true,
+    safety_tolerance: "2", // 安全级别设置为中等
   };
 };
 
@@ -107,11 +113,11 @@ export const generateIdPhoto = async (
   params: IdPhotoGeneratorParams
 ): Promise<IdPhotoTaskInfo> => {
   try {
-    // 1. 前处理：将业务参数转换为FluxDev参数
-    const fluxParams = preprocessIdPhotoParams(params);
+    // 1. 前处理：将业务参数转换为Kcontext参数
+    const kcontextParams = preprocessIdPhotoParams(params);
     
     // 2. 调用底层工具 (userContext会被dataActionWithPermission自动注入)
-    const taskInfo = await wsFluxDevUltraFast(fluxParams);
+    const taskInfo = await wsKcontext(kcontextParams);
     
     // 3. 后处理：添加业务相关的元数据
     return postprocessIdPhotoResult(taskInfo, params);
@@ -135,7 +141,7 @@ export const getIdPhotoTaskStatus = async (
 ): Promise<IdPhotoTaskInfo> => {
   try {
     // 直接调用底层工具 (userContext会被dataActionWithPermission自动注入)
-    const taskInfo = await wsFluxDevUltraFastStatus(taskId);
+    const taskInfo = await wsKcontextStatus(taskId);
     
     // 可以在这里添加证件照特有的状态处理逻辑
     // 比如：进度描述本地化、结果验证等
