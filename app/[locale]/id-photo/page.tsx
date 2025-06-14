@@ -759,7 +759,7 @@ export default function IdPhotoPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className={`${hasStartedProcessing ? 'space-y-6' : 'grid md:grid-cols-2 gap-6'}`}>
+                  <div className={`${hasStartedProcessing ? 'space-y-6' : 'grid md:grid-cols-1 gap-6'}`}>
                     
                     {/* 原图预览 - 开始处理后移到上方并缩小 */}
                     {hasStartedProcessing ? (
@@ -844,7 +844,7 @@ export default function IdPhotoPage() {
                             </div>
                           )}
                         </div>
-                        <div className="aspect-[3/4] bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden">
+                        <div className="h-96 bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden">
                           {(croppedImage || uploadedImage) ? (
                             <Image
                               src={croppedImage || uploadedImage || ''}
