@@ -7,37 +7,43 @@ import { updateSessionAndAuth } from "./lib/supabase/middleware";
 const locales = ["en", "zh-CN"];
 const defaultLocale = "en";
 
-export async function middleware(request: NextRequest) {
-  // First, handle next-intl internationalization middleware
-  const handleIntl = createIntlMiddleware({
-    locales,
-    defaultLocale,
-    localePrefix: "as-needed", // or 'never' | 'as-needed'
-    localeDetection: false,
-  });
-  let response = handleIntl(request);
+export default async function middleware(request: NextRequest) {
+  try {
+    // First, handle next-intl internationalization middleware
+    const handleIntl = createIntlMiddleware({
+      locales,
+      defaultLocale,
+      localePrefix: "as-needed",
+      localeDetection: false,
+    });
+    let response = handleIntl(request);
 
-  // 3. Clone the request, as the request body may have been consumed
-  const requestForAuth = new NextRequest(request, {
-    headers: request.headers,
-  });
+    // 3. Clone the request, as the request body may have been consumed
+    const requestForAuth = new NextRequest(request, {
+      headers: request.headers,
+    });
 
-  // 4. Execute authentication and permission check middleware
-  const authResponse = await updateSessionAndAuth(requestForAuth);
+    // 4. Execute authentication and permission check middleware
+    const authResponse = await updateSessionAndAuth(requestForAuth);
 
-  // 5. If the authentication middleware returns a redirect or error response, return it directly
-  if (authResponse.status !== 200 || authResponse.headers.get("location")) {
-    return authResponse;
-  }
-
-  // 6. Merge response headers (preserve cookies set by internationalization middleware, etc.)
-  authResponse.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== "content-length") {
-      response.headers.set(key, value);
+    // 5. If the authentication middleware returns a redirect or error response, return it directly
+    if (authResponse.status !== 200 || authResponse.headers.get("location")) {
+      return authResponse;
     }
-  });
 
-  return response;
+    // 6. Merge response headers (preserve cookies set by internationalization middleware, etc.)
+    authResponse.headers.forEach((value, key) => {
+      if (key.toLowerCase() !== "content-length") {
+        response.headers.set(key, value);
+      }
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // 如果 middleware 出错，返回基本的响应而不是崩溃
+    return NextResponse.next();
+  }
 }
 
 export const config = {

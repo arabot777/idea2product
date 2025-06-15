@@ -4,6 +4,7 @@ import withNextIntl from "next-intl/plugin";
 import { mergeAllLocales, watchLocales } from "./scripts/merge-locales";
 import { permissionCollector } from "./scripts/merge-permissions";
 import { resolve } from 'path';
+import { fa } from '@faker-js/faker';
 
 // Use an immediately invoked async function to handle top-level await
 (async () => {
@@ -39,7 +40,7 @@ const nextConfig = {
     ],
   },
   experimental: {
-    ppr: true,
+    ppr: false,
     clientSegmentCache: true,
     nodeMiddleware: true,
     // forceSwcTransforms: true,
