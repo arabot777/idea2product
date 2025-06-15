@@ -106,6 +106,27 @@
     "regenerating": "重新生成中...",
     "regenerateSuccess": "重新生成成功！",
     "showRuler": "显示标尺",
-    "hideRuler": "隐藏标尺"
+    "hideRuler": "隐藏标尺",
+    "functionSelection": "功能选择",
+    "aiBackgroundColor": "AI生图背景色",
+    "backgroundReplace": "背景替换",
+    "oneClickCutout": "一键抠图",
+    "sizeAdjust": "尺寸调整",
+    "layoutArrange": "排版设计",
+    "photoSpecs": "证件照规格",
+    "paperLayout": "相纸排版",
+    "cutoutInProgress": "抠图中",
+    "backgroundRemovalSuccess": "背景移除成功",
+    "backgroundRemovalFailed": "背景移除失败",
+    "layoutComplete": "排版完成",
+    "layoutFailed": "排版失败",
+    "tipAiBetter": "💡 提示：AI生图背景色会与人物更好融合，推荐用于初次生成",
+    "tipFrontendFaster": "💡 提示：点击颜色即可实时替换背景，无需重新生成",
+    "tipAutoLayout": "💡 提示：自动计算最佳排版，一张相纸放置多张证件照",
+    "needGenerateFirst": "需要先生成图片",
+    "aiPhotoGeneration": "AI智能生成证件照",
+    "frontendProcessing": "抠图并替换背景色",
+    "selectPhotoSpecs": "选择证件照规格",
+    "paperLayoutOutput": "相纸排版输出"
   }
 } 

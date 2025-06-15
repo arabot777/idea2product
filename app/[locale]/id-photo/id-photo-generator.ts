@@ -30,7 +30,14 @@ const generateIdPhotoPrompt = (params: IdPhotoGeneratorParams): string => {
   const { photoSpec, backgroundColor, enhanceQuality } = params;
   
   // 基础证件照prompt - 强调保持面部特征不变
-  let basePrompt = `Create a professional ID photo from this person's face. IMPORTANT: Keep all facial features, face shape, skin tone, and facial characteristics exactly the same as the original person. Only change the background and photo composition.
+  let basePrompt = `Create a professional ID photo from this person's face. 
+IMPORTANT: 
+- Only change the background and photo composition.
+- Keep all facial features, face shape, skin tone, and facial characteristics exactly the same as the original person.
+- Remove the ENTIRE background and make it 100% transparent (RGBA with alpha channel)
+- Ensure clean, sharp edges around the subject with no background artifacts
+- Maintain natural hair details and fine edges
+- Output format must support transparency (PNG recommended)
 
 The photo should have:
 - PRESERVE all original facial features, expressions, and characteristics
@@ -49,11 +56,12 @@ The photo should have:
     '#E30E19': 'solid red background',
     '#CCCCCC': 'light gray background',
     '#009944': 'solid green background',
-    '#FFC0CB': 'light pink background'
+    '#FFC0CB': 'light pink background',
+    'transparent': 'rgba(0,0,0,0)'
   };
   
   const backgroundDesc = colorMap[backgroundColor] || 'pure white background';
-  basePrompt += `\n- Replace ONLY the background with ${backgroundDesc}, keep the person's face unchanged`;
+  basePrompt += `\n- Replace ONLY the background with ${backgroundDesc}`;
   
   // 根据照片规格调整prompt
   if (photoSpec.usage.toLowerCase().includes('passport')) {
