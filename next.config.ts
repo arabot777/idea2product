@@ -33,13 +33,16 @@ import { resolve } from 'path';
 
 const nextConfig = {
   images: {
-    domains: ['d2p7pge43lyniu.cloudfront.net'],
+    domains: [
+      'd2p7pge43lyniu.cloudfront.net',
+      'd2g64w682n9w0w.cloudfront.net'
+    ],
   },
   experimental: {
     ppr: true,
     clientSegmentCache: true,
     nodeMiddleware: true,
-    forceSwcTransforms: true,
+    // forceSwcTransforms: true,
   },
   // Development environment optimization
   onDemandEntries: {

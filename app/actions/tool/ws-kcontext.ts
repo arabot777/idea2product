@@ -2,7 +2,7 @@
 
 import { dataActionWithPermission } from "@/lib/permission/guards/action";
 import { WaveSpeedClient } from "@/sdk/wavespeed/client";
-import { FluxDevUltraFastRequest } from "@/sdk/wavespeed/requests/flux-dev-ultra-fast.request";
+import { FluxKontextProRequest } from "@/sdk/wavespeed/requests/flux-kontext-pro.request";
 import { TasksEdit } from "@/lib/db/crud/task/tasks.edit";
 import { TasksQuery } from "@/lib/db/crud/task/tasks.query";
 import { taskResultMigration } from "@/app/actions/task/task-result-migration";
@@ -20,19 +20,13 @@ import { Task } from "@/lib/db/schemas/task/task";
 import { NewTaskResult } from "@/lib/db/schemas/task/task-result";
 import { TaskResultsQuery } from "@/lib/db/crud/task/task-results.query";
 
-// Interface for image generation request parameters
-export interface FluxDevUltraFastParams {
+// Interface for kcontext generation request parameters
+export interface WSKcontextParams {
   prompt: string;
-  image?: string;
-  mask_image?: string;
-  strength?: number;
-  size?: string;
-  num_inference_steps?: number;
+  image: string;
   seed?: number;
   guidance_scale?: number;
-  num_images?: number;
-  enable_base64_output?: boolean;
-  enable_safety_checker?: boolean;
+  safety_tolerance?: "1" | "2" | "3" | "4" | "5";
 }
 
 // Interface for task status
@@ -42,6 +36,7 @@ export interface TaskInfo {
   progress?: number;
   message?: string;
   result?: any;
+  output_url?: string;
 }
 
 const response2TaskInfo = (response: WaveSpeedResponse<ModelResult>): TaskInfo => {
@@ -69,34 +64,32 @@ const response2TaskInfo = (response: WaveSpeedResponse<ModelResult>): TaskInfo =
     status: status,
     progress: progress,
     result: response.data.status === "completed" ? response.data.outputs : undefined,
+    output_url: response.data.status === "completed" && response.data.outputs && response.data.outputs.length > 0 ? response.data.outputs[0] : undefined,
     message: response.data.status === "failed" ? response.data.error : undefined,
   };
 };
+
 /**
- * Calls AI image generation function
+ * Calls AI image generation function using Flux Kontext Pro
  * @param params AI image generation parameters
  * @param userContext User context
  */
-export const wsFluxDevUltraFast = dataActionWithPermission(
-  "wsFluxDevUltraFast",
+export const wsKcontext = dataActionWithPermission(
+  "wsKcontext",
   async (
-    params: FluxDevUltraFastParams,
+    params: WSKcontextParams,
     userContext: UserContext // Pass userContext as a parameter
   ): Promise<TaskInfo> => {
     // Default parameters
     const defaultParams = {
-      strength: 0.8,
-      size: "1024*1024",
-      num_inference_steps: 28,
       seed: -1,
       guidance_scale: 3.5,
-      num_images: 1,
-      enable_base64_output: false,
-      enable_safety_checker: true,
+      safety_tolerance: "2" as const,
     };
 
     try {
       // 1. Pre-check the task - check if the user has permission to call this function
+      // TODO :  CODE.FluxDev
       const checkResult = await taskCallCheck(params, defaultParams, CODE.FluxDev, userContext);
 
       if (!checkResult.allow) {
@@ -111,19 +104,14 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
       }
 
       // 2. generate request
-      const request = new FluxDevUltraFastRequest(
+      const request = new FluxKontextProRequest(
         params.prompt,
         params.image,
-        params.mask_image,
-        params.strength,
-        params.size,
-        params.num_inference_steps,
         params.seed,
         params.guidance_scale,
-        params.num_images,
-        params.enable_base64_output,
-        params.enable_safety_checker
+        params.safety_tolerance
       );
+
       // 3. Get WaveSpeed API Key
       const apiKey = process.env.WAVESPEED_API_KEY;
       if (!apiKey) {
@@ -141,10 +129,10 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
 
       const task = await TasksEdit.create({
         userId: userContext.id!,
-        type: "wsFluxDevUltraFast",
+        type: "wsKcontext",
         status: TaskStatus.PENDING,
-        title: "AI Image Generation Task",
-        description: "Process image generation request via WaveSpeed FluxDevUltraFast API",
+        title: "AI Image Generation Task (Kontext)",
+        description: "Process image generation request via WaveSpeed Flux Kontext Pro API",
         progress: 0,
         startedAt: new Date(),
         checkInterval: 5,
@@ -213,12 +201,13 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
     }
   }
 );
+
 /**
  * Query task status
  * @param taskId Task ID
  */
-export const wsFluxDevUltraFastStatus = dataActionWithPermission(
-  "wsFluxDevUltraFastStatus",
+export const wsKcontextStatus = dataActionWithPermission(
+  "wsKcontextStatus",
   async (
     taskId: string,
     userContext: UserContext // Pass userContext as a parameter
@@ -242,6 +231,7 @@ export const wsFluxDevUltraFastStatus = dataActionWithPermission(
             taskResult?.map((result) => {
               return result.storageUrl;
             }) || [],
+          output_url: taskResult && taskResult.length > 0 ? taskResult[0].storageUrl || undefined : undefined,
           progress: task.progress,
           message: task.message || undefined,
         };
@@ -300,8 +290,8 @@ export const wsFluxDevUltraFastStatus = dataActionWithPermission(
             outputData: JSON.stringify(response.data),
           }).catch((err) => console.error("Update task data failed:", err));
           if (taskInfo.status === "failed") {
-            const billableMetric: BillableMetric | undefined = await BillableMetricsQuery.getByCode(CODE.FluxDevUltraFast);
-            taskCallRecordRevoke(parseInt(task?.externalMetricEventId!, 0), task?.currentRequestAmount!, CODE.FluxDevUltraFast, billableMetric!, userContext)
+            const billableMetric: BillableMetric | undefined = await BillableMetricsQuery.getByCode(CODE.FluxDev);
+            taskCallRecordRevoke(parseInt(task?.externalMetricEventId!, 0), task?.currentRequestAmount!, CODE.FluxDev, billableMetric!, userContext)
               .then(() => {
                 console.log("Task record revoked successfully");
               })
@@ -314,7 +304,7 @@ export const wsFluxDevUltraFastStatus = dataActionWithPermission(
                   taskId: taskId,
                   parentTaskId: task?.parentTaskId,
                   type: TaskResultType.IMAGE,
-                  status: response.data.has_nsfw_contents[index] ? TaskResultStatus.REJECTED_NSFW : TaskResultStatus.COMPLETED,
+                  status: response.data.has_nsfw_contents && response.data.has_nsfw_contents[index] ? TaskResultStatus.REJECTED_NSFW : TaskResultStatus.COMPLETED,
                   storageUrl: output,
                   mimeType: "image/jpeg",
                 };

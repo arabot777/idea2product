@@ -1,31 +1,436 @@
 {
-  "simulateUsageDataComment": "// Simulate fetching usage data",
-  "simulateDisplayUsageDataComment": "// Simulate displaying usage data",
-  "heroTitlePart1": "Build Your Next",
-  "heroTitlePart2": "AI-Powered Application",
-  "heroDescriptionLine1": "Transform your ideas into reality with our cutting-edge AI platform.",
-  "heroDescriptionLine2": "Designed for developers, by developers.",
-  "startButton": "Get Started",
-  "viewPlansButton": "View Plans",
-  "featuresTitle": "Why Choose Our Platform",
-  "featuresDescription": "Experience the future of AI development with our comprehensive platform.",
-  "feature1Title": "Lightning Fast",
-  "feature1Description": "Our AI models deliver instant results with industry-leading speed and accuracy.",
-  "feature2Title": "Scalable Infrastructure",
-  "feature2Description": "Built on robust cloud architecture that scales with your needs.",
-  "feature3Title": "Enterprise-Grade Security",
-  "feature3Description": "Your data is protected with military-grade encryption and compliance standards.",
-  "stat1Value": "99.9%",
-  "stat1Label": "Uptime",
-  "stat2Value": "10M+",
-  "stat2Label": "API Calls",
-  "stat3Value": "50K+",
-  "stat3Label": "Developers",
-  "stat4Value": "24/7",
-  "stat4Label": "Support",
-  "ctaTitle": "Ready to launch your SaaS?",
-  "ctaDescription": "Our template provides everything you need to get your SaaS up and running quickly. Don't waste time on boilerplate - focus on what makes your product unique.",
-  "viewCodeButton": "View the code",
-  "usageDataTitle": "Usage Data (Simulated)",
-  "deployButton": "Deploy your own"
+  "hero": {
+    "badge": "AI-Powered Professional ID Photos",
+    "title": {
+      "smart": "Smart ID Photos",
+      "generate": "One-Click Generation"
+    },
+    "description": "Upload your photo and get professional ID photos with AI background removal",
+    "features": "3s Generation • HD Download • Professional Quality",
+    "startButton": "Create ID Photo Now",
+    "viewExamples": "View Examples"
+  },
+  "stats": {
+    "users": "Users Served",
+    "formats": "Photo Formats",
+    "speed": "Fast Generation"
+  },
+  "features": {
+    "highQuality": "HD Output",
+    "aiSmart": "AI Smart",
+    "instantPreview": "Instant Preview",
+    "title": "Why Choose Our AI ID Photo Service",
+    "subtitle": "Professional, Fast, Convenient",
+    "smartCutout": "AI Smart Cutout",
+    "smartCutoutDesc": "Advanced AI algorithms automatically optimize lighting, background, and facial features",
+    "multipleColors": "Multiple Background Colors",
+    "multipleColorsDesc": "Support for various background colors including red, blue, white, etc.",
+    "privacy": "Privacy Protection",
+    "privacyDesc": "Local processing, photos never uploaded to servers, complete privacy protection",
+    "fastGeneration": "Ultra-Fast Generation",
+    "fastGenerationDesc": "3-second generation with instant preview, efficient and convenient",
+    "aiCutout": "AI Smart Cutout",
+    "multipleBackgrounds": "Multiple Background Colors",
+    "standardSize": "Standard ID Photo Sizes",
+    "instantGeneration": "Instant Generation Preview"
+  },
+  "idTypes": {
+    "oneInch": {
+      "name": "1-Inch Photo",
+      "description": "Standard 1-inch ID photo"
+    },
+    "twoInch": {
+      "name": "2-Inch Photo",
+      "description": "Standard 2-inch ID photo"
+    },
+    "smallTwoInch": {
+      "name": "Small 2-Inch",
+      "description": "Small 2-inch ID photo"
+    },
+    "bigOneInch": {
+      "name": "Large 1-Inch",
+      "description": "Large 1-inch ID photo"
+    },
+    "passport": {
+      "name": "Passport Photo",
+      "description": "Passport-specific ID photo"
+    },
+    "visa": {
+      "name": "Visa Photo",
+      "description": "Visa application ID photo"
+    },
+    "driver": {
+      "name": "Driver's License Photo",
+      "description": "Driver's license specific photo"
+    },
+    "student": {
+      "name": "Student Photo",
+      "description": "Student ID photo"
+    }
+  },
+  "categories": {
+    "title": "AI Smart ID Photo Creation",
+    "subtitle": "Transform any casual photo into professional ID photos with multiple formats and backgrounds",
+    "professional": "Professional Quality",
+    "classic": {
+      "name": "Classic ID Photos",
+      "description": "Standard ID photos for passports, IDs, and official documents"
+    },
+    "academic": {
+      "name": "Academic Exam Photos",
+      "description": "Photos meeting requirements for college entrance exams, graduate exams, etc."
+    },
+    "professional": {
+      "name": "Professional Headshots",
+      "description": "Perfect for job applications, resumes, and professional use"
+    },
+    "marriage": {
+      "name": "Marriage Registration Photos",
+      "description": "Photos meeting marriage registration office requirements"
+    },
+    "family": {
+      "name": "Family Photos",
+      "description": "Suitable for family and parent-child relationship documentation"
+    }
+  },
+  "showcase": {
+    "beforeAfter": {
+      "before": "Casual Photo",
+      "after": "Professional ID Photo",
+      "beforeIssues": {
+        "background": "Messy Background",
+        "size": "Non-standard Size", 
+        "lighting": "Uneven Lighting"
+      },
+      "afterFeatures": {
+        "aistrong": "AI Enhancement",
+        "background": "Professional Background",
+        "size": "Standard Size",
+        "lighting": "Perfect Lighting"
+      }
+    },
+    "useCases": {
+      "anyPhoto": {
+        "title": "Any Casual Photo Can Be Converted",
+        "subtitle": "Upload any casual photo, AI automatically identifies portraits",
+        "types": {
+          "selfie": "Selfie",
+          "travel": "Travel Photo", 
+          "party": "Party Photo"
+        },
+        "feature": "Smart cutout with precise portrait recognition"
+      },
+      "multiFormat": {
+        "title": "Multiple Background & Size Options",
+        "subtitle": "One-click switching between background colors and ID photo formats",
+        "backgrounds": "Red, blue, white and other background options",
+        "sizes": {
+          "oneInch": "1-Inch",
+          "twoInch": "2-Inch"
+        },
+        "feature": "Support 50+ ID photo formats to meet various needs"
+      }
+    },
+    "scenarios": {
+      "title": "Application Scenarios",
+      "subtitle": "Covering various ID photo use cases"
+    }
+  },
+  "common": {
+    "startNow": "Start Now",
+    "makeIdPhoto": "Create ID Photo Now"
+  },
+  "steps": {
+    "title": "How It Works",
+    "subtitle": "Simple 3-step process",
+    "upload": {
+      "title": "1. Upload Photo",
+      "description": "Upload a clear front-facing photo, supports JPG and PNG formats"
+    },
+    "process": {
+      "title": "2. AI Processing",
+      "description": "AI automatically removes background, select photo size and background color"
+    },
+    "download": {
+      "title": "3. Download & Use",
+      "description": "Download high-quality ID photo, ready for official document applications"
+    }
+  },
+  "products": {
+    "title": "More AI Creative Tools",
+    "subtitle": "Explore our other AI products to unleash your creativity",
+    "viewAll": "View All Products",
+    "avatar": {
+      "title": "AI Avatar Generation",
+      "description": "Upload photos and generate various styles of AI avatars to showcase your unique personality"
+    },
+    "background": {
+      "title": "AI Background Generation",
+      "description": "Intelligently replace photo backgrounds to create perfect scenes and make photos more vivid"
+    },
+    "enhance": {
+      "title": "AI Image Enhancement",
+      "description": "Improve photo quality, fix blur and noise, make photos clearer and sharper"
+    }
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "subtitle": "Trusted by millions worldwide",
+    "user1": {
+      "name": "Mr. Li",
+      "role": "Civil Servant",
+      "comment": "Very fast processing and professional results, much more convenient than traditional photo studios!"
+    },
+    "user2": {
+      "name": "Student Zhang",
+      "role": "Student",
+      "comment": "Needed ID photos for exam registration, this tool is so convenient and the quality is excellent."
+    },
+    "user3": {
+      "name": "Ms. Wang",
+      "role": "Office Worker",
+      "comment": "Used for job resume, AI cutout is very precise and the background is very clean!"
+    }
+  },
+  "status": {
+    "totalUsers": "Total Users",
+    "rating": "User Rating",
+    "successRate": "Success Rate",
+    "countries": "Countries & Regions"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Answers to questions you might have",
+    "q1": {
+      "question": "What ID photo formats are supported?",
+      "answer": "We support 50+ ID photo formats including 1-inch, 2-inch, small 2-inch, large 1-inch, and various standard sizes for IDs, passports, visas, exam registrations, and more."
+    },
+    "q2": {
+      "question": "What are the photo upload requirements?",
+      "answer": "We recommend uploading front-facing photos without headwear, with even lighting and natural expression, minimum resolution of 300x400 pixels, supporting JPG and PNG formats."
+    },
+    "q3": {
+      "question": "Can the generated ID photos be used directly?",
+      "answer": "Yes, our generated ID photos fully comply with official standards and can be used directly for various document applications, exam registrations, and other official purposes."
+    },
+    "q4": {
+      "question": "How is photo privacy and security guaranteed?",
+      "answer": "We use local processing technology, photos are not uploaded to servers, and are automatically cleared after processing, completely protecting your privacy and security."
+    }
+  },
+  "cta": {
+    "title": "Ready to Create Your Perfect ID Photo?",
+    "subtitle": "Generate professional ID photos in 3 seconds, make every photo perfect",
+    "startButton": "Create ID Photo for Free",
+    "learnMore": "Learn More Features"
+  },
+  "footer": {
+    "company": "AI ID Photo",
+    "email": "Your Email Address",
+    "renewal": "Renewal",
+    "aiTools": {
+      "title": "AI Quality Enhancement Tools",
+      "idPhoto": "AI ID Photo",
+      "photoRepair": "Damaged Photo Repair",
+      "qualityEnhance": "Professional Quality Enhancement",
+      "textEnhance": "Text Enhancement",
+      "pngEnhance": "PNG Image Enhancement",
+      "colorize": "Black & White Photo Colorization",
+      "animeRestore": "Anime Restoration"
+    },
+    "aiEcommerce": {
+      "title": "AI E-commerce",
+      "cutout": "AI Cutout",
+      "eraser": "Online Eraser",
+      "logo": "AI LOGO",
+      "poster": "AI Poster",
+      "inpainting": "Region Inpainting",
+      "backgroundCompose": "AI Background Composition"
+    },
+    "otherTools": {
+      "title": "Other Tools",
+      "scratchRemoval": "Scratch Removal",
+      "sharpen": "AI Image Sharpening",
+      "avatarCutout": "Avatar Cutout",
+      "aiDrawing": "AI Drawing",
+      "aiPortrait": "AI Portrait",
+      "aiFilter": "AI Filter",
+      "compress": "Image Compression",
+      "formatConvert": "Image Format Conversion",
+      "deblur": "Deblur"
+    },
+    "api": {
+      "title": "API",
+      "aiImage": "AI Image",
+      "aiVideo": "AI Video"
+    },
+    "support": {
+      "title": "Support",
+      "qa": "Q&A",
+      "about": "About Us",
+      "terms": "Terms of Service",
+      "userAgreement": "User Agreement",
+      "privacy": "Privacy Policy",
+      "cookie": "Cookie Policy"
+    },
+    "copyright": "© 2024 AI ID Photo. All rights reserved.",
+    "language": "Language"
+  },
+  "idPhoto": {
+    "title": "AI ID Photo Generator",
+    "subtitle": "Intelligent Image Processing Tools",
+    "back": "Back",
+    "toolSelection": "Tool Selection",
+    "idPhotoMaker": "ID Photo Maker",
+    "idPhotoDescription": "AI-powered professional ID photo generation",
+    "imageEnhancement": "Image Enhancement",
+    "smartCropping": "Smart Cropping",
+    "comingSoon": "Coming soon...",
+    "photoSpecs": "Photo Specs",
+    "background": "Background",
+    "uploadPhoto": "Upload Photo",
+    "uploadDescription": "Supports JPG, PNG formats, max 5MB",
+    "clickToUpload": "Click to upload photo",
+    "uploadProgress": "Upload Progress",
+    "previewAndProcess": "Preview & Process",
+    "originalPreview": "Original Preview",
+    "crop": "Crop",
+    "reupload": "Re-upload",
+    "idPhotoResult": "ID Photo Result",
+    "generateIdPhoto": "Generate ID Photo",
+    "generating": "Generating...",
+    "download": "Download",
+    "downloadWithSpec": "Download ({spec})",
+    "cropImage": "Crop Image",
+    "zoom": "Zoom",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "originalSize": "Original size: {width} × {height} pixels",
+    "cropped": "✓ Cropped",
+    "noImage": "No image",
+    "waitingForProcess": "Waiting for processing",
+    "analyzing": "Analyzing image...",
+    "processingBackground": "Processing background...",
+    "optimizingQuality": "Optimizing quality...",
+    "almostDone": "Almost done...",
+    "uploadSuccess": "Image uploaded successfully",
+    "generateSuccess": "ID photo generated successfully!",
+    "downloadSuccess": "Image downloaded successfully",
+    "uploadFirst": "Please upload an image first",
+    "noDownloadImage": "No image to download",
+    "processFailed": "Processing failed, please try again",
+    "downloadFailed": "Download failed, please try again",
+    "taskTimeout": "Task timeout",
+    "taskFailed": "Task failed",
+    "pollingFailed": "Polling failed",
+    "cropSuccess": "Crop completed",
+    "cropFailed": "Crop failed",
+    "fileSizeExceeded": "File size exceeds limit (5MB)",
+    "watermark": "WaveSpeed AI",
+    "regenerateWithBackground": "Regenerate with {background} background",
+    "regenerateWithSpec": "Regenerate with {spec} size",
+    "regenerating": "Regenerating...",
+    "regenerateSuccess": "Regenerated successfully!",
+    "showRuler": "Show Ruler",
+    "hideRuler": "Hide Ruler",
+    "functionSelection": "Function Selection",
+    "aiPhotoGeneration": "AI Photo Generation",
+    "backgroundRemoval": "Background Removal",
+    "needGenerateFirst": "Please generate ID photo first",
+    "frontendProcessing": "Remove background and replace color",
+    "sizeAdjust": "Size Adjustment",
+    "selectPhotoSpecs": "Select photo specifications",
+    "layoutArrange": "Layout Design",
+    "paperLayoutOutput": "Paper layout output",
+    "aiBackgroundColor": "AI Background Color",
+    "tipAiBetter": "💡 Tip: AI background colors blend better with the subject, recommended for initial generation",
+    "backgroundReplace": "Background Replace",
+    "cutoutInProgress": "Removing background...",
+    "oneClickCutout": "One-Click Cutout",
+    "cutoutMode": "Cutout Mode",
+    "smartMode": "Smart Mode",
+    "fastMode": "Fast Mode",
+    "smartCutout": "Smart Cutout",
+    "prepareReplace": "Prepare Replace",
+    "cutoutPreview": "Cutout Preview",
+    "showPreview": "Show Preview",
+    "hidePreview": "Hide Preview",
+    "originalImage": "Original Image",
+    "cutoutResult": "Cutout Result",
+    "newBackground": "New Background",
+    "cutoutComplete": "Cutout Complete",
+    "backgroundChanged": "Background changed to",
+    "backgroundChangeFailed": "Background change failed",
+    "tipAutoLayout": "💡 Tip: Automatically calculates optimal layout, placing multiple photos on one sheet",
+    "tipFrontendFaster": "💡 Tip: Click colors to instantly replace background without regeneration",
+    "backgroundRemovalSuccess": "Background removed successfully",
+    "backgroundRemovalFailed": "Background removal failed",
+    "layoutComplete": " layout completed",
+    "layoutFailed": "Layout failed",
+    "backToOriginal": "Back to Original",
+    "paperLayout": "Paper Layout",
+    "categories": {
+      "common": "Common Photos",
+      "passport": "Passport & Visa", 
+      "exam": "Exam Photos",
+      "oneInch": "1-Inch Photo",
+      "twoInch": "2-Inch Photo",
+      "smallOneInch": "Small 1-Inch",
+      "largeOneInch": "Large 1-Inch",
+      "passportChina": "China Passport",
+      "passportUS": "US Passport",
+      "visaUS": "US Visa",
+      "tourGuide": "Tour Guide License",
+      "teacherLicense": "Teacher License",
+      "cpaExam": "CPA Exam",
+      "lawExam": "Law Exam",
+      "civilService": "Civil Service",
+      "fiveInchPaper": "5-Inch Paper",
+      "sixInchPaper": "6-Inch Paper",
+      "a4Paper": "A4 Paper",
+      "colors": {
+        "white": "White",
+        "blue": "Blue",
+        "red": "Red",
+        "gray": "Gray",
+        "green": "Green",
+        "pink": "Pink",
+        "pureWhite": "Pure White",
+        "ivoryWhite": "Ivory White",
+        "standardBlue": "Standard Blue",
+        "darkBlue": "Dark Blue",
+        "skyBlue": "Sky Blue",
+        "standardRed": "Standard Red",
+        "darkRed": "Dark Red",
+        "lightGray": "Light Gray",
+        "mediumGray": "Medium Gray",
+        "darkGray": "Dark Gray",
+        "standardGreen": "Standard Green",
+        "darkGreen": "Dark Green",
+        "lightPink": "Light Pink"
+      },
+      "white": "White",
+      "blue": "Blue",
+      "red": "Red",
+      "gray": "Gray",
+      "green": "Green",
+      "pink": "Pink",
+      "pureWhite": "Pure White",
+      "ivoryWhite": "Ivory White",
+      "standardBlue": "Standard Blue",
+      "darkBlue": "Dark Blue",
+      "skyBlue": "Sky Blue",
+      "standardRed": "Standard Red",
+      "darkRed": "Dark Red",
+      "lightGray": "Light Gray",
+      "mediumGray": "Medium Gray",
+      "darkGray": "Dark Gray",
+      "standardGreen": "Standard Green",
+      "darkGreen": "Dark Green",
+      "lightPink": "Light Pink"
+    },
+    "singlePhoto": "Single Photo",
+    "removeLayout": "Remove layout, show single photo",
+    "supportLayoutBackground": "Support layout background replacement"
+  }
 }
