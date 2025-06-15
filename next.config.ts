@@ -44,8 +44,6 @@ const nextConfig = {
     nodeMiddleware: true,
     // forceSwcTransforms: true,
   },
-   // 如果是在 serverless 环境，添加以下配置
-  output: 'standalone',
   // Development environment optimization
   onDemandEntries: {
     // Page cache duration in memory (milliseconds)
