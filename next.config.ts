@@ -29,13 +29,13 @@ let hasRunBuildTimeSetup = false;
 const nextConfig: NextConfig = {
   // 图片域名配置
   images: {
-    domains: ["d2p7pge43lyniu.cloudfront.net"],
+    domains: ["d2p7pge43lyniu.cloudfront.net", "d2g64w682n9w0w.cloudfront.net"],
   },
   // 实验性功能
   experimental: {
     ppr: true,
     // clientSegmentCache: true,
-    forceSwcTransforms: true,
+    // forceSwcTransforms: true,
   },
   onDemandEntries: {
     // Page cache duration in memory (milliseconds)
