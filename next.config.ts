@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
   // 实验性功能
   experimental: {
     ppr: true,
-    clientSegmentCache: true,
+    // clientSegmentCache: true,
     forceSwcTransforms: true,
   },
   onDemandEntries: {
