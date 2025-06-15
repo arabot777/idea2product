@@ -3,12 +3,22 @@ import type { WebpackConfigContext } from 'next/dist/server/config-shared';
 import withNextIntl from "next-intl/plugin";
 import { mergeAllLocales, watchLocales } from "./scripts/merge-locales";
 import { permissionCollector } from "./scripts/merge-permissions";
-import { resolve } from 'path';
-import { fa } from '@faker-js/faker';
 
-// Use an immediately invoked async function to handle top-level await
-(async () => {
-  // Merge language files
+// Build-time setup for production
+const setupBuildTime = async () => {
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV) {
+    try {
+      await mergeAllLocales();
+      await permissionCollector.generateMergedConfig();
+    } catch (error) {
+      console.error("Build-time setup failed:", error);
+      // Don't exit process in production build
+    }
+  }
+};
+
+// Setup for development
+const setupDevelopment = () => {
   if (process.env.NODE_ENV === "development") {
     // Watch for file changes in development mode
     mergeAllLocales()
@@ -18,87 +28,59 @@ import { fa } from '@faker-js/faker';
     permissionCollector
       .watchPermissionFiles()
       .then(() => {
-        // Generate config once first
         return permissionCollector.generateMergedConfig();
       })
       .catch((error) => {
         console.error("❌ Failed to start permission config monitoring:", error);
-        process.exit(1);
       });
-  } else {
-    // Only merge once in production mode
-    await mergeAllLocales();
-    await permissionCollector.generateMergedConfig();
   }
-})();
+};
 
-const nextConfig = {
+// Execute setup
+if (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV) {
+  await setupBuildTime();
+} else {
+  setupDevelopment();
+}
+
+const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'd2p7pge43lyniu.cloudfront.net',
-      'd2g64w682n9w0w.cloudfront.net'
-    ],
+    domains: ['d2p7pge43lyniu.cloudfront.net'],
   },
   experimental: {
-    ppr: false,
-    clientSegmentCache: true,
-    nodeMiddleware: true,
-    // forceSwcTransforms: true,
+    // Remove deprecated/problematic experimental features for Vercel
+    ppr: true,
+    serverComponentsExternalPackages: ['sharp'],
   },
-  // Development environment optimization
-  onDemandEntries: {
-    // Page cache duration in memory (milliseconds)
-    maxInactiveAge: 60 * 1000,
-    // Number of pages to preload simultaneously
-    pagesBufferLength: 5,
-  },
-  // Disable type checking in development environment (can significantly improve compilation speed)
+  // Remove deprecated options
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Disable ESLint checking in development environment
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Optimize Webpack configuration
+  // Add output configuration for Vercel
+  output: 'standalone',
+  // Optimize for serverless
+  poweredByHeader: false,
+  compress: true,
+  // Webpack configuration
   webpack: (config: any, { isServer, dev }: WebpackConfigContext) => {
-    if (isServer) {
-      const cryptoExternal = { 'node:crypto': 'commonjs crypto' };
-
-      if (Array.isArray(config.externals)) {
-        config.externals.push(cryptoExternal);
-      } else if (typeof config.externals === 'object' && config.externals !== null) {
-        Object.assign(config.externals, cryptoExternal);
-      } else if (!config.externals) { 
-        config.externals = [cryptoExternal];
-      } else { 
-        config.externals = [config.externals, cryptoExternal];
-      }
-    } else {
-      // Client Polyfills
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        // 'node:crypto': require.resolve('crypto-browserify') // temporarily commented out
-      };
-      
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        crypto: require.resolve('crypto-browserify'),
-        stream: require.resolve('stream-browserify'),
-        buffer: require.resolve('buffer/'),
-      };
-    }
-
-    // Ensure language files and permission configs are merged before building
-    if (!dev) {
+    // Only modify entry in development
+    if (dev) {
       const originalEntry = config.entry;
       config.entry = async () => {
         const entries = await originalEntry();
-        await mergeAllLocales().catch(console.error);
-        await permissionCollector.generateMergedConfig().catch(console.error);
+        try {
+          await mergeAllLocales();
+          await permissionCollector.generateMergedConfig();
+        } catch (error) {
+          console.error("Entry setup failed:", error);
+        }
         return entries;
       };
     }
+
     return config;
   },
 };

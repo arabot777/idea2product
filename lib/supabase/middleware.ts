@@ -1,9 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
-import { getCachedUser } from "@/lib/auth/session-cache";
-import { ApiResponse } from "@/lib/types/api.bean";
-import { checkApiPermission, checkPagePermission } from "@/lib/permission/guards/server";
-import { RejectAction } from "@/lib/types/permission/permission-config.dto";
+import { UserContext } from "@/lib/types/auth/user-context.bean";
+import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-config.dto";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
+
+const UN_USER_CONTEXT = {
+  id: null,
+  roles: [],
+  authStatus: AuthStatus.ANONYMOUS,
+  activeStatus: ActiveStatus.INACTIVE,
+};
+
+const ROUTE_PERMISSIONS = {
+  public: ["/login", "/not-found", "/unauthorized", "privacy", "terms", "auto-login", "confirm", "forgot-password", "login", "register", "subscribe-plan"],
+  admin: ["/admin", "/admin/*"],
+};
 
 /**
  * Create Supabase client and update session
@@ -35,8 +47,57 @@ export async function createSupabaseMiddlewareClient(request: NextRequest) {
   return { supabase, response };
 }
 
-function warpNextReqest(request: NextRequest, headers: Headers): NextRequest {
-  return new NextRequest(request.url, { ...request, headers });
+export async function getSessionUser(supabase: SupabaseClient): Promise<UserContext> {
+  try {
+    const supabaseClient = supabase || (await createClient());
+
+    // Get current session information
+    const {
+      data: { session: currentSession },
+    } = await supabaseClient.auth.getSession();
+
+    if (!currentSession) {
+      return UN_USER_CONTEXT;
+    }
+    const userContext = {
+      id: currentSession.user.id,
+      roles: currentSession.user.role?.split(",") || [],
+      authStatus: AuthStatus.AUTHENTICATED,
+      activeStatus: ActiveStatus.INACTIVE,
+    };
+
+    // Check if session refresh is needed
+    // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
+    const needsRefresh = currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
+
+    if (needsRefresh) {
+      const refreshResult = await supabaseClient.auth.refreshSession();
+      if (refreshResult.error) {
+        console.log("Failed to refresh session:", refreshResult.error);
+        return userContext;
+      }
+    }
+    return userContext;
+  } catch (error: any) {
+    console.error("Unexpected error in getCachedUser:", error.message || error);
+    return UN_USER_CONTEXT;
+  }
+}
+
+export function isBasicRoute(path: string, routes: string[]) {
+  for (const route of routes) {
+    if (route.endsWith("*")) {
+      const realRoute = route.slice(0, -1);
+      if (path.startsWith(realRoute)) {
+        return true;
+      }
+    } else {
+      if (path === route) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
@@ -46,32 +107,24 @@ function warpNextReqest(request: NextRequest, headers: Headers): NextRequest {
  */
 export async function updateSessionAndAuth(request: NextRequest) {
   const { supabase, response } = await createSupabaseMiddlewareClient(request);
-
-  const { userContext } = await getCachedUser(supabase);
+  const userContext = await getSessionUser(supabase);
   const path = request.nextUrl.pathname;
   const method = request.method;
 
-  if (path.startsWith("/api")) {
-    const result = await checkApiPermission(path, method, userContext);
-    if (!result.allowed) {
-      const apiResponse: ApiResponse<any> = {
-        success: false,
-        error: {
-          code: "PERMISSION_DENIED",
-          message: result.reason || "Permission denied",
-        },
-      };
-      return NextResponse.json(apiResponse, { status: 401 });
+  if (method === "GET") {
+    if (isBasicRoute(path, ROUTE_PERMISSIONS.public)) {
+      return response;
     }
-    return response;
-  } else {
-    const result = await checkPagePermission(path, userContext);
-    if (!result.allowed) {
-      if (result.rejectAction == RejectAction.REDIRECT && (!userContext || userContext.authStatus !== "authenticated")) {
-        return NextResponse.redirect(new URL("/login", request.url));
+
+    if (isBasicRoute(path, ROUTE_PERMISSIONS.admin)) {
+      if (userContext.roles.includes("system_admin")) {
+        return response;
       }
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
-    return response;
+    if (userContext.authStatus !== AuthStatus.AUTHENTICATED) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
+  return response;
 }
