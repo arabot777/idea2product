@@ -2,8 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-// @ts-ignore
-import { removeBackground } from '@imgly/background-removal';
+// 移除缓慢的背景移除库，使用自定义实现
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -36,16 +35,47 @@ import {
   getLocalizedText 
 } from './constants';
 import { TaskStatus } from '@/lib/types/task/enum.bean';
-// 水印组件
+// 增强防盗水印组件
 const Watermark = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations('HomePage.idPhoto');
   return (
     <div className="relative">
       {children}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/10 pointer-events-none">
-        <div className="absolute bottom-2 right-2 text-xs text-white/60 font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+      {/* 多层水印防护 */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* 中心大水印 */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div 
+            className="text-white/15 font-bold text-4xl transform rotate-45 select-none"
+            style={{ 
+              textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+              fontFamily: 'Arial, sans-serif'
+            }}
+          >
           {t('watermark')}
         </div>
+        </div>
+        
+        {/* 重复水印网格 - 增加数量 */}
+        <div className="absolute inset-0 opacity-10">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-white/40 text-sm font-semibold transform rotate-12 select-none"
+              style={{
+                left: `${(i % 5) * 20 + 10}%`,
+                top: `${Math.floor(i / 5) * 25 + 12}%`,
+                textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+              }}
+            >
+              {t('watermark')}
+            </div>
+          ))}
+        </div>
+        
+        {/* 渐变遮罩增强防截图 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-tl from-green-500/3 via-transparent to-red-500/3"></div>
       </div>
     </div>
   );
@@ -228,6 +258,7 @@ export default function IdPhotoPage() {
   // 全局状态管理
   const [currentBackgroundColor, setCurrentBackgroundColor] = useState<string | null>(null); // 当前选择的背景色
   const [isInLayoutMode, setIsInLayoutMode] = useState(false); // 是否为排版模式
+  const [showCutoutPreview, setShowCutoutPreview] = useState(true); // 显示抠图预览，默认展示
   
   // 图片上传和处理状态
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -361,62 +392,327 @@ export default function IdPhotoPage() {
     toast.success(t('uploadSuccess'));
   };
 
-  // 前端移除背景
+  // 高效的背景移除和替换系统 - 参考成功案例重新设计
+  const BackgroundProcessor = {
+    // 高级人像分割算法 - 基于边缘检测和区域生长
+    async smartCutout(imageUrl: string): Promise<string> {
+      const img = await createImage(imageUrl);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) throw new Error('Canvas context not available');
+      
+        canvas.width = img.width;
+        canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      // 使用多步骤处理获得更好的抠图效果
+      const processedData = await this.advancedMatting(imageData);
+      
+      ctx.putImageData(processedData, 0, 0);
+      return canvas.toDataURL('image/png');
+    },
+
+    // 高级抠图算法 - 结合多种技术
+    async advancedMatting(imageData: ImageData): Promise<ImageData> {
+      const { data, width, height } = imageData;
+      const result = new ImageData(width, height);
+      const resultData = result.data;
+      
+      // 复制原始数据
+      for (let i = 0; i < data.length; i++) {
+        resultData[i] = data[i];
+      }
+      
+      // 步骤1: 边缘检测预处理
+      const edges = this.detectEdges(data, width, height);
+      
+      // 步骤2: 肤色检测
+      const skinMask = this.detectSkin(data, width, height);
+      
+      // 步骤3: 背景区域识别
+      const backgroundMask = this.identifyBackground(data, width, height);
+      
+      // 步骤4: 区域生长算法
+      const foregroundMask = this.regionGrowing(data, width, height, skinMask, backgroundMask);
+      
+      // 步骤5: 边缘优化
+      const refinedMask = this.refineEdges(foregroundMask, edges, width, height);
+      
+      // 步骤6: 应用mask
+      for (let i = 0; i < width * height; i++) {
+        const alpha = refinedMask[i];
+        resultData[i * 4 + 3] = alpha; // 设置透明度
+      }
+      
+      return result;
+    },
+
+    // 边缘检测 - Sobel算子
+    detectEdges(data: Uint8ClampedArray, width: number, height: number): Uint8Array {
+      const edges = new Uint8Array(width * height);
+      const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
+      const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+      
+      for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+          let gx = 0, gy = 0;
+          
+          for (let ky = -1; ky <= 1; ky++) {
+            for (let kx = -1; kx <= 1; kx++) {
+              const idx = ((y + ky) * width + (x + kx)) * 4;
+              const gray = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+              const kernelIdx = (ky + 1) * 3 + (kx + 1);
+              
+              gx += gray * sobelX[kernelIdx];
+              gy += gray * sobelY[kernelIdx];
+            }
+          }
+          
+          const magnitude = Math.sqrt(gx * gx + gy * gy);
+          edges[y * width + x] = Math.min(255, magnitude);
+        }
+      }
+      
+      return edges;
+    },
+
+    // 肤色检测 - HSV色彩空间
+    detectSkin(data: Uint8ClampedArray, width: number, height: number): Uint8Array {
+      const skinMask = new Uint8Array(width * height);
+      
+      for (let i = 0; i < width * height; i++) {
+        const r = data[i * 4];
+        const g = data[i * 4 + 1];
+        const b = data[i * 4 + 2];
+        
+        // RGB转HSV
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const delta = max - min;
+        
+        let h = 0;
+        if (delta !== 0) {
+          if (max === r) h = ((g - b) / delta) % 6;
+          else if (max === g) h = (b - r) / delta + 2;
+          else h = (r - g) / delta + 4;
+        }
+        h = (h * 60 + 360) % 360;
+        
+        const s = max === 0 ? 0 : delta / max;
+        const v = max / 255;
+        
+        // 肤色范围检测
+        const isSkin = (h >= 0 && h <= 50) || (h >= 340 && h <= 360);
+        const saturationOk = s >= 0.2 && s <= 0.8;
+        const valueOk = v >= 0.4 && v <= 0.95;
+        
+        skinMask[i] = (isSkin && saturationOk && valueOk) ? 255 : 0;
+      }
+      
+      return skinMask;
+    },
+
+    // 背景识别 - 基于边缘采样和颜色聚类
+    identifyBackground(data: Uint8ClampedArray, width: number, height: number): Uint8Array {
+      const backgroundMask = new Uint8Array(width * height);
+      
+      // 采样边缘区域的颜色
+      const edgeColors: number[][] = [];
+      const sampleSize = Math.min(width, height) / 20;
+      
+      // 采样四边
+      for (let i = 0; i < width; i += Math.floor(width / sampleSize)) {
+        // 上边
+        const topIdx = i * 4;
+        edgeColors.push([data[topIdx], data[topIdx + 1], data[topIdx + 2]]);
+        
+        // 下边
+        const bottomIdx = ((height - 1) * width + i) * 4;
+        edgeColors.push([data[bottomIdx], data[bottomIdx + 1], data[bottomIdx + 2]]);
+      }
+      
+      for (let i = 0; i < height; i += Math.floor(height / sampleSize)) {
+        // 左边
+        const leftIdx = (i * width) * 4;
+        edgeColors.push([data[leftIdx], data[leftIdx + 1], data[leftIdx + 2]]);
+        
+        // 右边
+        const rightIdx = (i * width + width - 1) * 4;
+        edgeColors.push([data[rightIdx], data[rightIdx + 1], data[rightIdx + 2]]);
+      }
+      
+      // 计算主要背景色
+      const avgBgColor = this.averageColor(edgeColors);
+      
+      // 标记相似的像素为背景
+      for (let i = 0; i < width * height; i++) {
+        const r = data[i * 4];
+        const g = data[i * 4 + 1];
+        const b = data[i * 4 + 2];
+        
+        const similarity = this.colorSimilarity([r, g, b], avgBgColor);
+        backgroundMask[i] = similarity > 0.8 ? 255 : 0;
+      }
+      
+      return backgroundMask;
+    },
+
+    // 区域生长算法
+    regionGrowing(data: Uint8ClampedArray, width: number, height: number, 
+                  skinMask: Uint8Array, backgroundMask: Uint8Array): Uint8Array {
+      const foregroundMask = new Uint8Array(width * height);
+      const visited = new Uint8Array(width * height);
+      
+      // 初始化种子点（肤色区域作为前景种子）
+      const seeds: number[] = [];
+      for (let i = 0; i < width * height; i++) {
+        if (skinMask[i] > 128) {
+          foregroundMask[i] = 255;
+          seeds.push(i);
+        } else if (backgroundMask[i] > 128) {
+          foregroundMask[i] = 0;
+        } else {
+          foregroundMask[i] = 128; // 未确定
+        }
+      }
+      
+      // 区域生长
+      while (seeds.length > 0) {
+        const currentIdx = seeds.shift()!;
+        const x = currentIdx % width;
+        const y = Math.floor(currentIdx / width);
+        
+        if (visited[currentIdx]) continue;
+        visited[currentIdx] = 1;
+        
+        // 检查8邻域
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            
+            const nx = x + dx;
+            const ny = y + dy;
+            
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+              const neighborIdx = ny * width + nx;
+              
+              if (!visited[neighborIdx] && foregroundMask[neighborIdx] === 128) {
+                // 计算颜色相似度
+                const currentColor = [
+                  data[currentIdx * 4],
+                  data[currentIdx * 4 + 1],
+                  data[currentIdx * 4 + 2]
+                ];
+                const neighborColor = [
+                  data[neighborIdx * 4],
+                  data[neighborIdx * 4 + 1],
+                  data[neighborIdx * 4 + 2]
+                ];
+                
+                const similarity = this.colorSimilarity(currentColor, neighborColor);
+                
+                if (similarity > 0.7) {
+                  foregroundMask[neighborIdx] = foregroundMask[currentIdx];
+                  seeds.push(neighborIdx);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // 处理未确定的像素
+      for (let i = 0; i < width * height; i++) {
+        if (foregroundMask[i] === 128) {
+          foregroundMask[i] = 0; // 默认为背景
+        }
+      }
+      
+      return foregroundMask;
+    },
+
+    // 边缘优化 - 基于边缘信息细化mask
+    refineEdges(mask: Uint8Array, edges: Uint8Array, width: number, height: number): Uint8Array {
+      const refined = new Uint8Array(mask.length);
+      
+      for (let i = 0; i < mask.length; i++) {
+        const edgeStrength = edges[i] / 255;
+        
+        if (mask[i] > 128) {
+          // 前景区域，在边缘处适当降低透明度
+          refined[i] = Math.max(128, 255 - edgeStrength * 127);
+        } else {
+          // 背景区域，在边缘处可能有前景
+          refined[i] = Math.min(127, edgeStrength * 127);
+        }
+      }
+      
+      return refined;
+    },
+
+    // 计算平均颜色
+    averageColor(colors: number[][]): number[] {
+      if (colors.length === 0) return [128, 128, 128];
+      
+      const sum = colors.reduce((acc, color) => [
+        acc[0] + color[0],
+        acc[1] + color[1],
+        acc[2] + color[2]
+      ], [0, 0, 0]);
+      
+      return [
+        Math.round(sum[0] / colors.length),
+        Math.round(sum[1] / colors.length),
+        Math.round(sum[2] / colors.length)
+      ];
+    },
+
+    // 计算颜色相似度
+    colorSimilarity(color1: number[], color2: number[]): number {
+      const dr = Math.abs(color1[0] - color2[0]);
+      const dg = Math.abs(color1[1] - color2[1]);
+      const db = Math.abs(color1[2] - color2[2]);
+      
+      const distance = Math.sqrt(dr * dr + dg * dg + db * db);
+      const maxDistance = Math.sqrt(255 * 255 * 3);
+      
+      return 1 - (distance / maxDistance);
+    },
+
+    // 快速背景替换（直接替换而不抠图）
+    async fastBackgroundReplace(imageUrl: string, newColor: string): Promise<string> {
+      const img = await createImage(imageUrl);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) throw new Error('Canvas context not available');
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // 填充新背景色
+      ctx.fillStyle = newColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+      // 绘制原图（如果是透明图，会叠加在新背景上）
+          ctx.drawImage(img, 0, 0);
+      
+      return canvas.toDataURL('image/jpeg', 0.95);
+    }
+  };
+
+  // 新的背景移除函数
   const handleRemoveBackground = async (imageUrl: string): Promise<string> => {
     try {
       setIsRemovingBackground(true);
       
-      // 检查图片URL是否有跨域问题
-      let imageData;
+      // 使用自定义的快速抠图算法
+      const result = await BackgroundProcessor.smartCutout(imageUrl);
+      return result;
       
-      if (imageUrl.startsWith('data:')) {
-        // 如果是base64数据，直接使用
-        const response = await fetch(imageUrl);
-        imageData = await response.blob();
-      } else {
-        // 如果是外部URL，需要通过代理或转换
-        try {
-          const response = await fetch(imageUrl, {
-            mode: 'cors',
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-            }
-          });
-          imageData = await response.blob();
-        } catch (corsError) {
-          // 如果跨域失败，尝试通过canvas转换
-          const img = document.createElement('img');
-          img.crossOrigin = 'anonymous';
-          
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = imageUrl;
-          });
-          
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx?.drawImage(img, 0, 0);
-          
-          imageData = await new Promise<Blob>((resolve) => {
-            canvas.toBlob((blob) => {
-              resolve(blob!);
-            }, 'image/jpeg', 0.95);
-          });
-        }
-      }
-      
-      // 使用blob进行背景移除
-      const imageBlob = await removeBackground(imageData);
-      
-      // 转换为base64 URL
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(imageBlob);
-      });
     } catch (error) {
       console.error('背景移除失败:', error);
       throw error;
@@ -425,32 +721,10 @@ export default function IdPhotoPage() {
     }
   };
 
-  // 前端替换背景色（用于透明背景图片）
-  const applyBackgroundColor = (imageUrl: string, backgroundColor: string): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = document.createElement('img');
-      
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // 填充背景色
-        if (ctx) {
-          ctx.fillStyle = backgroundColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // 绘制图片（如果是透明背景会叠加在新背景上）
-          ctx.drawImage(img, 0, 0);
-        }
-        
-        resolve(canvas.toDataURL('image/jpeg', 0.9));
-      };
-      
-      img.crossOrigin = 'anonymous';
-      img.src = imageUrl;
-    });
+  // 优化的背景色应用函数
+  const applyBackgroundColor = async (imageUrl: string, backgroundColor: string): Promise<string> => {
+    // 使用快速背景替换
+    return await BackgroundProcessor.fastBackgroundReplace(imageUrl, backgroundColor);
   };
 
   // 统一的图片更新函数 - 处理规格、排版、背景色的联动
@@ -464,15 +738,16 @@ export default function IdPhotoPage() {
       // 确定当前设置
       const currentSpec = newSpec || selectedSpec;
       const currentLayout = newLayoutSize !== undefined ? newLayoutSize : (isInLayoutMode ? selectedLayoutSize : null);
-      const currentBgColor = newBackgroundColor || currentBackgroundColor;
+      const currentBgColor = newBackgroundColor !== undefined ? newBackgroundColor : currentBackgroundColor;
       const baseImage = sourceImage || originalProcessedImage;
       
       if (!baseImage) return;
       
-      // 步骤1: 获取基础图片（原图或抠图结果）
+      // 步骤1: 确定工作图片
       let workingImage = baseImage;
-      if (currentBgColor && removedBackgroundImage) {
-        // 如果有选择背景色且有抠图结果，使用抠图结果
+      
+      // 如果有抠图结果，优先使用抠图结果
+      if (removedBackgroundImage) {
         workingImage = removedBackgroundImage;
       }
       
@@ -480,7 +755,7 @@ export default function IdPhotoPage() {
       const croppedImg = await cropToSelectedSpec(workingImage, currentSpec);
       setCroppedForSpec(croppedImg);
       
-      // 步骤3: 应用背景色（如果有）
+      // 步骤3: 应用背景色（如果有背景色且有抠图结果）
       let finalImage = croppedImg;
       if (currentBgColor && removedBackgroundImage) {
         finalImage = await applyBackgroundColor(croppedImg, currentBgColor);
@@ -498,7 +773,7 @@ export default function IdPhotoPage() {
       // 步骤5: 更新状态
       setProcessedImage(finalImage);
       if (newSpec) setSelectedSpec(newSpec);
-      if (newBackgroundColor) setCurrentBackgroundColor(newBackgroundColor);
+      if (newBackgroundColor !== undefined) setCurrentBackgroundColor(newBackgroundColor);
       
     } catch (error) {
       console.error('图片更新失败:', error);
@@ -719,7 +994,9 @@ export default function IdPhotoPage() {
     }
   };
 
-  // 修复：改进下载功能，解决跨域问题
+
+
+  // 下载功能，不添加水印
   const handleDownloadWithSpec = async () => {
     if (!processedImage) {
       toast.error(t('noDownloadImage'));
@@ -741,33 +1018,33 @@ export default function IdPhotoPage() {
         Math.abs(img.width - size.width) < 50 && Math.abs(img.height - size.height) < 50
       );
 
-      let downloadSpec, filename;
+      let finalImageUrl, filename;
       
       if (isLayoutImage) {
-        // 如果是排版图片，使用排版尺寸下载
+        // 排版图片直接下载
         const currentLayoutSize = LAYOUT_SIZES.find(size => 
           Math.abs(img.width - size.width) < 50 && Math.abs(img.height - size.height) < 50
         ) || selectedLayoutSize;
         
-        downloadSpec = { width: currentLayoutSize.width, height: currentLayoutSize.height };
+        finalImageUrl = processedImage;
         filename = `id-photo-layout-${getLocalizedText(t, currentLayoutSize, currentLayoutSize.name)}-${Date.now()}.jpg`;
       } else {
-        // 单张图片，使用选择的规格尺寸
-        const targetRatio = selectedSpec.width / selectedSpec.height;
-        const imageRatio = img.width / img.height;
+        // 单张图片处理
+      const targetRatio = selectedSpec.width / selectedSpec.height;
+      const imageRatio = img.width / img.height;
         const isSquare = Math.abs(targetRatio - 1) < 0.1;
-        
-        let cropWidth, cropHeight, cropX, cropY;
-        
-        if (imageRatio > targetRatio) {
-          cropHeight = img.height;
-          cropWidth = cropHeight * targetRatio;
-          cropX = (img.width - cropWidth) / 2;
-          cropY = 0;
-        } else {
-          cropWidth = img.width;
-          cropHeight = cropWidth / targetRatio;
-          cropX = 0;
+      
+      let cropWidth, cropHeight, cropX, cropY;
+      
+      if (imageRatio > targetRatio) {
+        cropHeight = img.height;
+        cropWidth = cropHeight * targetRatio;
+        cropX = (img.width - cropWidth) / 2;
+        cropY = 0;
+      } else {
+        cropWidth = img.width;
+        cropHeight = cropWidth / targetRatio;
+        cropX = 0;
           
           if (isSquare) {
             cropY = img.height * 0.05;
@@ -775,63 +1052,34 @@ export default function IdPhotoPage() {
               cropY = img.height - cropHeight;
             }
           } else {
-            cropY = (img.height - cropHeight) / 2;
+        cropY = (img.height - cropHeight) / 2;
           }
-        }
-
-        // 创建canvas用于调整到指定尺寸
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = selectedSpec.width;
-        canvas.height = selectedSpec.height;
-        
-        ctx?.drawImage(
-          img,
-          cropX, cropY, cropWidth, cropHeight,
-          0, 0, selectedSpec.width, selectedSpec.height
-        );
-
-        const imageBlob = await new Promise<Blob>((resolve) => {
-          canvas.toBlob((blob) => {
-            resolve(blob!);
-          }, 'image/jpeg', 0.95);
-        });
-
-        const url = URL.createObjectURL(imageBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `id-photo-${getLocalizedText(t, selectedSpec, selectedSpec.name)}-${selectedSpec.width}x${selectedSpec.height}-${Date.now()}.jpg`;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        toast.success(t('downloadSuccess'));
-        return;
       }
 
-      // 排版图片直接下载
-      const imageBlob = await new Promise<Blob>((resolve) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = downloadSpec.width;
-        canvas.height = downloadSpec.height;
-        ctx?.drawImage(img, 0, 0);
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, 'image/jpeg', 0.95);
-      });
+        // 创建裁剪后的图片
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = selectedSpec.width;
+      canvas.height = selectedSpec.height;
+      
+      ctx?.drawImage(
+        img,
+        cropX, cropY, cropWidth, cropHeight,
+        0, 0, selectedSpec.width, selectedSpec.height
+      );
 
-      const url = URL.createObjectURL(imageBlob);
+        finalImageUrl = canvas.toDataURL('image/jpeg', 0.95);
+        filename = `id-photo-${getLocalizedText(t, selectedSpec, selectedSpec.name)}-${selectedSpec.width}x${selectedSpec.height}-${Date.now()}.jpg`;
+      }
+
+      // 下载无水印的图片
       const link = document.createElement('a');
-      link.href = url;
+      link.href = finalImageUrl;
       link.download = filename;
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
       
       toast.success(t('downloadSuccess'));
     } catch (error) {
@@ -899,50 +1147,52 @@ export default function IdPhotoPage() {
                           <div>
                             <div className={`font-medium text-sm ${activeTab === 'idPhotoMaker' ? 'text-gray-800' : 'text-gray-600'}`}>
                               {t('idPhotoMaker')}
-                            </div>
-                            <div className="text-xs text-gray-600">{t('aiPhotoGeneration')}</div>
                           </div>
+                            <div className="text-xs text-gray-600">{t('aiPhotoGeneration')}</div>
                         </div>
                       </div>
+                      </div>
                       
-                      {/* 背景替换 */}
-                      <div 
-                        onClick={() => {
-                          if (!processedImage) return;
-                          setActiveTab('backgroundReplace');
-                        }}
-                        className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                          activeTab === 'backgroundReplace' && processedImage
-                            ? 'border-green-500 bg-green-50/80 shadow-md' 
-                            : processedImage
-                            ? 'border-gray-200 bg-gray-50/40 hover:bg-white/60'
-                            : 'border-gray-200 bg-gray-50/40 opacity-60 cursor-not-allowed'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Palette className={`w-5 h-5 ${
+                      {/* 背景替换 - 暂时隐藏 */}
+                      {false && (
+                        <div 
+                          onClick={() => {
+                            if (!processedImage) return;
+                            setActiveTab('backgroundReplace');
+                          }}
+                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                             activeTab === 'backgroundReplace' && processedImage
-                              ? 'text-green-600' 
-                              : processedImage 
-                              ? 'text-gray-600' 
-                              : 'text-gray-400'
-                          }`} />
-                          <div>
-                            <div className={`font-medium text-sm ${
+                              ? 'border-green-500 bg-green-50/80 shadow-md' 
+                              : processedImage
+                              ? 'border-gray-200 bg-gray-50/40 hover:bg-white/60'
+                              : 'border-gray-200 bg-gray-50/40 opacity-60 cursor-not-allowed'
+                          }`}
+                        >
+                        <div className="flex items-center gap-3">
+                            <Palette className={`w-5 h-5 ${
                               activeTab === 'backgroundReplace' && processedImage
-                                ? 'text-gray-800' 
+                                ? 'text-green-600' 
                                 : processedImage 
                                 ? 'text-gray-600' 
                                 : 'text-gray-400'
-                            }`}>
-                              {t('backgroundReplace')}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              {processedImage ? t('frontendProcessing') : t('needGenerateFirst')}
-                            </div>
+                            }`} />
+                          <div>
+                              <div className={`font-medium text-sm ${
+                                activeTab === 'backgroundReplace' && processedImage
+                                  ? 'text-gray-800' 
+                                  : processedImage 
+                                  ? 'text-gray-600' 
+                                  : 'text-gray-400'
+                              }`}>
+                                {t('backgroundReplace')}
                           </div>
+                              <div className="text-xs text-gray-600">
+                                {processedImage ? t('frontendProcessing') : t('needGenerateFirst')}
                         </div>
                       </div>
+                          </div>
+                        </div>
+                      )}
                       
                       {/* 尺寸调整 */}
                       <div 
@@ -975,14 +1225,14 @@ export default function IdPhotoPage() {
                                 : 'text-gray-400'
                             }`}>
                               {t('sizeAdjust')}
-                            </div>
+                          </div>
                             <div className="text-xs text-gray-600">
                               {processedImage ? t('selectPhotoSpecs') : t('needGenerateFirst')}
-                            </div>
-                          </div>
                         </div>
                       </div>
-                      
+                    </div>
+                  </div>
+
                       {/* 排版设计 */}
                       <div 
                         onClick={() => {
@@ -1060,83 +1310,7 @@ export default function IdPhotoPage() {
                     </div>
                   )}
 
-                  {/* 背景替换功能 */}
-                  {activeTab === 'backgroundReplace' && processedImage && (
-                    <div className="border-t pt-4">
-                      <div className="space-y-3">
-                                                  <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Label className="text-sm font-medium text-gray-700">{t('backgroundReplace')}</Label>
-                            </div>
-                          <Button
-                            size="sm"
-                            onClick={async () => {
-                              try {
-                                // 使用原始处理图片进行抠图，确保获得最好的抠图效果
-                                const imageToRemoveBg = originalProcessedImage || processedImage;
-                                const removedBg = await handleRemoveBackground(imageToRemoveBg);
-                                setRemovedBackgroundImage(removedBg);
-                                toast.success(t('backgroundRemovalSuccess'));
-                              } catch (error) {
-                                toast.error(t('backgroundRemovalFailed'));
-                              }
-                            }}
-                            disabled={isRemovingBackground}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            {isRemovingBackground ? (
-                              <>
-                                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                {t('cutoutInProgress')}
-                              </>
-                            ) : (
-                              <>
-                                <Wand2 className="w-3 h-3 mr-1" />
-                                {t('oneClickCutout')}
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                        
-                        {removedBackgroundImage && (
-                          <>
-                            <div className="grid grid-cols-4 gap-2">
-                              {FRONTEND_BACKGROUNDS.map((color: any) => (
-                                <div key={color.value} className="space-y-1">
-                                  <div
-                                    onClick={async () => {
-                                      // 使用统一的更新函数，应用新背景色
-                                      if (removedBackgroundImage) {
-                                        await updateImageWithCurrentSettings(undefined, undefined, undefined, color.value);
-                                      }
-                                    }}
-                                    className={`w-full h-6 rounded cursor-pointer border transition-all duration-200 ${
-                                      currentBackgroundColor === color.value
-                                        ? 'border-green-500 ring-2 ring-green-500/30 scale-105'
-                                        : 'border-gray-300 hover:border-gray-400'
-                                    }`}
-                                    style={{ backgroundColor: color.value }}
-                                  >
-                                    {currentBackgroundColor === color.value && (
-                                      <div className="w-full h-full flex items-center justify-center">
-                                        <Check className="w-3 h-3" style={{ color: color.textColor }} />
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="text-center text-xs text-gray-600">{getLocalizedText(t, color, color.name)}</div>
-                                </div>
-                              ))}
-                            </div>
-                            <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                              {t('tipFrontendFaster')}
-                              <br />
-                              <span className="text-green-600">✓ {t('supportLayoutBackground')}</span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  {/* 背景替换功能 - 已隐藏 */}
 
                   {/* 尺寸调整功能 */}
                   {activeTab === 'sizeAdjust' && processedImage && (
@@ -1164,31 +1338,31 @@ export default function IdPhotoPage() {
                                                 {/* 规格列表 */}
                         <div className="space-y-1">
                           {ID_PHOTO_CATEGORIES[selectedCategory as keyof typeof ID_PHOTO_CATEGORIES]?.specs.map((spec) => (
-                            <div
-                              key={spec.id}
+                                <div
+                                  key={spec.id}
                               onClick={async () => {
                                 // 使用统一的更新函数，保持当前的排版和背景设置
                                 await updateImageWithCurrentSettings(undefined, spec);
-                              }}
+                                  }}
                               className={`p-2 rounded cursor-pointer transition-all duration-200 border ${
-                                selectedSpec.id === spec.id
+                                    selectedSpec.id === spec.id
                                   ? 'border-purple-500 bg-purple-50/80 shadow-sm'
-                                  : 'border-gray-200 bg-white/40 hover:bg-white/60'
-                              }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div>
+                                      : 'border-gray-200 bg-white/40 hover:bg-white/60'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div>
                                   <div className="font-medium text-gray-900 text-xs">{getLocalizedText(t, spec, spec.name)}</div>
-                                  <div className="text-xs text-gray-600">{spec.description}</div>
-                                </div>
-                                {selectedSpec.id === spec.id && (
+                                      <div className="text-xs text-gray-600">{spec.description}</div>
+                                    </div>
+                                    {selectedSpec.id === spec.id && (
                                   <Check className="w-3 h-3 text-purple-600" />
-                                )}
-                              </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
                     </div>
                   )}
 
@@ -1197,10 +1371,10 @@ export default function IdPhotoPage() {
                     <div className="border-t pt-4">
                       <div className="space-y-3">
                         <Label className="text-sm font-medium text-gray-700">{t('paperLayout')}</Label>
-                        <div className="space-y-2">
+                          <div className="space-y-2">
                           {/* 移除排版选项 */}
-                          <div
-                            onClick={async () => {
+                                  <div
+                                    onClick={async () => {
                               // 移除排版，返回单张图片
                               await updateImageWithCurrentSettings(undefined, undefined, null);
                               toast.success(t('backToOriginal'));
@@ -1215,9 +1389,9 @@ export default function IdPhotoPage() {
                                <div>
                                  <div className="font-medium text-gray-900 text-sm">{t('singlePhoto')}</div>
                                  <div className="text-xs text-gray-600">{t('removeLayout')}</div>
-                               </div>
+                                      </div>
                                <RotateCcw className="w-4 h-4 text-blue-600" />
-                             </div>
+                                  </div>
                           </div>
                           
                           {LAYOUT_SIZES.map((size) => (
@@ -1241,12 +1415,12 @@ export default function IdPhotoPage() {
                                     </div>
                                     <Settings className="w-4 h-4 text-orange-600" />
                                   </div>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
                         <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
                           {t('tipAutoLayout')}
-                        </div>
+                          </div>
                         
 
                       </div>
@@ -1391,18 +1565,18 @@ export default function IdPhotoPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                                              onClick={() => {
-                                setIsUploaded(false);
-                                setUploadedImage(null);
-                                setProcessedImage(null);
+                                onClick={() => {
+                                  setIsUploaded(false);
+                                  setUploadedImage(null);
+                                  setProcessedImage(null);
                                 setOriginalProcessedImage(null);
                                 setRemovedBackgroundImage(null);
-                                setCroppedImage(null);
+                                  setCroppedImage(null);
                                 setCroppedForSpec(null); // 重置规格裁剪图片
                                 setCurrentBackgroundColor(null); // 重置背景色
                                 setIsInLayoutMode(false); // 重置排版模式
-                                setHasStartedProcessing(false); // 重置处理状态
-                              }}
+                                  setHasStartedProcessing(false); // 重置处理状态
+                                }}
                                 className="bg-white/80 backdrop-blur-md border-white/60 hover:bg-white text-gray-700"
                               >
                                 {t('reupload')}
@@ -1413,14 +1587,14 @@ export default function IdPhotoPage() {
                         <div className="min-h-96 max-h-[500px] bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden">
                           {(croppedImage || uploadedImage) ? (
                             <div className="w-full h-full p-4 flex items-center justify-center">
-                              <Image
-                                src={croppedImage || uploadedImage || ''}
-                                alt="Original Image"
-                                width={400}
-                                height={500}
+                            <Image
+                              src={croppedImage || uploadedImage || ''}
+                              alt="Original Image"
+                              width={400}
+                              height={500}
                                 className="max-w-full max-h-full object-contain rounded-lg shadow-md"
                                 priority
-                              />
+                            />
                             </div>
                           ) : (
                             <div className="text-center text-gray-500 py-8">
@@ -1444,7 +1618,7 @@ export default function IdPhotoPage() {
                         <Label className="text-sm font-medium text-gray-700">
                           {t('idPhotoResult')}
                         </Label>
-                                                  <div className="relative">
+                        <div className="relative">
                             <div className="w-full min-h-96 max-h-[900px] bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/60 overflow-hidden relative">
                             {isProcessing ? (
                               <div className="text-center space-y-4 py-8">
@@ -1477,14 +1651,14 @@ export default function IdPhotoPage() {
                               <div className="w-full h-full p-4 flex items-center justify-center">
                                 <Watermark>
                                   <div className="relative max-w-full max-h-full flex items-center justify-center">
-                                    <Image
-                                      src={processedImage || ''}
-                                      alt="Processing Result"
-                                      width={400}
-                                      height={500}
+                                  <Image
+                                    src={processedImage || ''}
+                                    alt="Processing Result"
+                                    width={400}
+                                    height={500}
                                       className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                                       priority
-                                    />
+                                  />
                                   </div>
                                 </Watermark>
                               </div>
@@ -1499,9 +1673,9 @@ export default function IdPhotoPage() {
                           {/* 尺寸说明和操作按钮区域 */}
                           {processedImage && (
                             <div className="space-y-3">
-                              <DimensionInfo 
-                                spec={selectedSpec}
-                                show={true}
+                            <DimensionInfo 
+                              spec={selectedSpec}
+                              show={true}
                                 t={t}
                               />
                               
@@ -1535,23 +1709,23 @@ export default function IdPhotoPage() {
                   <div className="flex gap-4 mt-6">
                     {/* 生成按钮 - 只在证件照制作tab显示 */}
                     {activeTab === 'idPhotoMaker' && (
-                      <Button
-                        onClick={handleProcess}
-                        disabled={!uploadedImage || isProcessing}
+                    <Button
+                      onClick={handleProcess}
+                      disabled={!uploadedImage || isProcessing}
                         className={`h-11 ${processedImage ? 'flex-1' : 'flex-1'} bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium shadow-lg hover:shadow-blue-500/25 transition-all duration-300 disabled:opacity-50`}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            {t('generating')} {generationProgress > 0 && `${generationProgress}%`}
-                          </>
-                        ) : (
-                          <>
-                            <Wand2 className="w-4 h-4 mr-2" />
-                            {t('generateIdPhoto')}
-                          </>
-                        )}
-                      </Button>
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {t('generating')} {generationProgress > 0 && `${generationProgress}%`}
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-4 h-4 mr-2" />
+                          {t('generateIdPhoto')}
+                        </>
+                      )}
+                    </Button>
                     )}
                     
                     {/* 下载按钮 - 有图片时显示 */}

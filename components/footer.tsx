@@ -12,50 +12,51 @@ export default function Footer() {
     {
       title: t('aiTools.title'),
       links: [
-        { name: t('aiTools.photoRepair'), href: '/photo-repair' },
-        { name: t('aiTools.qualityEnhance'), href: '/quality-enhance' },
-        { name: t('aiTools.textEnhance'), href: '/text-enhance' },
-        { name: t('aiTools.pngEnhance'), href: '/png-enhance' },
-        { name: t('aiTools.colorize'), href: '/colorize' },
-        { name: t('aiTools.animeRestore'), href: '/anime-restore' }
+        { name: t('aiTools.idPhoto'), href: '/id-photo' },
+        // { name: t('aiTools.photoRepair'), href: '/photo-repair' },
+        // { name: t('aiTools.qualityEnhance'), href: '/quality-enhance' },
+        // { name: t('aiTools.textEnhance'), href: '/text-enhance' },
+        // { name: t('aiTools.pngEnhance'), href: '/png-enhance' },
+        // { name: t('aiTools.colorize'), href: '/colorize' },
+        // { name: t('aiTools.animeRestore'), href: '/anime-restore' }
       ]
     },
-    {
-      title: t('aiEcommerce.title'),
-      links: [
-        { name: t('aiEcommerce.cutout'), href: '/ai-cutout' },
-        { name: t('aiEcommerce.eraser'), href: '/eraser' },
-        { name: t('aiEcommerce.logo'), href: '/ai-logo' },
-        { name: t('aiEcommerce.poster'), href: '/ai-poster' },
-        { name: t('aiEcommerce.inpainting'), href: '/inpainting' },
-        { name: t('aiEcommerce.backgroundCompose'), href: '/background-compose' }
-      ]
-    },
-    {
-      title: t('otherTools.title'),
-      links: [
-        { name: t('otherTools.scratchRemoval'), href: '/scratch-removal' },
-        { name: t('otherTools.sharpen'), href: '/sharpen' },
-        { name: t('otherTools.avatarCutout'), href: '/avatar-cutout' },
-        { name: t('otherTools.aiDrawing'), href: '/ai-drawing' },
-        { name: t('otherTools.aiPortrait'), href: '/ai-portrait' },
-        { name: t('otherTools.aiFilter'), href: '/ai-filter' },
-        { name: t('otherTools.compress'), href: '/compress' },
-        { name: t('otherTools.formatConvert'), href: '/format-convert' },
-        { name: t('otherTools.deblur'), href: '/deblur' }
-      ]
-    },
-    {
-      title: t('api.title'),
-      links: [
-        { name: t('api.aiImage'), href: '/api/ai-image' },
-        { name: t('api.aiVideo'), href: '/api/ai-video' }
-      ]
-    },
+    // {
+    //   title: t('aiEcommerce.title'),
+    //   links: [
+    //     { name: t('aiEcommerce.cutout'), href: '/ai-cutout' },
+    //     { name: t('aiEcommerce.eraser'), href: '/eraser' },
+    //     { name: t('aiEcommerce.logo'), href: '/ai-logo' },
+    //     { name: t('aiEcommerce.poster'), href: '/ai-poster' },
+    //     { name: t('aiEcommerce.inpainting'), href: '/inpainting' },
+    //     { name: t('aiEcommerce.backgroundCompose'), href: '/background-compose' }
+    //   ]
+    // },
+    // {
+    //   title: t('otherTools.title'),
+    //   links: [
+    //     { name: t('otherTools.scratchRemoval'), href: '/scratch-removal' },
+    //     { name: t('otherTools.sharpen'), href: '/sharpen' },
+    //     { name: t('otherTools.avatarCutout'), href: '/avatar-cutout' },
+    //     { name: t('otherTools.aiDrawing'), href: '/ai-drawing' },
+    //     { name: t('otherTools.aiPortrait'), href: '/ai-portrait' },
+    //     { name: t('otherTools.aiFilter'), href: '/ai-filter' },
+    //     { name: t('otherTools.compress'), href: '/compress' },
+    //     { name: t('otherTools.formatConvert'), href: '/format-convert' },
+    //     { name: t('otherTools.deblur'), href: '/deblur' }
+    //   ]
+    // },
+    // {
+    //   title: t('api.title'),
+    //   links: [
+    //     { name: t('api.aiImage'), href: '/api/ai-image' },
+    //     { name: t('api.aiVideo'), href: '/api/ai-video' }
+    //   ]
+    // },
     {
       title: t('support.title'),
       links: [
-        { name: t('support.qa'), href: '/qa' },
+        // { name: t('support.qa'), href: '/qa' },
         { name: t('support.about'), href: '/about' },
         { name: t('support.terms'), href: '/terms' },
         { name: t('support.userAgreement'), href: '/user-agreement' },

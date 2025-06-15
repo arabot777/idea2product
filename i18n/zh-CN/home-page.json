@@ -50,11 +50,27 @@
     "bigOneInch": {
       "name": "大一寸",
       "description": "大一寸证件照"
+    },
+    "passport": {
+      "name": "护照照",
+      "description": "护照专用证件照"
+    },
+    "visa": {
+      "name": "签证照",
+      "description": "签证申请证件照"
+    },
+    "driver": {
+      "name": "驾照照",
+      "description": "驾驶证专用照片"
+    },
+    "student": {
+      "name": "学生照",
+      "description": "学生证件照"
     }
   },
   "categories": {
-    "title": "证件照类型",
-    "subtitle": "满足各种场景需求，一键生成专业证件照",
+    "title": "AI智能证件照制作",
+    "subtitle": "一键将生活照转换为专业证件照，支持多种规格和背景",
     "professional": "专业品质",
     "classic": {
       "name": "经典证件照",
@@ -76,6 +92,52 @@
       "name": "亲子照",
       "description": "适合家庭、亲子关系证明的证件照"
     }
+  },
+  "showcase": {
+    "beforeAfter": {
+      "before": "普通生活照",
+      "after": "专业证件照",
+      "beforeIssues": {
+        "background": "背景杂乱",
+        "size": "尺寸不标准", 
+        "lighting": "光线不均匀"
+      },
+      "afterFeatures": {
+        "background": "专业背景",
+        "size": "标准尺寸",
+        "lighting": "完美光线"
+      }
+    },
+    "useCases": {
+      "anyPhoto": {
+        "title": "任意生活照都可转换",
+        "subtitle": "上传任何生活照片，AI自动识别人像",
+        "types": {
+          "selfie": "自拍照",
+          "travel": "旅游照", 
+          "party": "聚会照"
+        },
+        "feature": "智能抠图，精确识别人像轮廓"
+      },
+      "multiFormat": {
+        "title": "多种背景尺寸选择",
+        "subtitle": "一键切换背景色和证件照规格",
+        "backgrounds": "红底、蓝底、白底等多种背景",
+        "sizes": {
+          "oneInch": "一寸",
+          "twoInch": "二寸"
+        },
+        "feature": "支持50+种证件照规格，满足各种需求"
+      }
+    },
+    "scenarios": {
+      "title": "适用场景",
+      "subtitle": "覆盖各种证件照使用场景"
+    }
+  },
+  "common": {
+    "startNow": "立即开始",
+    "makeIdPhoto": "立即制作证件照"
   },
   "steps": {
     "title": "三步制作证件照",
@@ -277,6 +339,20 @@
     "aiBackgroundColor": "AI生图背景色",
     "backgroundReplace": "背景替换",
     "oneClickCutout": "一键抠图",
+    "cutoutMode": "抠图模式",
+    "smartMode": "智能模式",
+    "fastMode": "快速模式",
+    "smartCutout": "智能抠图",
+    "prepareReplace": "准备替换",
+    "cutoutPreview": "抠图预览",
+    "showPreview": "显示预览",
+    "hidePreview": "隐藏预览",
+    "originalImage": "原始图像",
+    "cutoutResult": "抠图结果",
+    "newBackground": "新背景效果",
+    "cutoutComplete": "抠图完成",
+    "backgroundChanged": "背景已更换为",
+    "backgroundChangeFailed": "背景更换失败",
     "sizeAdjust": "尺寸调整",
     "layoutArrange": "排版设计",
     "photoSpecs": "证件照规格",

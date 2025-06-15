@@ -50,11 +50,27 @@
     "bigOneInch": {
       "name": "Large 1-Inch",
       "description": "Large 1-inch ID photo"
+    },
+    "passport": {
+      "name": "Passport Photo",
+      "description": "Passport-specific ID photo"
+    },
+    "visa": {
+      "name": "Visa Photo",
+      "description": "Visa application ID photo"
+    },
+    "driver": {
+      "name": "Driver's License Photo",
+      "description": "Driver's license specific photo"
+    },
+    "student": {
+      "name": "Student Photo",
+      "description": "Student ID photo"
     }
   },
   "categories": {
-    "title": "ID Photo Categories",
-    "subtitle": "Professional photos for all your needs",
+    "title": "AI Smart ID Photo Creation",
+    "subtitle": "Transform any casual photo into professional ID photos with multiple formats and backgrounds",
     "professional": "Professional Quality",
     "classic": {
       "name": "Classic ID Photos",
@@ -76,6 +92,53 @@
       "name": "Family Photos",
       "description": "Suitable for family and parent-child relationship documentation"
     }
+  },
+  "showcase": {
+    "beforeAfter": {
+      "before": "Casual Photo",
+      "after": "Professional ID Photo",
+      "beforeIssues": {
+        "background": "Messy Background",
+        "size": "Non-standard Size", 
+        "lighting": "Uneven Lighting"
+      },
+      "afterFeatures": {
+        "aistrong": "AI Enhancement",
+        "background": "Professional Background",
+        "size": "Standard Size",
+        "lighting": "Perfect Lighting"
+      }
+    },
+    "useCases": {
+      "anyPhoto": {
+        "title": "Any Casual Photo Can Be Converted",
+        "subtitle": "Upload any casual photo, AI automatically identifies portraits",
+        "types": {
+          "selfie": "Selfie",
+          "travel": "Travel Photo", 
+          "party": "Party Photo"
+        },
+        "feature": "Smart cutout with precise portrait recognition"
+      },
+      "multiFormat": {
+        "title": "Multiple Background & Size Options",
+        "subtitle": "One-click switching between background colors and ID photo formats",
+        "backgrounds": "Red, blue, white and other background options",
+        "sizes": {
+          "oneInch": "1-Inch",
+          "twoInch": "2-Inch"
+        },
+        "feature": "Support 50+ ID photo formats to meet various needs"
+      }
+    },
+    "scenarios": {
+      "title": "Application Scenarios",
+      "subtitle": "Covering various ID photo use cases"
+    }
+  },
+  "common": {
+    "startNow": "Start Now",
+    "makeIdPhoto": "Create ID Photo Now"
   },
   "steps": {
     "title": "How It Works",
@@ -129,7 +192,7 @@
       "comment": "Used for job resume, AI cutout is very precise and the background is very clean!"
     }
   },
-  "stats": {
+  "status": {
     "totalUsers": "Total Users",
     "rating": "User Rating",
     "successRate": "Success Rate",
@@ -167,6 +230,7 @@
     "renewal": "Renewal",
     "aiTools": {
       "title": "AI Quality Enhancement Tools",
+      "idPhoto": "AI ID Photo",
       "photoRepair": "Damaged Photo Repair",
       "qualityEnhance": "Professional Quality Enhancement",
       "textEnhance": "Text Enhancement",
@@ -211,10 +275,6 @@
     },
     "copyright": "© 2024 AI ID Photo. All rights reserved.",
     "language": "Language"
-  },
-  "common": {
-    "error": "An error occurred, please try again",
-    "startNow": "Start Now"
   },
   "idPhoto": {
     "title": "AI ID Photo Generator",
@@ -287,6 +347,20 @@
     "backgroundReplace": "Background Replace",
     "cutoutInProgress": "Removing background...",
     "oneClickCutout": "One-Click Cutout",
+    "cutoutMode": "Cutout Mode",
+    "smartMode": "Smart Mode",
+    "fastMode": "Fast Mode",
+    "smartCutout": "Smart Cutout",
+    "prepareReplace": "Prepare Replace",
+    "cutoutPreview": "Cutout Preview",
+    "showPreview": "Show Preview",
+    "hidePreview": "Hide Preview",
+    "originalImage": "Original Image",
+    "cutoutResult": "Cutout Result",
+    "newBackground": "New Background",
+    "cutoutComplete": "Cutout Complete",
+    "backgroundChanged": "Background changed to",
+    "backgroundChangeFailed": "Background change failed",
     "tipAutoLayout": "💡 Tip: Automatically calculates optimal layout, placing multiple photos on one sheet",
     "tipFrontendFaster": "💡 Tip: Click colors to instantly replace background without regeneration",
     "backgroundRemovalSuccess": "Background removed successfully",
@@ -355,7 +429,6 @@
       "darkGreen": "Dark Green",
       "lightPink": "Light Pink"
     },
-   
     "singlePhoto": "Single Photo",
     "removeLayout": "Remove layout, show single photo",
     "supportLayoutBackground": "Support layout background replacement"
