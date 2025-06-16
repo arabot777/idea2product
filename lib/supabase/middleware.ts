@@ -28,6 +28,7 @@ const ROUTE_PERMISSIONS = {
     "/forgot-password",
     "/register",
     "/subscribe-plan",
+    "/id-photo",
   ],
   admin: ["/admin", "/admin/*"],
 };
