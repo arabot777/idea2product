@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
-import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-config.dto";
+import {
+  AuthStatus,
+  ActiveStatus,
+} from "@/lib/types/permission/permission-config.dto";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,7 +16,19 @@ const UN_USER_CONTEXT = {
 };
 
 const ROUTE_PERMISSIONS = {
-  public: ["/", "/login", "/not-found", "/unauthorized", "privacy", "terms", "auto-login", "confirm", "forgot-password", "login", "register", "subscribe-plan"],
+  public: [
+    "/",
+    "/login",
+    "/not-found",
+    "/unauthorized",
+    "/privacy",
+    "/terms",
+    "/auto-login",
+    "/confirm",
+    "/forgot-password",
+    "/register",
+    "/subscribe-plan",
+  ],
   admin: ["/admin", "/admin/*"],
 };
 
@@ -29,25 +44,35 @@ export async function createSupabaseMiddlewareClient(request: NextRequest) {
     },
   });
 
-  const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
       },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
-        response = NextResponse.next({
-          request,
-        });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
-      },
-    },
-  });
+    }
+  );
   // await supabase.auth.getSession();
   return { supabase, response };
 }
 
-export async function getSessionUser(supabase: SupabaseClient): Promise<UserContext> {
+export async function getSessionUser(
+  supabase: SupabaseClient
+): Promise<UserContext> {
   try {
     const supabaseClient = supabase || (await createClient());
 
@@ -68,7 +93,10 @@ export async function getSessionUser(supabase: SupabaseClient): Promise<UserCont
 
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
-    const needsRefresh = currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
+    const needsRefresh =
+      currentSession.expires_at &&
+      new Date(currentSession.expires_at * 1000).getTime() - Date.now() <
+        10 * 60 * 1000;
 
     if (needsRefresh) {
       const refreshResult = await supabaseClient.auth.refreshSession();
