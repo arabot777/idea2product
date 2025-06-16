@@ -41,6 +41,43 @@ async function calculateCookieMD5(supabase: SupabaseClient) {
   return cookieString ? calculateMD5(cookieString) : null;
 }
 
+export async function getSessionUser(supabase: SupabaseClient): Promise<UserContext> {
+  try {
+    const supabaseClient = supabase || (await createClient());
+
+    // Get current session information
+    const {
+      data: { session: currentSession },
+    } = await supabaseClient.auth.getSession();
+
+    if (!currentSession) {
+      return UN_USER_CONTEXT;
+    }
+    const userContext = {
+      id: currentSession.user.id,
+      roles: currentSession.user.role?.split(",") || [],
+      authStatus: AuthStatus.AUTHENTICATED,
+      activeStatus: ActiveStatus.INACTIVE,
+    };
+
+    // Check if session refresh is needed
+    // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
+    const needsRefresh = currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
+
+    if (needsRefresh) {
+      const refreshResult = await supabaseClient.auth.refreshSession();
+      if (refreshResult.error) {
+        console.log("Failed to refresh session:", refreshResult.error);
+        return userContext;
+      }
+    }
+    return userContext;
+  } catch (error: any) {
+    console.error("Unexpected error in getCachedUser:", error.message || error);
+    return UN_USER_CONTEXT;
+  }
+}
+
 // Get user information from session
 export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userContext: UserContext; user: Session["user"] | null }> {
   try {
@@ -87,9 +124,10 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
       refreshError = refreshResult.error;
 
       if (refreshError) {
-        return { userContext: UN_USER_CONTEXT, user: null };
+        console.log("Failed to refresh session:", refreshError);
+      }else{
+        await cache.set(cookieMD5Key, refreshedSession, SESSION_CACHE_TTL);
       }
-      await cache.set(cookieMD5Key, refreshedSession, SESSION_CACHE_TTL);
     }
 
     if (!refreshedSession) {

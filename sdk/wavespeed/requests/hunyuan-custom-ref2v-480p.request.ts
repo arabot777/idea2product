@@ -14,9 +14,8 @@ const HunyuanCustomRef2v480pSchema = z.object({
 
 export class HunyuanCustomRef2v480pRequest extends BaseRequest<typeof HunyuanCustomRef2v480pSchema> {
   protected schema = HunyuanCustomRef2v480pSchema;
-  protected data: z.infer<typeof HunyuanCustomRef2v480pSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt: string,
     negative_prompt?: string,
@@ -26,8 +25,8 @@ export class HunyuanCustomRef2v480pRequest extends BaseRequest<typeof HunyuanCus
     seed?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new HunyuanCustomRef2v480pRequest();
+    request.data = {
       image,
       prompt,
       ...(negative_prompt !== undefined && { negative_prompt }),
@@ -37,7 +36,7 @@ export class HunyuanCustomRef2v480pRequest extends BaseRequest<typeof HunyuanCus
       ...(seed !== undefined && { seed }),
       ...(enable_safety_checker !== undefined && { enable_safety_checker }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -48,13 +47,13 @@ export class HunyuanCustomRef2v480pRequest extends BaseRequest<typeof HunyuanCus
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
    
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

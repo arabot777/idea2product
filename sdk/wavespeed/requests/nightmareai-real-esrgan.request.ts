@@ -9,12 +9,11 @@ const NightmareaiRealEsrganSchema = z.object({
 
 export class NightmareaiRealEsrganRequest extends BaseRequest<typeof NightmareaiRealEsrganSchema> {
   protected schema = NightmareaiRealEsrganSchema;
-  protected data: z.infer<typeof NightmareaiRealEsrganSchema>;
-
-  constructor(image: string, guidance_scale?: number, face_enhance?: boolean) {
-    super();
-    this.data = { image, guidance_scale, face_enhance };
-    
+  
+  static create(image: string, guidance_scale?: number, face_enhance?: boolean) {
+    const request = new NightmareaiRealEsrganRequest();
+    request.data = { image, guidance_scale, face_enhance };
+    return request;
   }
 
   getModelUuid(): string {
@@ -25,12 +24,12 @@ export class NightmareaiRealEsrganRequest extends BaseRequest<typeof Nightmareai
     return "image-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

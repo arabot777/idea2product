@@ -20,9 +20,8 @@ const Wan21V2v720pSchema = z.object({
 
 export class Wan21V2v720pRequest extends BaseRequest<typeof Wan21V2v720pSchema> {
   protected schema = Wan21V2v720pSchema;
-  protected data: z.infer<typeof Wan21V2v720pSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     video: string,
     duration: number = 5,
@@ -34,8 +33,8 @@ export class Wan21V2v720pRequest extends BaseRequest<typeof Wan21V2v720pSchema> 
     seed: number = -1,
     strength: number = 0.9
   ) {
-    super();
-    this.data = {
+    const request = new Wan21V2v720pRequest();
+    request.data = {
       prompt,
       video,
       duration,
@@ -47,6 +46,7 @@ export class Wan21V2v720pRequest extends BaseRequest<typeof Wan21V2v720pSchema> 
       seed,
       strength,
     };
+    return request;
   }
 
   getModelUuid(): string {
@@ -56,14 +56,14 @@ export class Wan21V2v720pRequest extends BaseRequest<typeof Wan21V2v720pSchema> 
   getModelType(): string {
     return "video-to-video";
   }
-  static getDefaultParams(): Record<string, any> {
+  getDefaultParams(): Record<string, any> {
     return {
       duration: 5,
       num_inference_steps: 30,
     };
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

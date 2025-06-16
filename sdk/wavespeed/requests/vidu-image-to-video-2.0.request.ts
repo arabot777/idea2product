@@ -11,24 +11,23 @@ const ViduImageToVideo20Schema = z.object({
 
 export class ViduImageToVideo20Request extends BaseRequest<typeof ViduImageToVideo20Schema> {
   protected schema = ViduImageToVideo20Schema;
-  protected data: z.infer<typeof ViduImageToVideo20Schema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt: string,
     duration?: 4 | 8,
     movement_amplitude?: "auto" | "small" | "medium" | "large",
     seed?: number
   ) {
-    super();
-    this.data = {
+    const request = new ViduImageToVideo20Request();
+    request.data = {
       image,
       prompt,
       ...(duration !== undefined && { duration }),
       ...(movement_amplitude !== undefined && { movement_amplitude }),
       ...(seed !== undefined && { seed }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -39,13 +38,13 @@ export class ViduImageToVideo20Request extends BaseRequest<typeof ViduImageToVid
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 4,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/4";
   }
 }

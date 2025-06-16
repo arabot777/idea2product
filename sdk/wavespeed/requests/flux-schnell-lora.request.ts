@@ -23,9 +23,8 @@ const FluxSchnellLoraSchema = z.object({
 
 export class FluxSchnellLoraRequest extends BaseRequest<typeof FluxSchnellLoraSchema> {
   protected schema = FluxSchnellLoraSchema;
-  protected data: z.infer<typeof FluxSchnellLoraSchema>;
-
-  constructor(params: {
+  
+  static create(params: {
     prompt: string;
     image?: string;
     mask_image?: string;
@@ -39,8 +38,9 @@ export class FluxSchnellLoraRequest extends BaseRequest<typeof FluxSchnellLoraSc
     enable_base64_output?: boolean;
     enable_safety_checker?: boolean;
   }) {
-    super();
-    this.data = this.schema.parse(params);
+    const request = new FluxSchnellLoraRequest();
+    request.updateValue(params);
+    return request;
   }
 
   getModelUuid(): string {
@@ -51,14 +51,14 @@ export class FluxSchnellLoraRequest extends BaseRequest<typeof FluxSchnellLoraSc
     return "text-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 4,
       num_images: 1,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "num_images";
   }
 }

@@ -8,6 +8,8 @@ import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { ProfileQuery } from "@/lib/db/crud/auth/profile.query";
 import { NewProfile } from "@/lib/db/schemas/auth/profile";
 import { getTranslations } from 'next-intl/server';
+import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
+
 const t = await getTranslations('AuthAutoLogin');
 
 export async function autoLogin(
@@ -80,13 +82,20 @@ export async function autoLogin(
       email: authData.user.email,
       full_name: authData.user.user_metadata.full_name,
       roles: [],
+      unibeeExternalId: undefined,
     };
 
     if (existingProfile) {
+      await unibeeSyncUser(existingProfile).catch((error) => {
+        console.error("unibeeSyncUser error", error);
+      });
       // If profile exists, update it
       const [updatedProfile] = await ProfileEdit.update(authData.user.id, profileData);
       profileDTO = ProfileMapper.toDTO(updatedProfile);
     } else {
+      await unibeeSyncUser(profileData).catch((error) => {
+        console.error("unibeeSyncUser error", error);
+      });
       // Otherwise create a new profile
       const [createdProfile] = await ProfileEdit.create(profileData as NewProfile);
       profileDTO = ProfileMapper.toDTO(createdProfile);

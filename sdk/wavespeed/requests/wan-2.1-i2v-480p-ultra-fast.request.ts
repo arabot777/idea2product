@@ -16,12 +16,11 @@ const Wan21I2v480pUltraFastSchema = z.object({
 
 export class Wan21I2v480pUltraFastRequest extends BaseRequest<typeof Wan21I2v480pUltraFastSchema> {
   protected schema = Wan21I2v480pUltraFastSchema;
-  protected data: z.infer<typeof Wan21I2v480pUltraFastSchema>;
-
-  constructor(image: string, prompt: string, negative_prompt?: string, size?: '832*480' | '480*832', num_inference_steps?: number, duration?: number, guidance_scale?: number, flow_shift?: number, seed?: number, enable_safety_checker?: boolean) {
-    super();
-    this.data = { image, prompt, negative_prompt, size, num_inference_steps, duration, guidance_scale, flow_shift, seed, enable_safety_checker };
-    
+  
+  static create(image: string, prompt: string, negative_prompt?: string, size?: '832*480' | '480*832', num_inference_steps?: number, duration?: number, guidance_scale?: number, flow_shift?: number, seed?: number, enable_safety_checker?: boolean) {
+    const request = new Wan21I2v480pUltraFastRequest();
+    request.data = { image, prompt, negative_prompt, size, num_inference_steps, duration, guidance_scale, flow_shift, seed, enable_safety_checker };
+    return request;
   }
 
   getModelUuid(): string {
@@ -31,14 +30,14 @@ export class Wan21I2v480pUltraFastRequest extends BaseRequest<typeof Wan21I2v480
   getModelType(): string {
     return "image-to-video";
   }
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

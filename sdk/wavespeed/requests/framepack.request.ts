@@ -16,9 +16,8 @@ const FramepackSchema = z.object({
 
 export class FramepackRequest extends BaseRequest<typeof FramepackSchema> {
   protected schema = FramepackSchema;
-  protected data: z.infer<typeof FramepackSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt: string,
     negative_prompt?: string,
@@ -30,7 +29,7 @@ export class FramepackRequest extends BaseRequest<typeof FramepackSchema> {
     guidance_scale?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
+    const request = new FramepackRequest();
     const rawData = {
       image,
       prompt,
@@ -43,8 +42,8 @@ export class FramepackRequest extends BaseRequest<typeof FramepackSchema> {
       guidance_scale,
       enable_safety_checker,
     };
-    this.data = this.schema.parse(rawData);
-    
+    request.updateValue(rawData);
+    return request;
   }
 
   getModelUuid(): string {
@@ -55,14 +54,14 @@ export class FramepackRequest extends BaseRequest<typeof FramepackSchema> {
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_frames: 180,
       num_inference_steps: 25,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

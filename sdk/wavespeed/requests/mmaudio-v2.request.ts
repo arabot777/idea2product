@@ -14,9 +14,8 @@ const MmaudioV2Schema = z.object({
 
 export class MmaudioV2Request extends BaseRequest<typeof MmaudioV2Schema> {
   protected schema = MmaudioV2Schema;
-  protected data: z.infer<typeof MmaudioV2Schema>;
-
-  constructor(
+  
+  static create(
     video: string,
     prompt: string,
     negative_prompt?: string,
@@ -26,8 +25,8 @@ export class MmaudioV2Request extends BaseRequest<typeof MmaudioV2Schema> {
     guidance_scale?: number,
     mask_away_clip?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new MmaudioV2Request();
+    request.data = {
       video,
       prompt,
       ...(negative_prompt !== undefined && { negative_prompt }),
@@ -37,7 +36,7 @@ export class MmaudioV2Request extends BaseRequest<typeof MmaudioV2Schema> {
       ...(guidance_scale !== undefined && { guidance_scale }),
       ...(mask_away_clip !== undefined && { mask_away_clip }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -48,14 +47,14 @@ export class MmaudioV2Request extends BaseRequest<typeof MmaudioV2Schema> {
     return "video-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 8,
       num_inference_steps: 25,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

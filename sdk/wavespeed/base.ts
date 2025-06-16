@@ -1,12 +1,14 @@
-import { z, type ZodType, type ZodError } from 'zod';
-
+import { z, type ZodType, type ZodError } from "zod";
 /**
  * Base class for all API models
  */
 export abstract class BaseModel<TSchema extends ZodType> {
   protected abstract schema: TSchema;
-  protected abstract data: z.infer<TSchema>;
+  protected data: z.infer<TSchema>;
 
+  constructor() {
+    this.data = {};
+  }
   /**
    * Get the validated data
    */
@@ -14,20 +16,26 @@ export abstract class BaseModel<TSchema extends ZodType> {
     return this.data;
   }
 
+  updateValue(value: Record<string, any>): void {
+    Object.assign(this.data, value);
+  }
+
   /**
    * Convert model to plain object
    */
-  toJSON(): Record<string, unknown> {
-    return this.data as Record<string, unknown>;
+  toJSON(): Record<string, any> {
+    return this.data as Record<string, any>;
   }
-
 
   /**
    * Validates the model data.
    * @throws {ZodError} If validation fails
    */
   validate(): void {
-    this.schema.safeParse(this.data);
+    const result = this.schema.safeParse(this.data);
+    if (!result.success) {
+      throw result.error;
+    }
   }
 
   /**
@@ -38,10 +46,10 @@ export abstract class BaseModel<TSchema extends ZodType> {
     try {
       this.validate();
       return { success: true };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error as ZodError
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error as ZodError,
       };
     }
   }
@@ -49,6 +57,10 @@ export abstract class BaseModel<TSchema extends ZodType> {
   abstract getModelUuid(): string;
 
   abstract getModelType(): string;
+
+  abstract getDefaultParams(): Record<string, any>;
+
+  abstract getFeatureCalculator(): string;
 }
 
 /**

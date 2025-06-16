@@ -13,9 +13,8 @@ const SkyReelsV1Schema = z.object({
 
 export class SkyReelsV1Request extends BaseRequest<typeof SkyReelsV1Schema> {
   protected schema = SkyReelsV1Schema;
-  protected data: z.infer<typeof SkyReelsV1Schema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image: string,
     seed?: number,
@@ -24,8 +23,8 @@ export class SkyReelsV1Request extends BaseRequest<typeof SkyReelsV1Schema> {
     negative_prompt?: string,
     aspect_ratio?: "16:9" | "9:16"
   ) {
-    super();
-    this.data = {
+    const request = new SkyReelsV1Request();
+    request.data = {
       prompt,
       image,
       seed,
@@ -34,7 +33,7 @@ export class SkyReelsV1Request extends BaseRequest<typeof SkyReelsV1Schema> {
       negative_prompt,
       aspect_ratio: aspect_ratio === undefined ? "16:9" : aspect_ratio
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -45,13 +44,13 @@ export class SkyReelsV1Request extends BaseRequest<typeof SkyReelsV1Schema> {
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

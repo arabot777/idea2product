@@ -13,9 +13,8 @@ const HunyuanVideoI2vSchema = z.object({
 
 export class HunyuanVideoI2vRequest extends BaseRequest<typeof HunyuanVideoI2vSchema> {
   protected schema = HunyuanVideoI2vSchema;
-  protected data: z.infer<typeof HunyuanVideoI2vSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt?: string,
     num_inference_steps?: number,
@@ -24,8 +23,8 @@ export class HunyuanVideoI2vRequest extends BaseRequest<typeof HunyuanVideoI2vSc
     size?: "1280*720" | "720*1280",
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new HunyuanVideoI2vRequest();
+    request.data = {
       image,
       prompt: prompt ?? "A pale vampire woman slowly walks to a candlelit window, her crimson eyes glowing in the dark. She lifts one hand and gently taps her long, sharp nails against the glass. Her expression shifts from seductive to dangerous. Outside, bats flutter past a glowing full moon, casting flickering shadows across her face. The candlelight flickers, reflecting in her eyes as she stares into the night",
       num_inference_steps: num_inference_steps ?? 30,
@@ -34,7 +33,7 @@ export class HunyuanVideoI2vRequest extends BaseRequest<typeof HunyuanVideoI2vSc
       size: size ?? "1280*720",
       enable_safety_checker: enable_safety_checker ?? true,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -45,14 +44,14 @@ export class HunyuanVideoI2vRequest extends BaseRequest<typeof HunyuanVideoI2vSc
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

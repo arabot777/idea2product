@@ -11,12 +11,11 @@ const LtxVideoV097I2v720pSchema = z.object({
 
 export class LtxVideoV097I2v720pRequest extends BaseRequest<typeof LtxVideoV097I2v720pSchema> {
   protected schema = LtxVideoV097I2v720pSchema;
-  protected data: z.infer<typeof LtxVideoV097I2v720pSchema>;
-
-  constructor(image: string, prompt: string, negative_prompt: string = 'worst quality, inconsistent motion, blurry, jittery, distorted', size: '720*1280' | '1280*720' = '1280*720', seed?: number) {
-    super();
-    this.data = { image, prompt, negative_prompt, size, seed };
-    
+  
+  static create(image: string, prompt: string, negative_prompt: string = 'worst quality, inconsistent motion, blurry, jittery, distorted', size: '720*1280' | '1280*720' = '1280*720', seed?: number) {
+    const request = new LtxVideoV097I2v720pRequest();
+    request.data = { image, prompt, negative_prompt, size, seed };
+    return request;
   }
 
   getModelUuid(): string {
@@ -27,13 +26,13 @@ export class LtxVideoV097I2v720pRequest extends BaseRequest<typeof LtxVideoV097I
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
 
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

@@ -12,9 +12,8 @@ const KwaivgiKlingV16I2vProSchema = z.object({
 
 export class KwaivgiKlingV16I2vProRequest extends BaseRequest<typeof KwaivgiKlingV16I2vProSchema> {
   protected schema = KwaivgiKlingV16I2vProSchema;
-  protected data: z.infer<typeof KwaivgiKlingV16I2vProSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     duration?: "5" | "10",
     end_image?: string,
@@ -22,8 +21,8 @@ export class KwaivgiKlingV16I2vProRequest extends BaseRequest<typeof KwaivgiKlin
     negative_prompt?: string,
     prompt?: string
   ) {
-    super();
-    this.data = {
+    const request = new KwaivgiKlingV16I2vProRequest();
+    request.data = {
       image,
       ...(duration !== undefined && { duration }),
       ...(end_image !== undefined && { end_image }),
@@ -31,7 +30,7 @@ export class KwaivgiKlingV16I2vProRequest extends BaseRequest<typeof KwaivgiKlin
       ...(negative_prompt !== undefined && { negative_prompt }),
       ...(prompt !== undefined && { prompt }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -42,13 +41,13 @@ export class KwaivgiKlingV16I2vProRequest extends BaseRequest<typeof KwaivgiKlin
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

@@ -17,7 +17,6 @@ export const updateBillableMetric = dataActionWithPermission(
     try {
       await BillableMetricsEdit.update(metricData.id, {
         ...metricData,
-        featureOnceMax: metricData.featureOnceMax,
       });
       return { success: true, message: "Billable metric updated successfully." };
     } catch (error) {

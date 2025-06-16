@@ -13,7 +13,6 @@ export const BillableMetricMapper = {
       aggregationType: model.aggregationType,
       type: model.type,
       featureCalculator: model.featureCalculator,
-      featureOnceMax: model.featureOnceMax,
       displayDescription: model.displayDescription,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
@@ -30,7 +29,6 @@ export const BillableMetricMapper = {
       aggregationType: dto.aggregationType,
       type: dto.type,
       featureCalculator: dto.featureCalculator,
-      featureOnceMax: dto.featureOnceMax ?? undefined,
       displayDescription: dto.displayDescription,
     };
   },

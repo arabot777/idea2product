@@ -14,9 +14,8 @@ const Hunyuan3dV2MultiViewSchema = z.object({
 
 export class Hunyuan3dV2MultiViewRequest extends BaseRequest<typeof Hunyuan3dV2MultiViewSchema> {
   protected schema = Hunyuan3dV2MultiViewSchema;
-  protected data: z.infer<typeof Hunyuan3dV2MultiViewSchema>;
-
-  constructor(
+  
+  static create(
     front_image_url: string,
     back_image_url: string,
     left_image_url: string,
@@ -28,8 +27,8 @@ export class Hunyuan3dV2MultiViewRequest extends BaseRequest<typeof Hunyuan3dV2M
       textured_mesh?: boolean;
     }
   ) {
-    super();
-    this.data = {
+    const request = new Hunyuan3dV2MultiViewRequest();
+    request.data = {
       front_image_url,
       back_image_url,
       left_image_url,
@@ -39,7 +38,7 @@ export class Hunyuan3dV2MultiViewRequest extends BaseRequest<typeof Hunyuan3dV2M
       octree_resolution: params?.octree_resolution ?? Hunyuan3dV2MultiViewSchema.shape.octree_resolution._def.defaultValue(),
       textured_mesh: params?.textured_mesh ?? Hunyuan3dV2MultiViewSchema.shape.textured_mesh._def.defaultValue(),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -50,13 +49,13 @@ export class Hunyuan3dV2MultiViewRequest extends BaseRequest<typeof Hunyuan3dV2M
     return "image-to-3d";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 50,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

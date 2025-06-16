@@ -39,7 +39,6 @@ export const createBillableMetric = dataActionWithPermission(
       const dbMetricData: NewBillableMetric = {
         ...metricData,
         unibeeExternalId: String(unibeeResponse.data.merchantMetric.id),
-        featureOnceMax: metricData.featureOnceMax,
       };
 
       await BillableMetricsEdit.create(dbMetricData);

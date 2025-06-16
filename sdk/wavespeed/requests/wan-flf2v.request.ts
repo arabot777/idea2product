@@ -47,9 +47,8 @@ const WanFlf2vSchema = z.object({
 
 export class WanFlf2vRequest extends BaseRequest<typeof WanFlf2vSchema> {
   protected schema = WanFlf2vSchema;
-  protected data: z.infer<typeof WanFlf2vSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     start_image: string,
     end_image: string,
@@ -65,8 +64,8 @@ export class WanFlf2vRequest extends BaseRequest<typeof WanFlf2vSchema> {
     enable_prompt_expansion?: boolean,
     aspect_ratio?: "auto" | "1:1" | "9:16" | "16:9"
   ) {
-    super();
-    this.data = {
+    const request = new WanFlf2vRequest();
+    request.data = {
       prompt,
       start_image,
       end_image,
@@ -82,6 +81,7 @@ export class WanFlf2vRequest extends BaseRequest<typeof WanFlf2vSchema> {
       enable_prompt_expansion: enable_prompt_expansion ?? WanFlf2vSchema.shape.enable_prompt_expansion._def.defaultValue(),
       aspect_ratio: aspect_ratio ?? WanFlf2vSchema.shape.aspect_ratio._def.defaultValue(),
     };
+    return request;
   }
 
   getModelUuid(): string {
@@ -91,7 +91,7 @@ export class WanFlf2vRequest extends BaseRequest<typeof WanFlf2vSchema> {
   getModelType(): string {
     return "image-to-video";
   }
-  static getDefaultParams(): Record<string, any> {
+  getDefaultParams(): Record<string, any> {
     return {
       num_frames: 81,
       frames_per_second: 16,
@@ -101,7 +101,7 @@ export class WanFlf2vRequest extends BaseRequest<typeof WanFlf2vSchema> {
     };
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return `(num_frames * (resolution === "720p" ? 1 : 0.5))`;
   }
 }

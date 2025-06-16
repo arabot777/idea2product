@@ -12,12 +12,16 @@ import { Loader2, Download, Share2, Wand2, Upload, Sparkles, AlertCircle } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { FluxDevUltraFastParams, wsFluxDevUltraFast, wsFluxDevUltraFastStatus, TaskInfo } from "@/app/actions/tool/ws-flux-dev-ultra-fast";
+import { toolCall } from "@/app/actions/tool/tool-call";
+import { toolStatus } from "@/app/actions/tool/tool-status";
 import { uploadFile } from "@/app/actions/common/upload";
 import { toast } from "sonner";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-config.dto";
 import { TaskStatus, TaskStatusType, TaskResultStatus, TaskResultType } from "@/lib/types/task/enum.bean";
+import { TaskInfo } from "@/lib/types/task/task.bean";
+import { FluxDevUltraFastRequest } from "@/sdk/wavespeed/requests/flux-dev-ultra-fast.request";
+import { CODE } from "@/lib/unibean/metric-code";
 
 export default function AIGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -67,7 +71,7 @@ export default function AIGenerator() {
     // Set polling interval
     pollingRef.current = setInterval(async () => {
       try {
-        const taskInfo = await wsFluxDevUltraFastStatus(id);
+        const taskInfo = await toolStatus(id);
         setTaskInfo(taskInfo);
 
         if (taskInfo.progress !== undefined) {
@@ -143,24 +147,31 @@ export default function AIGenerator() {
       setGeneratedImages([]);
       setGenerationProgress(0);
 
-      // Build request parameters
-      const params: FluxDevUltraFastParams = {
-        prompt: textPrompt,
-        size: imageSize,
-        num_images: numImages,
-        num_inference_steps: inferenceSteps,
-        guidance_scale: guidanceScale,
-        seed: seed,
-      };
+      const request = FluxDevUltraFastRequest.create(
+        textPrompt,
+        uploadedImage || undefined, // image (convert null to undefined)
+        undefined, // mask_image
+        strength,
+        imageSize,
+        inferenceSteps,
+        seed,
+        guidanceScale,
+        numImages,
+      );
 
-      // If in image-to-image mode, add image parameters
       if (uploadedImage) {
-        params.image = uploadedImage;
-        params.strength = strength;
+        request.updateValue({
+          image: uploadedImage || undefined,
+          strength: strength,
+        });
       }
+ 
 
       // Call Server Action
-      const taskInfo = await wsFluxDevUltraFast(params);
+      const taskInfo = await toolCall({
+        code: CODE.FluxDev,
+        requestData: request.value,
+      });
 
       if (taskInfo.id) {
         setTaskId(taskInfo.id);

@@ -6,7 +6,7 @@ export const response2TaskInfo = (response: WaveSpeedResponse<ModelResult>): Tas
   let status: TaskStatusType = TaskStatus.PENDING;
   let progress: number = 0;
   if (response.data.status === "completed") {
-    status = TaskStatus.TRANSFERING;
+    status = TaskStatus.TRANSFER_START;
     progress = 100;
   } else if (response.data.status === "failed") {
     status = TaskStatus.FAILED;

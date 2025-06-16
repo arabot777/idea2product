@@ -28,9 +28,8 @@ const Wan21I2v480pLoraUltraFastSchema = z.object({
 
 export class Wan21I2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2v480pLoraUltraFastSchema> {
   protected schema = Wan21I2v480pLoraUltraFastSchema;
-  protected data: z.infer<typeof Wan21I2v480pLoraUltraFastSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt: string,
     negative_prompt?: string,
@@ -43,8 +42,8 @@ export class Wan21I2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2
     seed?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new Wan21I2v480pLoraUltraFastRequest();
+    request.data = {
       image,
       prompt,
       negative_prompt: negative_prompt ?? "",
@@ -57,7 +56,7 @@ export class Wan21I2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2
       seed: seed ?? -1,
       enable_safety_checker: enable_safety_checker ?? true,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -67,14 +66,14 @@ export class Wan21I2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2
   getModelType(): string {
     return "image-to-video";
   }
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

@@ -12,9 +12,8 @@ const KwaivgiKlingV20I2vMasterSchema = z.object({
 
 export class KwaivgiKlingV20I2vMasterRequest extends BaseRequest<typeof KwaivgiKlingV20I2vMasterSchema> {
   protected schema = KwaivgiKlingV20I2vMasterSchema;
-  protected data: z.infer<typeof KwaivgiKlingV20I2vMasterSchema>;
-
-  constructor(
+  
+  static create(
     image: string, // Required by input.required
     end_image?: string,
     prompt?: string,
@@ -22,8 +21,8 @@ export class KwaivgiKlingV20I2vMasterRequest extends BaseRequest<typeof KwaivgiK
     guidance_scale?: number,
     duration?: "5" | "10"
   ) {
-    super();
-    this.data = {
+    const request = new KwaivgiKlingV20I2vMasterRequest();
+    request.data = {
       image,
       ...(end_image !== undefined && { end_image }),
       prompt: prompt ?? "Capture a dynamic, high-speed chase scene featuring two motorcycles navigating through a bustling cityscape at night. The camera alternates between close-up shots of the riders' intense expressions, the glowing neon signs of the city, and the sleek lines of the motorcycles as they weave through traffic. The sound of revving engines and the hum of the city create an exhilarating atmosphere.",
@@ -31,7 +30,7 @@ export class KwaivgiKlingV20I2vMasterRequest extends BaseRequest<typeof KwaivgiK
       guidance_scale: guidance_scale ?? 0.5,
       duration: duration ?? "5",
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -42,13 +41,13 @@ export class KwaivgiKlingV20I2vMasterRequest extends BaseRequest<typeof KwaivgiK
     return "text-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

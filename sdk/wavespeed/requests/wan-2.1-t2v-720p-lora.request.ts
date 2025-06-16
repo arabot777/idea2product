@@ -22,9 +22,8 @@ const Wan21T2v720pLoraSchema = z.object({
 
 export class Wan21T2v720pLoraRequest extends BaseRequest<typeof Wan21T2v720pLoraSchema> {
   protected schema = Wan21T2v720pLoraSchema;
-  protected data: z.infer<typeof Wan21T2v720pLoraSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     negative_prompt?: string,
     loras?: z.infer<typeof LoraWeightSchema>[],
@@ -36,20 +35,20 @@ export class Wan21T2v720pLoraRequest extends BaseRequest<typeof Wan21T2v720pLora
     seed?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new Wan21T2v720pLoraRequest();
+    request.data = {
       prompt,
-      negative_prompt,
-      loras,
-      size,
-      num_inference_steps,
-      duration,
-      guidance_scale,
-      flow_shift,
-      seed,
-      enable_safety_checker,
-    } as z.infer<typeof Wan21T2v720pLoraSchema>;
-    
+      negative_prompt: negative_prompt ?? "",
+      loras: loras ?? [],
+      size: size ?? "1280*720",
+      num_inference_steps: num_inference_steps ?? 30,
+      duration: duration ?? 5,
+      guidance_scale: guidance_scale ?? 5,
+      flow_shift: flow_shift ?? 5,
+      seed: seed ?? -1,
+      enable_safety_checker: enable_safety_checker ?? true,
+    };
+    return request;
   }
 
   getModelUuid(): string {
@@ -59,14 +58,14 @@ export class Wan21T2v720pLoraRequest extends BaseRequest<typeof Wan21T2v720pLora
   getModelType(): string {
     return "text-to-video";
   }
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
       num_inference_steps: 30,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

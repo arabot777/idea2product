@@ -19,6 +19,9 @@ import { WaveSpeedResponse, ModelResult } from "@/sdk/wavespeed/types";
 import { Task } from "@/lib/db/schemas/task/task";
 import { NewTaskResult } from "@/lib/db/schemas/task/task-result";
 import { TaskResultsQuery } from "@/lib/db/crud/task/task-results.query";
+import { eventBus } from "@/lib/events/event-bus";
+import { response2TaskInfo } from "@/sdk/wavespeed/task-info-converter";
+import { TaskInfo } from "@/lib/types/task/task.bean";
 
 // Interface for image generation request parameters
 export interface FluxDevUltraFastParams {
@@ -35,43 +38,6 @@ export interface FluxDevUltraFastParams {
   enable_safety_checker?: boolean;
 }
 
-// Interface for task status
-export interface TaskInfo {
-  id: string;
-  status: string;
-  progress?: number;
-  message?: string;
-  result?: any;
-}
-
-const response2TaskInfo = (response: WaveSpeedResponse<ModelResult>): TaskInfo => {
-  let status: TaskStatusType = TaskStatus.PENDING;
-  let progress: number = 0;
-  if (response.data.status === "completed") {
-    status = TaskStatus.COMPLETED;
-    progress = 100;
-  } else if (response.data.status === "failed") {
-    status = TaskStatus.FAILED;
-    progress = 100;
-  } else if (response.data.status === "processing") {
-    status = TaskStatus.PROCESSING;
-    progress = 30;
-  } else if (response.data.status === "created") {
-    status = TaskStatus.PENDING;
-    progress = 15;
-  } else {
-    status = TaskStatus.FAILED;
-    progress = 100;
-  }
-
-  return {
-    id: response.data.id,
-    status: status,
-    progress: progress,
-    result: response.data.status === "completed" ? response.data.outputs : undefined,
-    message: response.data.status === "failed" ? response.data.error : undefined,
-  };
-};
 /**
  * Calls AI image generation function
  * @param params AI image generation parameters
@@ -111,7 +77,7 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
       }
 
       // 2. generate request
-      const request = new FluxDevUltraFastRequest(
+      const request = FluxDevUltraFastRequest.create(
         params.prompt,
         params.image,
         params.mask_image,
@@ -138,7 +104,21 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
       const client = new WaveSpeedClient({
         apiKey,
       });
-
+      // 5. Record task call - consume user quota
+      const recordResult = await taskCallRecord(
+        checkResult.currentRequestAmount!,
+        CODE.FluxDevUltraFast,
+        checkResult.billableMetric as BillableMetric,
+        userContext
+      );
+      if (!recordResult.metricEventId || recordResult.error) {
+        console.error("Failed to record task:", recordResult.error);
+        return {
+          id: "",
+          status: TaskStatus.FAILED,
+          message: "Subscription system error, please try again later",
+        };
+      }
       const task = await TasksEdit.create({
         userId: userContext.id!,
         type: "wsFluxDevUltraFast",
@@ -147,6 +127,8 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
         description: "Process image generation request via WaveSpeed FluxDevUltraFast API",
         progress: 0,
         startedAt: new Date(),
+        externalId: "",
+        externalMetricEventId: recordResult.metricEventId.toString(),
         checkInterval: 5,
         currentRequestAmount: checkResult.currentRequestAmount!,
       });
@@ -155,19 +137,31 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
       const response = await client.postModelCall(request);
 
       if (!response || !response.data || !response.data.id) {
-        // Update task status and data asynchronously
-        Promise.resolve().then(() => {
-          TasksEdit.update(task.id, {
-            status: TaskStatus.FAILED,
-            progress: 100,
-            endedAt: new Date(),
-            message: "Invalid response data",
-          }).catch((err) => console.error("Failed to update task status:", err));
-          TaskDataEdit.create({
+        eventBus.publish({
+          name: "task.update",
+          payload: {
+            task: {
+              id: task.id,
+              status: TaskStatus.FAILED,
+              progress: 100,
+              message: "Invalid response data",
+            },
+          },
+        });
+        eventBus.publish({
+          name: "task.record.data",
+          payload: {
             taskId: task.id,
-            inputData: JSON.stringify(params),
-            outputData: response.data ? JSON.stringify(response.data) : "{}",
-          }).catch((err) => console.error("Failed to create task data:", err));
+            inputData: params,
+            outputData: response.data || {},
+          },
+        });
+        eventBus.publish({
+          name: "task.revoke.call.record",
+          payload: {
+            task: task,
+            userContext: userContext,
+          },
         });
         return {
           id: task.id,
@@ -176,28 +170,12 @@ export const wsFluxDevUltraFast = dataActionWithPermission(
         };
       } else {
         const taskInfo = response2TaskInfo(response);
-
-        // Update task status and data asynchronously
-        Promise.resolve()
-          .then(async () => {
-            // 6. Record task call - consume user quota
-            const recordResult = await taskCallRecord(
-              checkResult.currentRequestAmount!,
-              CODE.FluxDevUltraFast,
-              checkResult.billableMetric as BillableMetric,
-              userContext
-            );
-            if (recordResult.error) {
-              console.error("Failed to record task:", recordResult.error);
-            }
-            await TasksEdit.update(task.id, {
-              status: taskInfo.status,
-              progress: taskInfo.progress,
-              externalId: response.data.id,
-              externalMetricEventId: recordResult.metricEventId.toString(),
-            });
-          })
-          .catch((err) => console.error("Failed to execute:", err));
+        await TasksEdit.update(task.id, {
+          status: taskInfo.status,
+          progress: taskInfo.progress,
+          externalId: response.data.id,
+          externalMetricEventId: recordResult.metricEventId.toString(),
+        }).catch((err) => console.error("Failed to update task status:", err));
       }
       return {
         id: task.id,
@@ -233,111 +211,30 @@ export const wsFluxDevUltraFastStatus = dataActionWithPermission(
           message: "Task does not exist",
         };
       }
-      if (task.status === TaskStatus.COMPLETED || task.status === TaskStatus.FAILED || task.status === TaskStatus.CANCELLED) {
+      let result: string[] | undefined = undefined;
+      if (task.status === TaskStatus.COMPLETED) {
         const taskResult = await TaskResultsQuery.getByTaskId(taskId);
-        return {
-          id: taskId,
-          status: task.status,
-          result:
-            taskResult?.map((result) => {
-              return result.storageUrl;
-            }) || [],
-          progress: task.progress,
-          message: task.message || undefined,
-        };
+        result =
+          taskResult?.map((result) => {
+            return result.storageUrl || "";
+          }) || [];
       }
-      // Check if the task needs to be re-queried
-      if (task.checkedAt) {
-        const now = new Date();
-        const checkedAt = new Date(task.checkedAt);
-        const elapsedMs = now.getTime() - checkedAt.getTime();
-
-        if (elapsedMs < (task.checkInterval || 5000)) {
-          // Within the check interval, return the current status directly
-          return {
-            id: taskId,
-            status: task.status,
-            progress: task.progress,
-            message: task.message || undefined,
-          };
-        }
-      }
-
-      // Get WaveSpeed API Key
-      const apiKey = process.env.WAVESPEED_API_KEY;
-      if (!apiKey) {
-        return {
-          id: taskId,
-          status: TaskStatus.FAILED,
-          message: "WaveSpeed API Key is not configured",
-        };
-      }
-      // Create WaveSpeed client
-      const client = new WaveSpeedClient({
-        apiKey,
-      });
-      // Query task status
-      const response = await client.getTaskStatus(task.externalId || "");
-      if (!response || !response.data) {
-        return {
-          id: taskId,
-          status: task.status,
-          progress: task.progress,
-          message: "Request failed, please try again later",
-        };
-      }
-
-      const taskInfo = response2TaskInfo(response);
-      if (taskInfo.status === "failed" || taskInfo.status === "cancelled" || taskInfo.status === "completed") {
-        Promise.resolve().then(async () => {
-          TasksEdit.update(taskId, {
-            status: taskInfo.status,
-            progress: taskInfo.progress,
-            endedAt: new Date(),
-            message: taskInfo.message,
-          }).catch((err) => console.error("Execute exception:", err));
-          TaskDataEdit.update(taskId, {
-            outputData: JSON.stringify(response.data),
-          }).catch((err) => console.error("Update task data failed:", err));
-          if (taskInfo.status === "failed") {
-            const billableMetric: BillableMetric | undefined = await BillableMetricsQuery.getByCode(CODE.FluxDevUltraFast);
-            taskCallRecordRevoke(parseInt(task?.externalMetricEventId!, 0), task?.currentRequestAmount!, CODE.FluxDevUltraFast, billableMetric!, userContext)
-              .then(() => {
-                console.log("Task record revoked successfully");
-              })
-              .catch((err) => console.error("Task record revoke failed:", err));
-          } else if (taskInfo.status === "completed") {
-            const newResults: NewTaskResult[] =
-              response.data.outputs?.map((output: string, index: number) => {
-                return {
-                  userId: userContext.id!,
-                  taskId: taskId,
-                  parentTaskId: task?.parentTaskId,
-                  type: TaskResultType.IMAGE,
-                  status: response.data.has_nsfw_contents[index] ? TaskResultStatus.REJECTED_NSFW : TaskResultStatus.COMPLETED,
-                  storageUrl: output,
-                  mimeType: "image/jpeg",
-                };
-              }) || [];
-            taskResultMigration(newResults, userContext);
-          }
+      if (task.status === TaskStatus.PENDING || task.status === TaskStatus.PROCESSING || task.status === TaskStatus.TRANSFERING) {
+        eventBus.publish({
+          name: "task.sync.status",
+          payload: {
+            task: task,
+            userContext: userContext,
+          },
         });
-      } else {
-        Promise.resolve()
-          .then(async () => {
-            TasksEdit.update(taskId, {
-              status: taskInfo.status,
-              progress: taskInfo.progress,
-              checkedAt: new Date(),
-            }).catch((err) => console.error("Execute exception:", err));
-            TaskDataEdit.update(taskId, {
-              outputData: JSON.stringify(response.data),
-            }).catch((err) => console.error("Execute exception:", err));
-          })
-          .catch((err) => console.error("Execute exception:", err));
       }
-
-      return taskInfo;
+      return {
+        id: taskId,
+        status: task.status,
+        result: result,
+        progress: task.progress,
+        message: task.message || undefined,
+      };
     } catch (error) {
       if (!task) {
         return {

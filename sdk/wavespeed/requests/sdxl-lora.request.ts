@@ -29,9 +29,8 @@ const SdxlLoraSchema = z.object({
 
 export class SdxlLoraRequest extends BaseRequest<typeof SdxlLoraSchema> {
   protected schema = SdxlLoraSchema;
-  protected data: z.infer<typeof SdxlLoraSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image: string = SdxlLoraSchema.shape.image.parse(undefined),
     mask_image?: string,
@@ -45,8 +44,8 @@ export class SdxlLoraRequest extends BaseRequest<typeof SdxlLoraSchema> {
     enable_base64_output: boolean = SdxlLoraSchema.shape.enable_base64_output.parse(undefined),
     enable_safety_checker: boolean = SdxlLoraSchema.shape.enable_safety_checker.parse(undefined)
   ) {
-    super();
-    this.data = {
+    const request = new SdxlLoraRequest();
+    request.data = {
       prompt,
       image,
       mask_image,
@@ -60,7 +59,7 @@ export class SdxlLoraRequest extends BaseRequest<typeof SdxlLoraSchema> {
       enable_base64_output,
       enable_safety_checker
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -71,14 +70,14 @@ export class SdxlLoraRequest extends BaseRequest<typeof SdxlLoraSchema> {
     return "text-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
       num_images: 1,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "num_images";
   }
 }

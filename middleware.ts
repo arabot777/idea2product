@@ -1,5 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { updateSessionAndAuth } from "./lib/supabase/middleware";
 
@@ -41,8 +40,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2|ttf|eot)$).*)'
-  ],
-  runtime: 'nodejs',
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff|woff2|ttf|eot)$).*)"],
 };

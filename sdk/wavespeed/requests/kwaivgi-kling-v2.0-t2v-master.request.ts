@@ -12,22 +12,21 @@ const KwaivgiKlingV20T2vMasterSchema = z.object({
 
 export class KwaivgiKlingV20T2vMasterRequest extends BaseRequest<typeof KwaivgiKlingV20T2vMasterSchema> {
   protected schema = KwaivgiKlingV20T2vMasterSchema;
-  protected data: z.infer<typeof KwaivgiKlingV20T2vMasterSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     aspect_ratio?: "16:9" | "9:16" | "1:1",
     negative_prompt?: string,
     duration?: "5" | "10"
   ) {
-    super();
-    this.data = {
+    const request = new KwaivgiKlingV20T2vMasterRequest();
+    request.data = {
       prompt,
       ...(aspect_ratio && { aspect_ratio }),
       ...(negative_prompt && { negative_prompt }),
       ...(duration && { duration }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -38,13 +37,13 @@ export class KwaivgiKlingV20T2vMasterRequest extends BaseRequest<typeof KwaivgiK
     return "text-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

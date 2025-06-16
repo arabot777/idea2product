@@ -15,11 +15,10 @@ const Wan21T2v480pSchema = z.object({
 
 export class Wan21T2v480pRequest extends BaseRequest<typeof Wan21T2v480pSchema> {
   protected schema = Wan21T2v480pSchema;
-  protected data: z.infer<typeof Wan21T2v480pSchema>;
-
-  constructor({ prompt, duration, enable_safety_checker, flow_shift, guidance_scale, negative_prompt, num_inference_steps, seed, size }: { prompt: string, duration?: number | undefined, enable_safety_checker?: boolean | undefined, flow_shift?: number | undefined, guidance_scale?: number | undefined, negative_prompt?: string | undefined, num_inference_steps?: number | undefined, seed?: number | undefined, size?: "832*480" | "480*832" | undefined }) {
-    super();
-    this.data = {
+  
+  static create({ prompt, duration, enable_safety_checker, flow_shift, guidance_scale, negative_prompt, num_inference_steps, seed, size }: { prompt: string, duration?: number | undefined, enable_safety_checker?: boolean | undefined, flow_shift?: number | undefined, guidance_scale?: number | undefined, negative_prompt?: string | undefined, num_inference_steps?: number | undefined, seed?: number | undefined, size?: "832*480" | "480*832" | undefined }) {
+    const request = new Wan21T2v480pRequest();
+    request.data = {
       prompt,
       duration: duration ?? 5,
       enable_safety_checker: enable_safety_checker ?? true,
@@ -30,7 +29,7 @@ export class Wan21T2v480pRequest extends BaseRequest<typeof Wan21T2v480pSchema> 
       seed: seed ?? -1,
       size: size ?? '832*480'
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -40,14 +39,14 @@ export class Wan21T2v480pRequest extends BaseRequest<typeof Wan21T2v480pSchema> 
   getModelType(): string {
     return "text-to-video";
   }
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
       num_inference_steps: 30,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

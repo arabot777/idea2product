@@ -21,18 +21,17 @@ interface Imagen4RequestParams {
 
 export class Imagen4Request extends BaseRequest<typeof Imagen4Schema> {
   protected schema = Imagen4Schema;
-  protected data: z.infer<typeof Imagen4Schema>;
-
-  constructor(params: Imagen4RequestParams) {
-    super();
-    this.data = {
+  
+  static create(params: Imagen4RequestParams) {
+    const request = new Imagen4Request();
+    request.data = {
       prompt: params.prompt,
       negative_prompt: params.negative_prompt ?? "",
       aspect_ratio: params.aspect_ratio ?? "1:1",
       num_images: params.num_images ?? 1,
       ...(params.seed !== undefined && { seed: params.seed }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -43,13 +42,13 @@ export class Imagen4Request extends BaseRequest<typeof Imagen4Schema> {
     return "text-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_images: 1,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "num_images";
   }
 }

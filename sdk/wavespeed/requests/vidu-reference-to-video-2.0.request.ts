@@ -11,24 +11,23 @@ const ViduReferenceToVideo20Schema = z.object({
 
 export class ViduReferenceToVideo20Request extends BaseRequest<typeof ViduReferenceToVideo20Schema> {
   protected schema = ViduReferenceToVideo20Schema;
-  protected data: z.infer<typeof ViduReferenceToVideo20Schema>;
-
-  constructor(
+  
+  static create(
     images: string[],
     prompt: string,
     aspect_ratio?: "16:9" | "9:16" | "1:1",
     movement_amplitude?: "auto" | "small" | "medium" | "large",
     seed?: number
   ) {
-    super();
-    this.data = {
+    const request = new ViduReferenceToVideo20Request();
+    request.data = {
       images,
       prompt,
       aspect_ratio: aspect_ratio ?? "16:9",
       movement_amplitude: movement_amplitude ?? "auto",
       seed: seed ?? 0,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -39,12 +38,12 @@ export class ViduReferenceToVideo20Request extends BaseRequest<typeof ViduRefere
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

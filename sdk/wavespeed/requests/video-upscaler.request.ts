@@ -9,16 +9,15 @@ const VideoUpscalerSchema = z.object({
 
 export class VideoUpscalerRequest extends BaseRequest<typeof VideoUpscalerSchema> {
   protected schema = VideoUpscalerSchema;
-  protected data: z.infer<typeof VideoUpscalerSchema>;
-
-  constructor(video: string, target_resolution?: "720p" | "1080p" | "2k" | "4k", copy_audio?: boolean) {
-    super();
-    this.data = { video };
+  
+  static create(video: string, target_resolution?: "720p" | "1080p" | "2k" | "4k", copy_audio?: boolean) {
+    const request = new VideoUpscalerRequest();
+    request.data = { video };
     if (target_resolution !== undefined) {
-      this.data.target_resolution = target_resolution;
+      request.data.target_resolution = target_resolution;
     }
     if (copy_audio !== undefined) {
-      this.data.copy_audio = copy_audio;
+      request.data.copy_audio = copy_audio;
     }
     
   }
@@ -31,7 +30,7 @@ export class VideoUpscalerRequest extends BaseRequest<typeof VideoUpscalerSchema
     return "video-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       video: "",
       target_resolution: undefined,
@@ -39,7 +38,7 @@ export class VideoUpscalerRequest extends BaseRequest<typeof VideoUpscalerSchema
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

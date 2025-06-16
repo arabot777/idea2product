@@ -13,24 +13,23 @@ const HunyuanVideoT2vSchema = z.object({
 
 export class HunyuanVideoT2vRequest extends BaseRequest<typeof HunyuanVideoT2vSchema> {
   protected schema = HunyuanVideoT2vSchema;
-  protected data: z.infer<typeof HunyuanVideoT2vSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     enable_safety_checker?: boolean,
     num_inference_steps?: number,
     seed?: number,
     size?: "1280*720" | "720*1280"
   ) {
-    super();
-    this.data = {
+    const request = new HunyuanVideoT2vRequest();
+    request.data = {
       prompt,
       ...(enable_safety_checker !== undefined && { enable_safety_checker }),
       ...(num_inference_steps !== undefined && { num_inference_steps }),
       ...(seed !== undefined && { seed }),
       ...(size !== undefined && { size }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -41,13 +40,13 @@ export class HunyuanVideoT2vRequest extends BaseRequest<typeof HunyuanVideoT2vSc
     return "text-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

@@ -21,9 +21,8 @@ const FluxControlLoraCannySchema = z.object({
 
 export class FluxControlLoraCannyRequest extends BaseRequest<typeof FluxControlLoraCannySchema> {
   protected schema = FluxControlLoraCannySchema;
-  protected data: z.infer<typeof FluxControlLoraCannySchema>;
 
-  constructor(
+  static create(
     prompt: string,
     control_image?: string,
     loras?: z.infer<typeof LoraWeightSchema>[],
@@ -35,8 +34,8 @@ export class FluxControlLoraCannyRequest extends BaseRequest<typeof FluxControlL
     guidance_scale?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new FluxControlLoraCannyRequest();
+    request.data = {
       prompt,
       control_image: control_image,
       loras: loras ?? [],
@@ -48,7 +47,7 @@ export class FluxControlLoraCannyRequest extends BaseRequest<typeof FluxControlL
       guidance_scale: guidance_scale ?? 3.5,
       enable_safety_checker: enable_safety_checker ?? true,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -59,14 +58,14 @@ export class FluxControlLoraCannyRequest extends BaseRequest<typeof FluxControlL
     return "image-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_inference_steps: 30,
       num_images: 1,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "num_images";
   }
 }

@@ -14,9 +14,8 @@ const HunyuanCustomRef2v720pSchema = z.object({
 
 export class HunyuanCustomRef2v720pRequest extends BaseRequest<typeof HunyuanCustomRef2v720pSchema> {
   protected schema = HunyuanCustomRef2v720pSchema;
-  protected data: z.infer<typeof HunyuanCustomRef2v720pSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image: string,
     options?: {
@@ -28,8 +27,8 @@ export class HunyuanCustomRef2v720pRequest extends BaseRequest<typeof HunyuanCus
       size?: "1280*720" | "720*1280";
     }
   ) {
-    super();
-    this.data = {
+    const request = new HunyuanCustomRef2v720pRequest();
+    request.data = {
       prompt,
       image,
       enable_safety_checker: options?.enable_safety_checker ?? (typeof HunyuanCustomRef2v720pSchema.shape.enable_safety_checker._def.defaultValue === 'function' ? HunyuanCustomRef2v720pSchema.shape.enable_safety_checker._def.defaultValue() : HunyuanCustomRef2v720pSchema.shape.enable_safety_checker._def.defaultValue),
@@ -39,7 +38,7 @@ export class HunyuanCustomRef2v720pRequest extends BaseRequest<typeof HunyuanCus
       seed: options?.seed ?? (typeof HunyuanCustomRef2v720pSchema.shape.seed._def.defaultValue === 'function' ? HunyuanCustomRef2v720pSchema.shape.seed._def.defaultValue() : HunyuanCustomRef2v720pSchema.shape.seed._def.defaultValue),
       size: options?.size ?? (typeof HunyuanCustomRef2v720pSchema.shape.size._def.defaultValue === 'function' ? HunyuanCustomRef2v720pSchema.shape.size._def.defaultValue() : HunyuanCustomRef2v720pSchema.shape.size._def.defaultValue),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -50,13 +49,13 @@ export class HunyuanCustomRef2v720pRequest extends BaseRequest<typeof HunyuanCus
     return "image-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
    
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "1";
   }
 }

@@ -15,9 +15,8 @@ const UnoSchema = z.object({
 
 export class UnoRequest extends BaseRequest<typeof UnoSchema> {
   protected schema = UnoSchema;
-  protected data: z.infer<typeof UnoSchema>;
-
-  constructor(
+  
+  static create(
     images: string[],
     prompt: string,
     image_size: "square_hd" | "square" | "portrait_4_3" | "portrait_16_9" | "landscape_4_3" | "landscape_16_9" = "square_hd",
@@ -28,8 +27,8 @@ export class UnoRequest extends BaseRequest<typeof UnoSchema> {
     output_format: "jpeg" | "png" = "jpeg",
     enable_safety_checker: boolean = true
   ) {
-    super();
-    this.data = {
+    const request = new UnoRequest();
+    request.data = {
       images,
       image_size,
       prompt,
@@ -40,7 +39,7 @@ export class UnoRequest extends BaseRequest<typeof UnoSchema> {
       output_format,
       enable_safety_checker,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -51,14 +50,14 @@ export class UnoRequest extends BaseRequest<typeof UnoSchema> {
     return "image-to-image";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       num_images: 1,
       num_inference_steps: 28,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "num_images";
   }
 }

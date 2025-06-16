@@ -92,8 +92,13 @@ export class UnibeanClient {
       const response = await fetch(requestUrl, options);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        try {
+          const data: T = await response.json();
+          return data;
+        } catch (error) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        }
       }
 
       const data: T = await response.json();

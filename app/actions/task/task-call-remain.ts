@@ -9,11 +9,8 @@ import { NewUserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserMetricLimitMapper } from "@/lib/mappers/unibee/user-metric-limit";
 import { UserMetricLimitDto } from "@/lib/types/unibee/user-metric-limit-dto";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
-import { AppError } from "@/lib/types/app.error";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 export const taskCallRemain = actionWithPermission("taskCallRemain", async (userContext: UserContext): Promise<UserMetricLimitDto[]> => {
-  await unibeeSyncUser(userContext);
   // 1. Query user-metric-limits by user ID
   let userMetricLimitList: UserMetricLimit[] | undefined = await UserMetricLimitsQuery.getByUserId(userContext.id || "");
 

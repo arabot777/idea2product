@@ -1,6 +1,5 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as chokidar from 'chokidar';
 
 const MESSAGES_DIR = path.join(process.cwd(), 'i18n');
 const LOCALES: string[] = ['en', 'zh-CN'];
@@ -58,45 +57,8 @@ async function mergeAllLocales(): Promise<void> {
   }
 }
 
-/**
- * Watches for changes in localization files and merges them automatically.
- * @returns The chokidar watcher instance.
- */
-function watchLocales(): chokidar.FSWatcher {
-  const watcher = chokidar.watch(
-    LOCALES.map(locale => path.join(MESSAGES_DIR, locale, '**/*.json')),
-    { ignoreInitial: true }
-  );
-  
-  const handleFileChange = (filePath: string): void => {
-    const locale = filePath.split(path.sep).find(dir => LOCALES.includes(dir));
-    if (locale) {
-      mergeLocaleFiles(locale);
-    }
-  };
-  
-  watcher
-    .on('add', (path) => handleFileChange(path))
-    .on('change', (path) => handleFileChange(path))
-    .on('unlink', (path) => handleFileChange(path));  
-  return watcher;
-}
-
 // Export functions
 export {
   mergeAllLocales,
-  watchLocales,
   mergeLocaleFiles
 };
-
-// If this script is run directly
-if (require.main === module) {
-  const args = process.argv.slice(2);
-  const watch = args.includes('--watch');
-  
-  mergeAllLocales().then(() => {
-    if (watch) {
-      watchLocales();
-    }
-  });
-}

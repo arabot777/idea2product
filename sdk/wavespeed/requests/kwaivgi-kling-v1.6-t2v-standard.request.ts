@@ -10,22 +10,21 @@ const KwaivgiKlingV16T2vStandardSchema = z.object({
 
 export class KwaivgiKlingV16T2vStandardRequest extends BaseRequest<typeof KwaivgiKlingV16T2vStandardSchema> {
   protected schema = KwaivgiKlingV16T2vStandardSchema;
-  protected data: z.infer<typeof KwaivgiKlingV16T2vStandardSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     negative_prompt?: string,
     guidance_scale?: number,
     duration?: "5" | "10"
   ) {
-    super();
-    this.data = {
+    const request = new KwaivgiKlingV16T2vStandardRequest();
+    request.data = {
       prompt,
       ... (negative_prompt !== undefined && { negative_prompt }),
       ... (guidance_scale !== undefined && { guidance_scale }),
       ... (duration !== undefined && { duration }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -36,13 +35,13 @@ export class KwaivgiKlingV16T2vStandardRequest extends BaseRequest<typeof Kwaivg
     return "text-to-video";
   }
 
-  static getDefaultParams(): Record<string,any> {
+  getDefaultParams(): Record<string,any> {
     return {
       duration: 5,
     }
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "duration/5";
   }
 }

@@ -17,7 +17,6 @@ import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
 import { UnibeeUserSubscription, UnibeeUserSubscriptionResponse } from "@/lib/types/unibee";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 // Helper function to map Unibee status number to BillingStatusType
 const mapUnibeeStatusToBillingStatusType = (unibeeStatus: number): BillingStatusType => {
   switch (unibeeStatus) {
@@ -46,7 +45,6 @@ const mapUnibeeStatusToBillingStatusType = (unibeeStatus: number): BillingStatus
 
 async function syncUserSubscriptionWithUnibee(userContext: UserContext, t: any) {
   try {
-    await unibeeSyncUser(userContext);
     if (!userContext.unibeeExternalId) {
       console.warn("User does not have a Unibee external ID. Skipping user subscription sync.");
       return false;

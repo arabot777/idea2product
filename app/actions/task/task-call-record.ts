@@ -10,7 +10,6 @@ import { UserMetricLimitsQuery } from "@/lib/db/crud/unibee/user-metric-limits.q
 import { UserMetricLimitsEdit } from "@/lib/db/crud/unibee/user-metric-limits.edit";
 import { v4 as uuidv4 } from "uuid";
 import { BillableMetric } from "@/lib/db/schemas/unibee/billable-metric";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 interface CacheData {
   cachedUserMetricLimit: UserMetricLimit;
@@ -30,7 +29,6 @@ export async function taskCallRecord(
   metricEventId: number;
   error?: string;
 }> {
-  await unibeeSyncUser(userContext);
   const result: {
     usedAmount: number;
     metricEventId: number;

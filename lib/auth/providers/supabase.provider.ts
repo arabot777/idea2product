@@ -83,6 +83,12 @@ export class SupabaseAuthProvider {
     return { user: data.user, error };
   }
 
+  async updateUserRoles(userId: string, roles: string[]): Promise<{ error: AuthError | null }> {
+    await this.initSupabase();
+    const { error } = await this.supabase!.auth.admin.updateUserById(userId, { role: roles.join(",") });
+    return { error };
+  }
+
   async signInWithOAuth(provider: 'google' | 'github', redirectTo: string): Promise<{ data: { url: string | null }; error: AuthError | null }> {
     await this.initSupabase();
     const { data, error } = await this.supabase!.auth.signInWithOAuth({

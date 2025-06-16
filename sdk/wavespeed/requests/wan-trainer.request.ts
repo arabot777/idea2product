@@ -17,17 +17,17 @@ const WanTrainerSchema = z.object({
 
 export class WanTrainerRequest extends BaseRequest<typeof WanTrainerSchema> {
   protected schema = WanTrainerSchema;
-  protected data: z.infer<typeof WanTrainerSchema>;
-
-  constructor(trainingDataUrl: string, numberOfSteps?: number, learningRate?: number, triggerPhrase?: string, autoScaleInput?: boolean) {
-    super();
-    this.data = {
+  
+  static create(trainingDataUrl: string, numberOfSteps?: number, learningRate?: number, triggerPhrase?: string, autoScaleInput?: boolean) {
+    const request = new WanTrainerRequest();
+    request.data = {
       training_data_url: trainingDataUrl,
       ...(numberOfSteps !== undefined && { number_of_steps: numberOfSteps }),
       ...(learningRate !== undefined && { learning_rate: learningRate }),
       ...(triggerPhrase !== undefined && { trigger_phrase: triggerPhrase }),
       ...(autoScaleInput !== undefined && { auto_scale_input: autoScaleInput }),
     };
+    return request;
   }
 
   getModelUuid(): string {
@@ -37,13 +37,13 @@ export class WanTrainerRequest extends BaseRequest<typeof WanTrainerSchema> {
   getModelType(): string {
     return "training";
   }
-  static getDefaultParams(): Record<string, any> {
+  getDefaultParams(): Record<string, any> {
     return {
       number_of_steps: 400,
     };
   }
 
-  static getFeatureCalculator(): string {
+  getFeatureCalculator(): string {
     return "number_of_steps";
   }
 }
