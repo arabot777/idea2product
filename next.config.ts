@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
   },
   // Experimental features
   experimental: {
-    ppr: true,
+    ppr: false,
     clientSegmentCache: true,
     forceSwcTransforms: true,
   },
