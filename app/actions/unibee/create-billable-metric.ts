@@ -19,6 +19,7 @@ export const createBillableMetric = dataActionWithPermission(
   "createBillableMetric",
   async (metricData: Omit<BillableMetricDto, "id" | "createdAt" | "updatedAt" | "unibeeExternalId">): Promise<{ success: boolean; message: string }> => {
     try {
+      metricData.aggregationProperty = "value";
       const unibeanClient = UnibeanClient.getInstance();
       
       const newMetricRequest: UnibeeNewMetricRequest = {
@@ -26,7 +27,7 @@ export const createBillableMetric = dataActionWithPermission(
         metricDescription: metricData.metricDescription || undefined,
         code: metricData.code,
         aggregationType: metricData.aggregationType,
-        aggregationProperty: metricData.aggregationProperty || undefined,
+        aggregationProperty: metricData.aggregationProperty,
         type: metricData.type,
       };
 

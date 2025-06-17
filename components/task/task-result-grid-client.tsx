@@ -56,7 +56,7 @@ export function TaskResultGridClient({}: TaskResultGridClientProps) {
     Object.entries(filteredParams).forEach(([key, value]) => {
       queryParams.set(key, value as string)
     })
-    const newURL = `/${locale}/task/result?${queryParams.toString()}`
+    const newURL = `/task/result?${queryParams.toString()}`
     window.history.pushState({}, "", newURL)
   }, [locale])
 

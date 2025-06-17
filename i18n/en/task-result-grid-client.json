@@ -6,6 +6,7 @@
   "filter": "Filter",
   "all": "All",
   "image": "Image",
+  "loading": "Loading...",
   "video": "Video",
   "noMatchingRecords": "No matching results found.",
   "tryDifferentKeywords": "Try different keywords or filters.",

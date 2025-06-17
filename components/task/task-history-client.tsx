@@ -53,7 +53,7 @@ export function TaskHistoryClient({}: TaskHistoryClientProps) {
     Object.entries(filteredParams).forEach(([key, value]) => {
       queryParams.set(key, value as string);
     });
-    const newURL = `/${locale}/task/history?${queryParams.toString()}`;
+    const newURL = `/task/history?${queryParams.toString()}`;
     window.history.pushState({}, "", newURL);
   }, [locale]);
 

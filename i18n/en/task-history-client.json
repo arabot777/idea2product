@@ -5,6 +5,7 @@
   "search": "Search",
   "filter": "Filter",
   "all": "All",
+  "loading": "Loading...",
   "completed": "Completed",
   "failed": "Failed",
   "noMatchingRecords": "No matching records found.",
