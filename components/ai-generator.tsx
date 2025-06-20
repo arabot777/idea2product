@@ -21,7 +21,7 @@ import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-conf
 import { TaskStatus, TaskStatusType, TaskResultStatus, TaskResultType } from "@/lib/types/task/enum.bean";
 import { TaskInfo } from "@/lib/types/task/task.bean";
 import { FluxDevUltraFastRequest } from "@/sdk/wavespeed/requests/flux-dev-ultra-fast.request";
-import { CODE } from "@/lib/unibean/metric-code";
+import { CODE } from "@/lib/unibee/metric-code";
 
 export default function AIGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);

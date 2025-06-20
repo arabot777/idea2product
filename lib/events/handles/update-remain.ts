@@ -3,7 +3,7 @@ import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { UserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { NewUserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserMetricLimitsQuery } from "@/lib/db/crud/unibee/user-metric-limits.query";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { UserMetricLimitsEdit } from "@/lib/db/crud/unibee/user-metric-limits.edit";
 
 interface UpdateRemainPayload {
@@ -21,7 +21,7 @@ export const updateRemainHandler = async (payload: UpdateRemainPayload) => {
 
     if (!hasRecentUpdates) {
       // Trigger Unibee synchronization
-      const unibeeClient = UnibeanClient.getInstance();
+      const unibeeClient = UnibeeClient.getInstance();
       const metricResponse = await unibeeClient.getUserMetric({ userId: parseInt(userContext.unibeeExternalId || "", 0) });
 
       if (metricResponse && metricResponse.data && metricResponse.data.userMetric && metricResponse.data.userMetric.limitStats) {

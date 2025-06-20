@@ -27,9 +27,37 @@ export class SupabaseAuthProvider {
   }
 
   async signOut(): Promise<{ error: AuthError | null }> {
-    await this.initSupabase();
-    const { error } = await this.supabase!.auth.signOut();
-    return { error };
+    try {
+      await this.initSupabase();
+      // Call Supabase logout first
+      const { error } = await this.supabase!.auth.signOut();
+      
+      // Manually clear all related cookies
+      if (typeof document !== 'undefined') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          const eqPos = cookie.indexOf('=');
+          const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+          // Delete all Supabase related cookies
+          if (name.startsWith('sb-') || name === 'sb-auth-token') {
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
+          }
+        }
+        
+        // Clear Supabase related data from localStorage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('sb-') || key.includes('supabase')) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
+      
+      console.log("signOut completed", error);
+      return { error };
+    } catch (err) {
+      console.error("Error during sign out:", err);
+      return { error: err as AuthError };
+    }
   }
 
   async verifyEmail(token: string): Promise<{ error: AuthError | null }> {

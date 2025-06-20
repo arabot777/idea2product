@@ -1,7 +1,7 @@
 "use server";
 
 import { AppError } from "@/lib/types/app.error";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 
 export const unibeeSyncUser = async (profile: { id?: string | null; email?: string | null; unibeeExternalId?: string | null }): Promise<void> => {
@@ -10,7 +10,7 @@ export const unibeeSyncUser = async (profile: { id?: string | null; email?: stri
       throw new AppError("VALIDATION_ERROR", "unibeeSyncUser.validationError");
     }
     if (profile.unibeeExternalId) return;
-    const sessionResponse = await UnibeanClient.getInstance().createClientSession({
+    const sessionResponse = await UnibeeClient.getInstance().createClientSession({
       email: profile.email,
       externalUserId: profile.id,
     });

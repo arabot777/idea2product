@@ -1,10 +1,10 @@
 "use server";
 
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { cache } from "@/lib/cache";
 import { CacheKeys } from "@/lib/cache/keys";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
-import { CODE } from "@/lib/unibean/metric-code";
+import { CODE } from "@/lib/unibee/metric-code";
 import { UserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserMetricLimitsQuery } from "@/lib/db/crud/unibee/user-metric-limits.query";
 import { UserMetricLimitsEdit } from "@/lib/db/crud/unibee/user-metric-limits.edit";
@@ -38,10 +38,10 @@ export async function taskCallRecord(
     metricEventId: 0,
   };
   try {
-    const unibeanClient = UnibeanClient.getInstance();
+    const unibeeClient = UnibeeClient.getInstance();
 
-    // 1. Call UnibeanClient's createNewMetricEvent to send to third party
-    const unibeeResponse = await unibeanClient.createNewMetricEvent({
+    // 1. Call UnibeeClient's createNewMetricEvent to send to third party
+    const unibeeResponse = await unibeeClient.createNewMetricEvent({
       externalEventId: uuidv4(), // Generate a unique ID
       metricCode: code,
       userId: parseInt(userContext.unibeeExternalId!),
@@ -51,7 +51,7 @@ export async function taskCallRecord(
     });
 
     if (unibeeResponse.code !== 0 || !unibeeResponse.data.merchantMetricEvent) {
-      result.error = unibeeResponse.message || "Failed to create metric event in Unibean";
+      result.error = unibeeResponse.message || "Failed to create metric event in Unibee";
       return result;
     }
     result.metricEventId = unibeeResponse.data.merchantMetricEvent.id;

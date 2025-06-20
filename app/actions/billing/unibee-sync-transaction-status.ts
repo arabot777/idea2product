@@ -10,7 +10,7 @@ import { SubscriptionPlanMapper } from "@/lib/mappers/billing/subscription-plan"
 import { getTranslations } from "next-intl/server";
 import { SubscriptionPlanDto } from "@/lib/types/billing/subscription-plan.dto";
 import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.query";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { UserSubscriptionPlanEdit } from "@/lib/db/crud/billing/user-subscription-plan.edit";
@@ -51,7 +51,7 @@ async function syncUnibeeTransactionsInBackground(userContext: UserContext): Pro
     const createTimeStart = Math.floor(firstTransactionTime.getTime() / 1000);
 
     // 3. Fetch payment timelines from Unibee since the earliest transaction.
-    const unibeeResponse = await UnibeanClient.getInstance().getPaymentTimelineList(
+    const unibeeResponse = await UnibeeClient.getInstance().getPaymentTimelineList(
       { userId: userContext.unibeeExternalId, createTimeStart, page: 0, count: 100 }
     );
 

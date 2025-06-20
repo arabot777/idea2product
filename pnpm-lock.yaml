@@ -16,7 +16,7 @@ importers:
         version: 5.0.1(react-hook-form@7.56.4(react@19.1.0))
       '@keyv/redis':
         specifier: ^4.4.0
-        version: 4.4.0(keyv@5.3.3)
+        version: 4.4.0(keyv@5.3.4)
       '@openmeter/sdk':
         specifier: 1.0.0-beta.213
         version: 1.0.0-beta.213(react@19.1.0)
@@ -173,6 +173,9 @@ importers:
       jose:
         specifier: ^6.0.11
         version: 6.0.11
+      keyv:
+        specifier: ^5.3.4
+        version: 5.3.4
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.1.0)
@@ -4044,8 +4047,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  keyv@5.3.3:
-    resolution: {integrity: sha512-Rwu4+nXI9fqcxiEHtbkvoes2X+QfkTRo1TMkPfwzipGsJlJO/z69vqB4FNl9xJ3xCpAcbkvmEabZfPzrwN3+gQ==}
+  keyv@5.3.4:
+    resolution: {integrity: sha512-ypEvQvInNpUe+u+w8BIcPkQvEqXquyyibWE/1NB5T2BTzIpS5cGEV1LZskDzPSTvNAaT4+5FutvzlvnkxOSKlw==}
 
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
@@ -6258,11 +6261,11 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@keyv/redis@4.4.0(keyv@5.3.3)':
+  '@keyv/redis@4.4.0(keyv@5.3.4)':
     dependencies:
       '@redis/client': 1.6.1
       cluster-key-slot: 1.1.2
-      keyv: 5.3.3
+      keyv: 5.3.4
 
   '@keyv/serialize@1.0.3':
     dependencies:
@@ -7871,12 +7874,12 @@ snapshots:
 
   cache-manager@6.4.3:
     dependencies:
-      keyv: 5.3.3
+      keyv: 5.3.4
 
   cacheable@1.9.0:
     dependencies:
       hookified: 1.9.0
-      keyv: 5.3.3
+      keyv: 5.3.4
 
   call-bind-apply-helpers@1.0.2:
     dependencies:
@@ -9690,7 +9693,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  keyv@5.3.3:
+  keyv@5.3.4:
     dependencies:
       '@keyv/serialize': 1.0.3
 

@@ -15,6 +15,13 @@
       "when": 1750043427852,
       "tag": "0001_clammy_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750379115821,
+      "tag": "0002_adorable_betty_brant",
+      "breakpoints": true
     }
   ]
 }

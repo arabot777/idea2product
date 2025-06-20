@@ -10,7 +10,7 @@ import { AppError } from "@/lib/types/app.error";
 import { UserSubscriptionPlanDto } from "@/lib/types/billing/user-subscription-plan.dto";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { BillingStatus, BillingStatusType, CurrencyType, BillingCycleType } from "@/lib/types/billing/enum.bean";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { NewUserSubscriptionPlan } from "@/lib/db/schemas/billing/user-subscription-plan";
 import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.query";
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
@@ -50,7 +50,7 @@ async function syncUserSubscriptionWithUnibee(userContext: UserContext, t: any) 
       return false;
     }
 
-    const response = await UnibeanClient.getInstance().getUserSubscriptionDetail({
+    const response = await UnibeeClient.getInstance().getUserSubscriptionDetail({
       userId: userContext.unibeeExternalId, // Use userId as parameter for POST request
     });
 
@@ -123,7 +123,7 @@ export const getUserSubscriptionPlan = actionWithPermission("getUserSubscription
 
   const userSubscriptionPlan = await UserSubscriptionPlanQuery.getByUserIdAndStatus(userContext.id || "", BillingStatus.ACTIVE);
   if (!userSubscriptionPlan) {
-    throw new AppError("NOT_FOUND", t("notFound.userSubscriptionPlanNotFound"));
+    throw new AppError("NOT_FOUND", t("subscriptionPlanNotFound"));
   }
 
   const userSubscriptionPlanDto = UserSubscriptionPlanMapper.toDTO(userSubscriptionPlan);

@@ -1,6 +1,6 @@
 "use server";
 
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { withPermission } from "@/lib/permission/guards/action";
 import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.query";
 import { AppError } from "@/lib/types/app.error";
@@ -10,7 +10,7 @@ import { UnibeePlanListResponse } from "@/lib/types/unibee";
 
 export const unibeeSyncSubscriptionPlan = withPermission("unibeeSyncSubscriptionPlan", async (): Promise<boolean> => {
   try {
-    const response = await UnibeanClient.getInstance().getPlanList({ page: 0, count: 99 });
+    const response = await UnibeeClient.getInstance().getPlanList({ page: 0, count: 99 });
 
     if (response.code !== 0) {
       throw new AppError("UNIBEE_API_ERROR", "Failed to fetch Unibee plans", response.message);

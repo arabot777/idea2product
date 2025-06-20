@@ -18,7 +18,7 @@ import {
 import { createBillableMetric } from "@/app/actions/unibee/create-billable-metric";
 import { updateBillableMetric } from "@/app/actions/unibee/update-billable-metric";
 import { toast } from "sonner";
-import { CODE } from "@/lib/unibean/metric-code";
+import { CODE } from "@/lib/unibee/metric-code";
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";

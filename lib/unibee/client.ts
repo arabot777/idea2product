@@ -14,11 +14,11 @@ import {
 } from "@/lib/types/unibee";
 
 /**
- * Simple Unibean client for handling HTTP requests.
+ * Simple Unibee client for handling HTTP requests.
  * Automatically converts request parameters based on the method (GET or POST) and parses JSON responses.
  */
-export class UnibeanClient {
-  private static _instance: UnibeanClient;
+export class UnibeeClient {
+  private static _instance: UnibeeClient;
   private baseUrl: string;
   private apiKey: string;
 
@@ -33,22 +33,22 @@ export class UnibeanClient {
   }
 
   /**
-   * Get the singleton instance of UnibeanClient.
+   * Get the singleton instance of UnibeeClient.
    * @param baseUrl Base URL for the API.
    * @param apiKey API key.
-   * @returns Singleton instance of UnibeanClient.
+   * @returns Singleton instance of UnibeeClient.
    */
-  public static getInstance(): UnibeanClient {
-    if (!UnibeanClient._instance) {
+  public static getInstance(): UnibeeClient {
+    if (!UnibeeClient._instance) {
       const baseUrl = process.env.UNIBEE_API_BASE_URL || "https://api.unibee.top";
       const apiKey = process.env.UNIBEE_API_KEY || "";
 
       if (!baseUrl || !apiKey) {
-        throw new Error('Unibean API base URL or API key not found in environment variables');
+        throw new Error('Unibee API base URL or API key not found in environment variables');
       }
-      UnibeanClient._instance = new UnibeanClient(baseUrl, apiKey);
+      UnibeeClient._instance = new UnibeeClient(baseUrl, apiKey);
     }
-    return UnibeanClient._instance;
+    return UnibeeClient._instance;
   }
 
   /**

@@ -103,13 +103,14 @@ export default function Navbar() {
                     {t('myPlans')}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="hover:bg-slate-700/50 text-red-400">
-                  <form action={handleSignOut} className="w-full">
-                    <button type="submit" className="flex items-center w-full text-left text-red-400">
-                      <LogOut className="mr-3 h-4 w-4" />
-                      {t('logout')}
-                    </button>
-                  </form>
+                <DropdownMenuItem asChild className="hover:bg-slate-700/50">
+                  <button 
+                    onClick={handleSignOut}
+                    className="w-full flex items-center text-red-400 hover:text-red-400"
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
+                    {t('logout')}
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

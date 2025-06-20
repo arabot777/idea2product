@@ -1,4 +1,4 @@
-import { CODE } from "@/lib/unibean/metric-code";
+import { CODE } from "@/lib/unibee/metric-code";
 import * as Requests from "./requests";
 import { BaseRequest } from "./base";  
 

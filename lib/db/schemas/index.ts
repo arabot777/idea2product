@@ -5,3 +5,4 @@ export * from './payment';
 export * from './permission';
 export * from './task';
 export * from './unibee';
+export * from './common';
