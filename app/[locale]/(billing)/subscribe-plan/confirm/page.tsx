@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { unibeeSyncTransactionStatus } from "@/app/actions/billing/unibee-sync-transaction-status";
+import { getUserSubscriptionPlan} from '@/app/actions/billing/get-user-subscription-plan';
 import { SubscriptionPlanDto } from "@/lib/types/billing/subscription-plan.dto";
 import { TransactionDto, TransactionStatus } from "@/lib/types/payment/transaction.dto";
 import { ReactNode } from "react";
@@ -27,6 +28,7 @@ export default function SubscribeConfirmPage() {
   const transactionId = searchParams.get("transactionId");
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
   const [transaction, setTransaction] = useState<TransactionDto | null>(null);
   const [plan, setPlan] = useState<SubscriptionPlanDto | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +93,11 @@ export default function SubscribeConfirmPage() {
   );
 
   const checkTransactionStatus = useCallback(async () => {
+    if (isChecking) {
+      console.log('Transaction status check is already in progress');
+      return;
+    }
+
     if (!transactionId) {
       setError(t("transaction.noPlanId"));
       setIsLoading(false);
@@ -102,7 +109,7 @@ export default function SubscribeConfirmPage() {
       setTransaction(result.transaction || null);
       setPlan(result.plan || null);
       if (result.transaction) {
-        const isFinalStatus = TransactionStatus.PENDING || transaction?.status === TransactionStatus.PROCESSING;
+        const isFinalStatus = transaction?.status === TransactionStatus.PENDING || transaction?.status === TransactionStatus.PROCESSING;
 
         if (!isFinalStatus && result.message) {
           setProgressMessage(result.message);
@@ -131,6 +138,8 @@ export default function SubscribeConfirmPage() {
       }
     } catch (err) {
       setProgressMessage(t("transaction.networkError"));
+    } finally {
+      setIsChecking(false);
     }
   }, [transactionId, t]);
 

@@ -1,4 +1,7 @@
 {
   "planNotFound": "Plan not found.",
-  "failedToUpdateTransactionStatus": "Failed to update transaction status."
+  "failedToUpdateTransactionStatus": "Failed to update transaction status.",
+  "syncStarted": "Payment status updating...",
+  "subscriptionPlanNotFound": "Subscription plan not found.",
+  "transactionNotFound": "Transaction not found."
 }
