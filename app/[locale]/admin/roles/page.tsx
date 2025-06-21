@@ -11,7 +11,7 @@ import { rebindPermissionsToRole } from '@/app/actions/permission/rebind-permiss
 import { RoleDto } from '@/lib/types/permission/role.dto';
 import { PermissionConfigDto } from '@/lib/types/permission/permission-config.dto';
 import { useTranslations } from 'next-intl';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
  
 // Import components
 import RoleTable from '@/components/admin/roles/role-table';
@@ -66,7 +66,7 @@ export default function RolesManagePage() {
       if ('id' in roleData && roleData.id) {
         // Update role
         await updateRole({ id: roleData.id }, roleData);
-        toast({ title: t('success'), description: t('roleUpdateSuccess') });
+        toast.success(t('roleUpdateSuccess'));
       } else {
         // Create role
         // Ensure that the type passed to createRole is CreateRoleDto
@@ -77,7 +77,7 @@ export default function RolesManagePage() {
           role_type: roleData.role_type || 'user',
         };
         await createRole(createData as RoleDto); // createRole might require a complete RoleDto
-        toast({ title: t('success'), description: t('roleCreateSuccess') });
+        toast.success(t('roleCreateSuccess'));
       }
       setShowCreateForm(false);
       setShowEditForm(false);
@@ -85,7 +85,7 @@ export default function RolesManagePage() {
       loadData();
     } catch (error) {
       console.error('saveRoleFailed', error);
-      toast({ title: t('error'), description: t('saveRoleFailed'), variant: 'destructive' });
+      toast.error(t('saveRoleFailed'));
     }
   };
 
@@ -93,10 +93,10 @@ export default function RolesManagePage() {
     try {
       await deleteRole({ name: roleName });
       loadData();
-      toast({ title: t('success'), description: t('roleDeleteSuccess') });
+      toast.success(t('roleDeleteSuccess'));
     } catch (error) {
       console.error('deleteRoleFailed', error);
-      toast({ title: t('error'), description: t('deleteRoleFailed'), variant: 'destructive' });
+      toast.error(t('deleteRoleFailed'));
     }
   };
 
@@ -113,7 +113,7 @@ export default function RolesManagePage() {
       setShowPermissionModal(true);
     } catch (error) {
       console.error('loadRolePermissionsFailed', error);
-      toast({ title: t('error'), description: t('loadRolePermissionsFailed'), variant: 'destructive' });
+      toast.error(t('loadRolePermissionsFailed'));
     }
   };
 
@@ -129,15 +129,14 @@ export default function RolesManagePage() {
         permissionIds: selectedPermissionIds,
       });
       setShowPermissionModal(false);
-      toast({ title: t('success'), description: t('permissionAssignmentSuccess') });
+      toast.success(t('permissionAssignmentSuccess'));
     } catch (error) {
       console.error('assignPermissionsFailed', error);
-      toast({ title: t('error'), description: t('assignPermissionsFailed'), variant: 'destructive' });
+      toast.error(t('assignPermissionsFailed'));
     }
   };
 
   const t = useTranslations('AdminRolesPage');
-  const { toast } = useToast();
   if (loading) {
     return <div className="p-6">{t('loading')}</div>;
   }

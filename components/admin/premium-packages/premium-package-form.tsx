@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { PremiumPackageDto, PremiumPackageDtoSchema } from "@/lib/types/billing/premium-package.dto";
 import { createPremiumPackage } from "@/app/actions/billing/create-premium-package";
@@ -32,7 +32,6 @@ interface PremiumPackageFormProps {
 export const PremiumPackageForm: React.FC<PremiumPackageFormProps> = ({
   initialData,
 }) => {
-  const { toast } = useToast();
   const t = useTranslations("PremiumPackageForm");
   const router = useRouter();
 
@@ -84,25 +83,15 @@ export const PremiumPackageForm: React.FC<PremiumPackageFormProps> = ({
       if (initialData?.id) {
         // Update existing premium package
         await updatePremiumPackage({ id: initialData.id!, ...values } as PremiumPackageDto);
-        toast({
-          title: t("common.success"),
-          description: t("premiumPackageUpdatedSuccessfully"),
-        });
+        toast.success(t("premiumPackageUpdatedSuccessfully"));
       } else {
         // Create new premium package
         await createPremiumPackage(values as PremiumPackageDto);
-        toast({
-          title: t("common.success"),
-          description: t("premiumPackageCreatedSuccessfully"),
-        });
+        toast.success(t("premiumPackageCreatedSuccessfully"));
         router.push("/admin/premium-packages"); // Redirect to list page after creation
       }
     } catch (error: any) {
-      toast({
-        title: t("common.error"),
-        description: error.message || t("failedToSavePremiumPackage"),
-        variant: "destructive",
-      });
+      toast.error(error.message || t("failedToSavePremiumPackage"));
     }
   };
 

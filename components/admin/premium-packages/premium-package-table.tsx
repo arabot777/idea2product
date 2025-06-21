@@ -14,14 +14,13 @@ import Link from "next/link";
 import { PremiumPackageDto } from "@/lib/types/billing/premium-package.dto";
 import { listPremiumPackages } from "@/app/actions/billing/list-premium-packages";
 import { AppError } from "@/lib/types/app.error";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 
 export function PremiumPackageTable() {
   const [premiumPackages, setPremiumPackages] = useState<PremiumPackageDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const t = useTranslations("PremiumPackageTable");
 
   useEffect(() => {
@@ -38,11 +37,7 @@ export function PremiumPackageTable() {
         error instanceof AppError
           ? error.message
           : t("errorLoadingPremiumPackages");
-      toast({
-        title: t("error"),
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -54,10 +49,7 @@ export function PremiumPackageTable() {
       return;
     }
     // Implement delete action here
-    toast({
-      title: t("success"),
-      description: t("deleteSuccess"),
-    });
+    toast.success(t("deleteSuccess"));
     fetchPremiumPackages(); // Refresh the list
   };
 
