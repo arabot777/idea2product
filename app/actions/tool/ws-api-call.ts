@@ -84,7 +84,7 @@ export const wsApiCall = async (
     });
     // 5. Record task call - consume user quota
     const recordResult = await taskCallRecord(checkResult.currentRequestAmount!, input.code, checkResult.billableMetric as BillableMetric, userContext);
-    if (!recordResult.metricEventId || recordResult.error) {
+    if (!recordResult.externalEventId || recordResult.error) {
       console.error("Failed to record task:", recordResult.error);
       return {
         id: "",
@@ -101,7 +101,7 @@ export const wsApiCall = async (
       progress: 0,
       startedAt: new Date(),
       externalId: "",
-      externalMetricEventId: recordResult.metricEventId.toString(),
+      externalMetricEventId: recordResult.externalEventId,
       checkInterval: 5,
       currentRequestAmount: checkResult.currentRequestAmount!,
     });
@@ -136,7 +136,7 @@ export const wsApiCall = async (
       };
       // Delay update until the next status query
       externalId = response.data.id;
-      externalMetricEventId = recordResult.metricEventId.toString();
+      externalMetricEventId = recordResult.externalEventId;
     }
     if (taskInfo.status === TaskStatus.FAILED) {
       eventBus.publish({

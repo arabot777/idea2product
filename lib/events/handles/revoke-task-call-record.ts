@@ -14,7 +14,7 @@ export const revokeTaskCallRecordHandler = async (payload: RevokeTaskCallRecordP
   try {
     console.log("Revoke task call record:", task);
     const billableMetric = await BillableMetricsQuery.getByCode(task.type);
-    await taskCallRecordRevoke(parseInt(task.externalMetricEventId, 0), task.currentRequestAmount, task.type, billableMetric!, userContext);
+    await taskCallRecordRevoke(task.externalMetricEventId, task.currentRequestAmount, task.type, billableMetric!, userContext);
   } catch (error) {
     console.error(`Failed to revoke task ${task.id} call record:`, error);
   }

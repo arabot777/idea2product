@@ -234,6 +234,11 @@ export interface UnibeeNewMetricEventRequest {
   userId: number;
 }
 
+export interface UnibeeDeleteMetricEventRequest {
+  externalEventId: string;
+  metricCode: string;
+}
+
 export interface UnibeeEventCharge {
   chargeAmount: number;
   chargePricing: {
@@ -432,6 +437,13 @@ export interface UnibeeUserMetric {
   limitStats: UnibeeLimitStat[];
   meteredChargeStats: UnibeeMeteredChargeStat[];
   recurringChargeStats: UnibeeRecurringChargeStat[];
+}
+
+export interface UnibeeDeleteMetricEventResponse {
+  code: number;
+  message: string;
+  redirect: string;
+  requestId: string;
 }
 
 export interface UnibeeUserMetricResponse {

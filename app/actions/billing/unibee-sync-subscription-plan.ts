@@ -10,7 +10,10 @@ import { UnibeePlanListResponse } from "@/lib/types/unibee";
 
 export const unibeeSyncSubscriptionPlan = withPermission("unibeeSyncSubscriptionPlan", async (): Promise<boolean> => {
   try {
-    const response = await UnibeeClient.getInstance().getPlanList({ page: 0, count: 99 });
+    const response = await UnibeeClient.getInstance().getPlanList({
+      page: 0,
+      count: 99,
+    });
 
     if (response.code !== 0) {
       throw new AppError("UNIBEE_API_ERROR", "Failed to fetch Unibee plans", response.message);

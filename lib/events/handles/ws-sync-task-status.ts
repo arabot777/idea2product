@@ -99,7 +99,7 @@ export const wsSyncTaskStatusHandler = async (payload: WsSyncTaskStatusPayload) 
       }).catch((err) => console.error("Update task failed:", err));
       if (taskInfo.status === TaskStatus.FAILED) {
         const billableMetric = await BillableMetricsQuery.getByCode(task.type);
-        await taskCallRecordRevoke(parseInt(task?.externalMetricEventId!, 0), task?.currentRequestAmount!, task.type, billableMetric!, userContext);
+        await taskCallRecordRevoke(task?.externalMetricEventId!, task?.currentRequestAmount!, task.type, billableMetric!, userContext);
       } else if (taskInfo.status === TaskStatus.TRANSFER_START) {
         const newResults: NewTaskResult[] =
           wsResult.map((output: { url: string; has_nsfw_contents: boolean }) => {

@@ -12,7 +12,7 @@ export const unibeeSyncUser = async (profile: { id?: string | null; email?: stri
     if (profile.unibeeExternalId) return;
     const sessionResponse = await UnibeeClient.getInstance().createClientSession({
       email: profile.email,
-      externalUserId: profile.id,
+      externalUserId: profile.email,
     });
 
     if (sessionResponse.code !== 0) {

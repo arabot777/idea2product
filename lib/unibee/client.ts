@@ -6,6 +6,8 @@ import {
   UnibeeNewMetricRequest,
   UnibeeNewMetricResponse,
   UnibeeNewMetricEventRequest,
+  UnibeeDeleteMetricEventRequest,
+  UnibeeDeleteMetricEventResponse,
   UnibeeNewMetricEventResponse,
   UnibeeUserMetricRequest,
   UnibeeUserMetricResponse,
@@ -115,6 +117,13 @@ export class UnibeeClient {
    * @returns A promise that resolves to UnibeePlanListResponse.
    */
   public async getPlanList(params?: Record<string, any>): Promise<UnibeePlanListResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      if (!params) {
+        params = {};
+      }
+      params.productIds = unibeeProductId;
+    }
     return this.request<UnibeePlanListResponse>("GET", "/merchant/plan/list", params);
   }
 
@@ -142,6 +151,13 @@ export class UnibeeClient {
    * @returns A promise that resolves to UnibeeUserSubscriptionResponse.
    */
   public async getUserSubscriptionDetail(params: Record<string, any>): Promise<UnibeeUserSubscriptionResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      if (!params) {
+        params = {};
+      }
+      params.productId = unibeeProductId;
+    }
     return this.request<UnibeeUserSubscriptionResponse>("POST", "/merchant/subscription/user_subscription_detail", params);
   }
 
@@ -151,6 +167,10 @@ export class UnibeeClient {
    * @returns A promise that resolves to UnibeeNewMetricResponse.
    */
   public async createNewMetric(data: UnibeeNewMetricRequest): Promise<UnibeeNewMetricResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      data.code = `${unibeeProductId}@${data.code}`;
+    }
     return this.request<UnibeeNewMetricResponse>("POST", "/merchant/metric/new", data);
   }
 
@@ -160,8 +180,25 @@ export class UnibeeClient {
    * @returns A promise that resolves to UnibeeNewMetricEventResponse.
    */
   public async createNewMetricEvent(data: UnibeeNewMetricEventRequest): Promise<UnibeeNewMetricEventResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      data.metricCode = `${unibeeProductId}@${data.metricCode}`;
+    }
     return this.request<UnibeeNewMetricEventResponse>("POST", "/merchant/metric/event/new", data);
   }
+
+  /**
+   * Deletes a metric event in Unibee.
+   * @param data The request body for deleting a metric event.
+   * @returns A promise that resolves to UnibeeDeleteMetricEventResponse.
+   */
+    public async deleteMetricEvent(data: UnibeeDeleteMetricEventRequest): Promise<UnibeeDeleteMetricEventResponse> {
+      const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+      if (unibeeProductId) {
+        data.metricCode = `${unibeeProductId}@${data.metricCode}`;
+      }
+      return this.request<UnibeeDeleteMetricEventResponse>("POST", "/merchant/metric/event/delete", data);
+    }
 
   /**
    * Fetches a user's metric data from Unibee.

@@ -25,24 +25,25 @@ export async function taskCallRecord(
   billableMetric: BillableMetric,
   userContext: UserContext
 ): Promise<{
+  externalEventId: string;
   usedAmount: number;
-  metricEventId: number;
   error?: string;
 }> {
   const result: {
+    externalEventId: string;
     usedAmount: number;
-    metricEventId: number;
     error?: string;
   } = {
+    externalEventId: "",
     usedAmount: currentRequestAmount,
-    metricEventId: 0,
   };
   try {
     const unibeeClient = UnibeeClient.getInstance();
-
+    const externalEventId = uuidv4();
+    result.externalEventId = externalEventId;
     // 1. Call UnibeeClient's createNewMetricEvent to send to third party
     const unibeeResponse = await unibeeClient.createNewMetricEvent({
-      externalEventId: uuidv4(), // Generate a unique ID
+      externalEventId,
       metricCode: code,
       userId: parseInt(userContext.unibeeExternalId!),
       metricProperties: {
@@ -54,8 +55,6 @@ export async function taskCallRecord(
       result.error = unibeeResponse.message || "Failed to create metric event in Unibee";
       return result;
     }
-    result.metricEventId = unibeeResponse.data.merchantMetricEvent.id;
-
     await UserMetricLimitsEdit.decreaseUsedValue(userContext.id!, code, currentRequestAmount);
 
     const cacheKey = CacheKeys.USER_METRIC_LIMIT(userContext.id || "", code);

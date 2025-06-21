@@ -16,7 +16,7 @@ interface CacheData {
 const CACHE_TTL = 30 * 60 * 1000;
 
 export async function taskCallRecordRevoke(
-  metricEventId: number,
+  metricEventId: string,
   currentRequestAmount: number,
   code: string,
   billableMetric: BillableMetric,
@@ -35,8 +35,9 @@ export async function taskCallRecordRevoke(
     const unibeeClient = UnibeeClient.getInstance();
 
     // 1. Call UnibeeClient's deleteMetric to revoke the third-party event
-    const unibeeResponse = await unibeeClient.deleteMetric({
-      metricId: metricEventId,
+    const unibeeResponse = await unibeeClient.deleteMetricEvent({
+      externalEventId: metricEventId,
+      metricCode: code,
     });
 
     if (unibeeResponse.code !== 0) {

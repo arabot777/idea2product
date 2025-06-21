@@ -56,7 +56,7 @@ export const unibeeCheckoutUrl = dataActionWithPermission(
       const sessionResponse = await UnibeeClient.getInstance().createClientSession(
         {
           email: userContext.email,
-          externalUserId: userContext.id,
+          externalUserId: userContext.email,
           cancelUrl: `${process.env.NEXT_PUBLIC_URL || ""}/subscribe-plan/confirm?transactionId=${transaction.id}`,
           returnUrl: `${process.env.NEXT_PUBLIC_URL || ""}/subscribe-plan/confirm?transactionId=${transaction.id}`,
         }
