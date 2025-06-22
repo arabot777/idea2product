@@ -170,6 +170,7 @@ export class UnibeeClient {
     const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
     if (unibeeProductId) {
       data.code = `${unibeeProductId}@${data.code}`;
+      data.metricName = `${unibeeProductId}@${data.metricName}`;
     }
     return this.request<UnibeeNewMetricResponse>("POST", "/merchant/metric/new", data);
   }
