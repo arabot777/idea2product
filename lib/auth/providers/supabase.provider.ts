@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export class SupabaseAuthProvider {
   private supabase?: SupabaseClient;
@@ -32,24 +33,19 @@ export class SupabaseAuthProvider {
       // Call Supabase logout first
       const { error } = await this.supabase!.auth.signOut();
       
-      // Manually clear all related cookies
-      if (typeof document !== 'undefined') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-          const eqPos = cookie.indexOf('=');
-          const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-          // Delete all Supabase related cookies
-          if (name.startsWith('sb-') || name === 'sb-auth-token') {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
-          }
+      // Clear all Supabase related cookies from the server-side request
+      const cookieStore = await cookies();
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+      const subdomain = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || "";
+      
+      // Get all cookies and delete the ones related to Supabase
+      const allCookies = cookieStore.getAll();
+      for (const cookie of allCookies) {
+        if (cookie.name.startsWith(`sb-${subdomain}`) || 
+            cookie.name === 'sb-auth-token' || 
+            cookie.name.includes('supabase')) {
+          cookieStore.delete(cookie.name);
         }
-        
-        // Clear Supabase related data from localStorage
-        Object.keys(localStorage).forEach(key => {
-          if (key.startsWith('sb-') || key.includes('supabase')) {
-            localStorage.removeItem(key);
-          }
-        });
       }
       
       console.log("signOut completed", error);

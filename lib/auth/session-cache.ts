@@ -62,7 +62,7 @@ export async function getSessionUser(supabase: SupabaseClient): Promise<UserCont
 
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
-    const needsRefresh = currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
+    const needsRefresh = currentSession.refresh_token && currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
 
     if (needsRefresh) {
       const refreshResult = await supabaseClient.auth.refreshSession();
@@ -115,8 +115,7 @@ export async function getCachedUser(supabase?: SupabaseClient): Promise<{ userCo
     }
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
-    const needsRefresh =
-      !refreshedSession || (refreshedSession.expires_at && new Date(refreshedSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000);
+    const needsRefresh = refreshedSession && refreshedSession.refresh_token && refreshedSession.expires_at && new Date(refreshedSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
 
     if (needsRefresh) {
       const refreshResult = await supabaseClient.auth.refreshSession();
