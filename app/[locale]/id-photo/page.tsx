@@ -217,7 +217,6 @@ export default function IdPhotoPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [originalProcessedImage, setOriginalProcessedImage] = useState<string | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [layoutImage, setLayoutImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -233,7 +232,7 @@ export default function IdPhotoPage() {
   const [selectedBgColor, setSelectedBgColor] = useState('#FFFFFF');
   const [selectedLayout, setSelectedLayout] = useState(LAYOUT_SIZES[0]);
 
-  // Cropping related
+  // Cropping related - integrated into main area
   const [showCropper, setShowCropper] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -242,6 +241,48 @@ export default function IdPhotoPage() {
 
   // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Add cropper styles
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .cropper-container {
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: #f9fafb;
+      }
+      
+      .cropper-media {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+      }
+      
+      .reactEasyCrop_Container {
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: #f9fafb;
+      }
+      
+      .reactEasyCrop_CropArea {
+        border: 2px solid #3b82f6 !important;
+        border-radius: 4px !important;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5) !important;
+      }
+      
+      .reactEasyCrop_Grid::before,
+      .reactEasyCrop_Grid::after {
+        border-color: rgba(255, 255, 255, 0.5) !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   // Get image dimensions
   const getImageDimensions = (src: string): Promise<{ width: number; height: number }> => {
@@ -269,15 +310,21 @@ export default function IdPhotoPage() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const imageSrc = e.target?.result as string;
+        
         setUploadedImage(imageSrc);
         setProcessedImage(null);
         setOriginalProcessedImage(null);
-        setCroppedImage(null);
         setLayoutImage(null);
         setIsInLayoutMode(false);
+        
+        // Reset cropper state
         setCrop({ x: 0, y: 0 });
         setZoom(1);
         setRotation(0);
+        setCroppedAreaPixels(null);
+        
+        // Show cropper after upload
+        setShowCropper(true);
         
         // Automatically open idPhotoMaker when re-uploading
         setShowSidePanel('idPhotoMaker');
@@ -285,7 +332,6 @@ export default function IdPhotoPage() {
         const dimensions = await getImageDimensions(imageSrc);
         setOriginalImageSize(dimensions);
         
-        // Prompt that you can reselect background color to generate image
         toast.success(t('uploadSuccess'));
       };
       reader.readAsDataURL(file);
@@ -300,32 +346,23 @@ export default function IdPhotoPage() {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  const handleCropApply = useCallback(async () => {
-    if (!uploadedImage || !croppedAreaPixels) return;
-    
-    try {
-      const croppedImageUrl = await getCroppedImg(uploadedImage, croppedAreaPixels, rotation);
-      setCroppedImage(croppedImageUrl);
-      setShowCropper(false);
-      toast.success(t('cropSuccess'));
-    } catch (error) {
-      console.error('Crop error:', error);
-      toast.error(t('cropError'));
-    }
-  }, [uploadedImage, croppedAreaPixels, rotation, t]);
-        
-  // Handle generation
+  // Handle generation with automatic cropping
   const handleProcess = async () => {
     if (!uploadedImage) {
       toast.error(t('selectPhotoFirst'));
       return;
-      }
+    }
       
-    const imageToProcess = croppedImage || uploadedImage;
     setIsProcessing(true);
     setGenerationProgress(0);
 
     try {
+      // Apply cropping automatically before generating
+      let imageToProcess = uploadedImage;
+      if (croppedAreaPixels) {
+        imageToProcess = await getCroppedImg(uploadedImage, croppedAreaPixels, rotation);
+      }
+
       const response = await generateIdPhoto({
         image: imageToProcess,
         photoSpec: selectedSpec,
@@ -344,6 +381,7 @@ export default function IdPhotoPage() {
           setProcessedImage(imageUrl);
           setOriginalProcessedImage(imageUrl);
           setIsProcessing(false);
+          setShowCropper(false); // Hide cropper after successful generation
           toast.success(t('generateSuccess'));
         },
         onError: (error) => {
@@ -484,10 +522,10 @@ export default function IdPhotoPage() {
   const handleDownloadWithSpec = async () => {
     if (!processedImage) return;
     
-      const link = document.createElement('a');
+    const link = document.createElement('a');
     link.href = processedImage;
     link.download = `id-photo-${selectedSpec.id}.jpg`;
-      link.click();
+    link.click();
   };
 
   return (
@@ -502,24 +540,22 @@ export default function IdPhotoPage() {
         <section className="pt-20 pb-4 px-6 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
                 className="bg-white/60 backdrop-blur-md hover:bg-white/80 shadow-lg border border-white/40"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('back')}
-            </Button>
-            <div>
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {t('back')}
+              </Button>
+              <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   {t('title')}
                 </h1>
+              </div>
+            </div>
           </div>
-        </div>
-
-
-                        </div>
         </section>
 
         {/* Main Content Area - left-right layout */}
@@ -786,13 +822,13 @@ export default function IdPhotoPage() {
             <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-4 shadow-lg flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                      <input
-                        type="file"
+                  <input
+                    type="file"
                     accept=".jpeg,.jpg,.png,.webp"
-                        onChange={handleFileUpload}
+                    onChange={handleFileUpload}
                     ref={fileInputRef}
-                        className="hidden"
-                      />
+                    className="hidden"
+                  />
                   <Button
                     onClick={() => fileInputRef.current?.click()}
                     className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg"
@@ -802,37 +838,25 @@ export default function IdPhotoPage() {
                   </Button>
                   
                   {uploadedImage && originalImageSize && (
-                    <>
-                      <div className="text-sm text-gray-600">
-                              {t('originalSize', { width: originalImageSize.width, height: originalImageSize.height })}
-                              {croppedImage && <span className="text-green-600 ml-2">{t('cropped')}</span>}
-                        </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setShowCropper(true)}
-                        className="bg-white/60 backdrop-blur-md border-white/60"
-                          >
-                            <Crop className="w-3 h-3 mr-1" />
-                            {t('crop')}
-                          </Button>
-                    </>
-                          )}
-                        </div>
+                    <div className="text-sm text-gray-600">
+                      {t('originalSize', { width: originalImageSize.width, height: originalImageSize.height })}
+                    </div>
+                  )}
+                </div>
                 
                 {uploadedImage && (
                   <div className="w-16 h-20 rounded-lg overflow-hidden shadow-md">
-                            <Image
-                      src={croppedImage || uploadedImage}
+                    <Image
+                      src={uploadedImage}
                       alt="Uploaded Photo"
                       width={64}
                       height={80}
                       className="w-full h-full object-cover"
-                            />
-                            </div>
-                          )}
-                        </div>
-                          </div>
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Lower section: preview area */}
             <div className="p-6">
@@ -867,7 +891,7 @@ export default function IdPhotoPage() {
               </div>
 
               {/* Image display area */}
-              <div className="flex items-center justify-center bg-gray-200/100 rounded-xl backdrop-blur-md border border-gray-200/50 min-h-[600px]">
+              <div className="flex items-center justify-center bg-gray-100/80 rounded-xl backdrop-blur-md border border-gray-200/50 min-h-[600px] relative">
                 {!uploadedImage ? (
                   <div className="text-center text-gray-500">
                     <Camera className="w-16 h-16 mx-auto mb-4 text-gray-300" />
@@ -901,18 +925,63 @@ export default function IdPhotoPage() {
                         alt="Processed ID Photo"
                         width={isInLayoutMode ? 800 : 400}
                         height={isInLayoutMode ? 600 : 500}
-                        // className={`rounded-xl shadow-2xl object-contain ${
-                        //   isInLayoutMode 
-                        //     ? 'max-w-[calc(100%-3rem)] max-h-[calc(100vh-350px)]' 
-                        //     : 'max-w-[70%] max-h-[70%]'
-                        // }`}
+                        className="rounded-xl shadow-2xl object-contain"
                       />
                     </Watermark>
+                  </div>
+                ) : showCropper ? (
+                  // Integrated cropper in main area
+                  <div className="w-full space-y-4">
+                    <div className="w-full h-[550px] relative bg-gray-50 rounded-xl overflow-hidden">
+                      <Cropper
+                        image={uploadedImage}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={selectedSpec.width / selectedSpec.height}
+                        onCropChange={setCrop}
+                        onCropComplete={onCropComplete}
+                        onZoomChange={setZoom}
+                        showGrid={true}
+                        zoomSpeed={0.1}
+                        cropShape="rect"
+                        objectFit="contain"
+                        restrictPosition={true}
+                      />
+                    </div>
+                    {/* Cropper controls below image */}
+                    <div className="bg-white/95 backdrop-blur-md rounded-lg p-4 shadow-lg border border-white/40">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Label className="text-sm font-medium text-gray-700">{t('zoom')}:</Label>
+                          <input
+                            type="range"
+                            value={zoom}
+                            min={1}
+                            max={3}
+                            step={0.1}
+                            onChange={(e) => setZoom(Number(e.target.value))}
+                            className="w-32"
+                          />
+                          <span className="text-xs text-gray-500">{Math.round(zoom * 100)}%</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setRotation(rotation + 90)}
+                            className="bg-white/80 backdrop-blur-md border-gray-300"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {t('dragToCrop')}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full">
                     <Image
-                      src={croppedImage || uploadedImage}
+                      src={uploadedImage}
                       alt="Original Photo"
                       width={400}
                       height={500}
@@ -925,67 +994,6 @@ export default function IdPhotoPage() {
           </div>
         </div>
       </div>
-
-      {/* Cropper Modal */}
-      {showCropper && uploadedImage && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden shadow-2xl border border-white/50">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('cropImage')}</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCropper(false)}
-                  className="bg-white/60 backdrop-blur-md"
-              >
-                  <X className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            <div className="relative h-96 bg-gray-100 rounded-xl overflow-hidden mb-6">
-              <Cropper
-                image={uploadedImage}
-                crop={crop}
-                zoom={zoom}
-                aspect={selectedSpec.width / selectedSpec.height}
-                onCropChange={setCrop}
-                onCropComplete={onCropComplete}
-                onZoomChange={setZoom}
-              />
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                  <Label className="text-sm font-medium">{t('zoom')}:</Label>
-                <input
-                  type="range"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-32"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setRotation(rotation + 90)}
-                    className="bg-white/60 backdrop-blur-md"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              <Button 
-                onClick={handleCropApply}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-              >
-                {t('apply')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

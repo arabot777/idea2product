@@ -305,6 +305,7 @@
     "zoom": "Zoom",
     "apply": "Apply",
     "cancel": "Cancel",
+    "dragToCrop": "Drag to adjust crop area",
     "originalSize": "Original size: {width} × {height} pixels",
     "cropped": "✓ Cropped",
     "noImage": "No image",

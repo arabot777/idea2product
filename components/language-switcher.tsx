@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Globe, Check } from 'lucide-react';
 
 const languages = [
-  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
+  // { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
   { code: 'en', name: 'English', flag: '🇺🇸' }
 ];
 
