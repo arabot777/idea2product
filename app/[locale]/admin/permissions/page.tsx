@@ -7,7 +7,7 @@ import { PermissionEditForm } from '@/components/admin/permission/permission-edi
 import { PermissionSyncDialog } from '@/components/admin/permission/permission-sync-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { PermissionDiff } from '@/lib/types/permission/permission-config.bean';
 import { useTranslations } from 'next-intl';
 import { getPagePermissionConfigs } from '@/app/actions/permission/get-page-permission-configs';
@@ -26,7 +26,6 @@ const PermissionsPage: React.FC = () => {
   const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false);
   const [syncDiffs, setSyncDiffs] = useState<PermissionDiff[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const { toast } = useToast();
   const t = useTranslations('PermissionsPage');
 
   const fetchPermissions = async (page: number = currentPage, size: number = pageSize) => {
@@ -41,11 +40,7 @@ const PermissionsPage: React.FC = () => {
       setCurrentPage(page);
       setPageSize(size);
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message || t('failedToLoadPermissions'),
-        variant: 'destructive',
-      });
+      toast.error(error.message || t('failedToLoadPermissions'));
     } finally {
       setLoading(false);
     }
@@ -66,18 +61,11 @@ const PermissionsPage: React.FC = () => {
     try {
       await updatePermission(updatedData.id, updatedData);
 
-      toast({
-        title: t('success'),
-        description: t('permissionUpdatedSuccessfully'),
-      });
+      toast.success(t('permissionUpdatedSuccessfully'));
       setEditingPermission(null);
       fetchPermissions(); // Refresh the list
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message || t('failedToUpdatePermission'),
-        variant: 'destructive',
-      });
+      toast.error(error.message || t('failedToUpdatePermission'));
     } finally {
       setIsSaving(false);
     }
@@ -96,18 +84,11 @@ const PermissionsPage: React.FC = () => {
     try {
       await syncPermissionsToDatabase(syncDiffs);
 
-      toast({
-        title: t('success'),
-        description: t('permissionsSyncedSuccessfully'),
-      });
+      toast.success(t('permissionsSyncedSuccessfully'));
       setIsSyncDialogOpen(false);
       fetchPermissions(); // Refresh the list
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message || t('failedToSyncPermissions'),
-        variant: 'destructive',
-      });
+      toast.error(error.message || t('failedToSyncPermissions'));
     } finally {
       setIsSyncing(false);
     }
@@ -120,11 +101,7 @@ const PermissionsPage: React.FC = () => {
       setSyncDiffs(data);
       setIsSyncDialogOpen(true);
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message || t('failedToLoadPermissionDiffs'),
-        variant: 'destructive',
-      });
+      toast.error(error.message || t('failedToLoadPermissionDiffs'));
     } finally {
       setLoading(false);
     }

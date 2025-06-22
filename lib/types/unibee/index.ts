@@ -10,6 +10,10 @@ export interface UnibeePlan {
   status: number; // 1-Editing, 2-Active, 3-InActive, 4-SoftArchive, 5-HardArchive
   type: number; // 1-main plan, 2-addon plan, 3-onetime
   createTime: number; // timestamp
+  metricLimits: {
+    metricLimit: number;
+    metricId: number;
+  }[];
 }
 
 export interface UnibeePlanListResponse {
@@ -234,6 +238,11 @@ export interface UnibeeNewMetricEventRequest {
   userId: number;
 }
 
+export interface UnibeeDeleteMetricEventRequest {
+  externalEventId: string;
+  metricCode: string;
+}
+
 export interface UnibeeEventCharge {
   chargeAmount: number;
   chargePricing: {
@@ -432,6 +441,13 @@ export interface UnibeeUserMetric {
   limitStats: UnibeeLimitStat[];
   meteredChargeStats: UnibeeMeteredChargeStat[];
   recurringChargeStats: UnibeeRecurringChargeStat[];
+}
+
+export interface UnibeeDeleteMetricEventResponse {
+  code: number;
+  message: string;
+  redirect: string;
+  requestId: string;
 }
 
 export interface UnibeeUserMetricResponse {

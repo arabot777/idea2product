@@ -6,6 +6,8 @@ import {
   UnibeeNewMetricRequest,
   UnibeeNewMetricResponse,
   UnibeeNewMetricEventRequest,
+  UnibeeDeleteMetricEventRequest,
+  UnibeeDeleteMetricEventResponse,
   UnibeeNewMetricEventResponse,
   UnibeeUserMetricRequest,
   UnibeeUserMetricResponse,
@@ -14,11 +16,11 @@ import {
 } from "@/lib/types/unibee";
 
 /**
- * Simple Unibean client for handling HTTP requests.
+ * Simple Unibee client for handling HTTP requests.
  * Automatically converts request parameters based on the method (GET or POST) and parses JSON responses.
  */
-export class UnibeanClient {
-  private static _instance: UnibeanClient;
+export class UnibeeClient {
+  private static _instance: UnibeeClient;
   private baseUrl: string;
   private apiKey: string;
 
@@ -33,22 +35,22 @@ export class UnibeanClient {
   }
 
   /**
-   * Get the singleton instance of UnibeanClient.
+   * Get the singleton instance of UnibeeClient.
    * @param baseUrl Base URL for the API.
    * @param apiKey API key.
-   * @returns Singleton instance of UnibeanClient.
+   * @returns Singleton instance of UnibeeClient.
    */
-  public static getInstance(): UnibeanClient {
-    if (!UnibeanClient._instance) {
+  public static getInstance(): UnibeeClient {
+    if (!UnibeeClient._instance) {
       const baseUrl = process.env.UNIBEE_API_BASE_URL || "https://api.unibee.top";
       const apiKey = process.env.UNIBEE_API_KEY || "";
 
       if (!baseUrl || !apiKey) {
-        throw new Error('Unibean API base URL or API key not found in environment variables');
+        throw new Error('Unibee API base URL or API key not found in environment variables');
       }
-      UnibeanClient._instance = new UnibeanClient(baseUrl, apiKey);
+      UnibeeClient._instance = new UnibeeClient(baseUrl, apiKey);
     }
-    return UnibeanClient._instance;
+    return UnibeeClient._instance;
   }
 
   /**
@@ -92,8 +94,13 @@ export class UnibeanClient {
       const response = await fetch(requestUrl, options);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        try {
+          const data: T = await response.json();
+          return data;
+        } catch (error) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        }
       }
 
       const data: T = await response.json();
@@ -110,6 +117,13 @@ export class UnibeanClient {
    * @returns A promise that resolves to UnibeePlanListResponse.
    */
   public async getPlanList(params?: Record<string, any>): Promise<UnibeePlanListResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      if (!params) {
+        params = {};
+      }
+      params.productIds = unibeeProductId;
+    }
     return this.request<UnibeePlanListResponse>("GET", "/merchant/plan/list", params);
   }
 
@@ -137,6 +151,13 @@ export class UnibeanClient {
    * @returns A promise that resolves to UnibeeUserSubscriptionResponse.
    */
   public async getUserSubscriptionDetail(params: Record<string, any>): Promise<UnibeeUserSubscriptionResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      if (!params) {
+        params = {};
+      }
+      params.productId = unibeeProductId;
+    }
     return this.request<UnibeeUserSubscriptionResponse>("POST", "/merchant/subscription/user_subscription_detail", params);
   }
 
@@ -146,6 +167,11 @@ export class UnibeanClient {
    * @returns A promise that resolves to UnibeeNewMetricResponse.
    */
   public async createNewMetric(data: UnibeeNewMetricRequest): Promise<UnibeeNewMetricResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      data.code = `${unibeeProductId}@${data.code}`;
+      data.metricName = `${unibeeProductId}@${data.metricName}`;
+    }
     return this.request<UnibeeNewMetricResponse>("POST", "/merchant/metric/new", data);
   }
 
@@ -155,8 +181,25 @@ export class UnibeanClient {
    * @returns A promise that resolves to UnibeeNewMetricEventResponse.
    */
   public async createNewMetricEvent(data: UnibeeNewMetricEventRequest): Promise<UnibeeNewMetricEventResponse> {
+    const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+    if (unibeeProductId) {
+      data.metricCode = `${unibeeProductId}@${data.metricCode}`;
+    }
     return this.request<UnibeeNewMetricEventResponse>("POST", "/merchant/metric/event/new", data);
   }
+
+  /**
+   * Deletes a metric event in Unibee.
+   * @param data The request body for deleting a metric event.
+   * @returns A promise that resolves to UnibeeDeleteMetricEventResponse.
+   */
+    public async deleteMetricEvent(data: UnibeeDeleteMetricEventRequest): Promise<UnibeeDeleteMetricEventResponse> {
+      const unibeeProductId = process.env.UNIBEE_PRODUCT_ID;
+      if (unibeeProductId) {
+        data.metricCode = `${unibeeProductId}@${data.metricCode}`;
+      }
+      return this.request<UnibeeDeleteMetricEventResponse>("POST", "/merchant/metric/event/delete", data);
+    }
 
   /**
    * Fetches a user's metric data from Unibee.

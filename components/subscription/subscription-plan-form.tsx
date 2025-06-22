@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { SubscriptionPlanDto, SubscriptionPlanDtoSchema } from '@/lib/types/billing/subscription-plan.dto';
 import { createSubscriptionPlan } from '@/app/actions/billing/create-subscription-plan';
 import { updateSubscriptionPlan } from '@/app/actions/billing/update-subscription-plan';
@@ -50,7 +50,6 @@ interface SubscriptionPlanFormProps {
 
 export function SubscriptionPlanForm({ initialData, onSuccess }: SubscriptionPlanFormProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const isEditMode = !!initialData;
   const t = useTranslations('SubscriptionPlanForm');
 
@@ -99,16 +98,10 @@ export function SubscriptionPlanForm({ initialData, onSuccess }: SubscriptionPla
           id: initialData.id,
           ...values
         });
-        toast({
-          title: t('success'),
-          description: t('updateSuccess'),
-        });
+        toast.success(t('updateSuccess'));
       } else {
         await createSubscriptionPlan(values as any); // Temporary as any, check type later
-        toast({
-          title: t('success'),
-          description: t('subscriptionPlanCreated'),
-        });
+        toast.success(t('subscriptionPlanCreated'));
       }
       if (onSuccess) {
         onSuccess();
@@ -123,11 +116,7 @@ export function SubscriptionPlanForm({ initialData, onSuccess }: SubscriptionPla
           : isEditMode
           ? t('updateFailed')
           : t('createFailed');
-      toast({
-        title: t('error'),
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(errorMessage);
     }
   };
 

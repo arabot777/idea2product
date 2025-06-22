@@ -11,23 +11,6 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations('AdminLayout');
-
-  // Mock permission check function
-  async function checkAdminPermissions(): Promise<boolean> {
-    // In a real application, this would check user sessions, database roles, etc.
-    // For simulation, we assume the user is an administrator only in the development environment
-    // Or it can be simulated based on an environment variable
-    const isAdmin = process.env.NODE_ENV === 'development';
-    return isAdmin;
-  }
-
-  const isAdmin = await checkAdminPermissions();
-
-  if (!isAdmin) {
-    // If not an administrator, redirect to the homepage or display an unauthorized message
-    redirect('/'); // Or an "unauthorized" component can be rendered
-  }
-
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left navigation bar */}

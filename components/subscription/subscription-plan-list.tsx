@@ -15,13 +15,12 @@ import { SubscriptionPlanDto } from '@/lib/types/billing/subscription-plan.dto';
 import { listSubscriptionPlans } from '@/app/actions/billing/list-subscription-plans';
 import { updateSubscriptionPlan } from '@/app/actions/billing/update-subscription-plan';
 import { AppError } from '@/lib/types/app.error';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
 export function SubscriptionPlanList() {
   const [plans, setPlans] = useState<SubscriptionPlanDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const t = useTranslations('SubscriptionPlanList');
 
   useEffect(() => {
@@ -38,11 +37,7 @@ export function SubscriptionPlanList() {
         error instanceof AppError
           ? error.message
           : t('errorLoadingPlans');
-      toast({
-        title: t('error'),
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -54,21 +49,14 @@ export function SubscriptionPlanList() {
         id,
         isActive: false,
       });
-      toast({
-        title: t('success'),
-        description: t('deleteSuccess'),
-      });
+      toast.success(t('deleteSuccess'));
       fetchPlans(); // Refresh the list
     } catch (error) {
       const errorMessage =
         error instanceof AppError
           ? error.message
           : t('errorDeletingPlan');
-      toast({
-        title: t('error'),
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(errorMessage);
     }
   };
 

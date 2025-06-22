@@ -1,5 +1,6 @@
 {
   "title": "Account Security",
+  "updatePasswordButton": "Update Password",
   "oldPasswordLabel": "Current Password",
   "newPasswordLabel": "New Password",
   "confirmNewPasswordLabel": "Confirm New Password",

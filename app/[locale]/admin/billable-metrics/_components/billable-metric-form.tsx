@@ -1,40 +1,29 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { AggregationType, BillableMetricDto, BillableMetricSchema, MetricType, aggregationTypeLabels, metricTypeLabels } from '@/lib/types/unibee/billable-metric-dto';
-import { createBillableMetric } from '@/app/actions/unibee/create-billable-metric';
-import { updateBillableMetric } from '@/app/actions/unibee/update-billable-metric';
-import { toast } from 'sonner';
-import { CODE } from '@/lib/unibean/metric-code';
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+  AggregationType,
+  BillableMetricDto,
+  BillableMetricSchema,
+  MetricType,
+  aggregationTypeLabels,
+  metricTypeLabels,
+} from "@/lib/types/unibee/billable-metric-dto";
+import { createBillableMetric } from "@/app/actions/unibee/create-billable-metric";
+import { updateBillableMetric } from "@/app/actions/unibee/update-billable-metric";
+import { toast } from "sonner";
+import { CODE } from "@/lib/unibee/metric-code";
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+import { getFeatureCalculator } from "@/sdk/wavespeed/code-mapping";
 
 const formSchema = BillableMetricSchema.omit({
   id: true,
@@ -58,24 +47,23 @@ export const metricTypes = Object.entries(metricTypeLabels).map(([key, value]) =
   label: value,
 }));
 
-const codeOptions = Object.entries(CODE).map(([label, value]) => ({ label:value, value }));
+const codeOptions = Object.entries(CODE).map(([label, value]) => ({ label: value, value }));
 
-function CodeSelector({ field, onSelect }: { field: any, onSelect: (value: string) => void }) {
+function CodeSelector({ field, onSelect, disabled }: { field: any; onSelect?: (value: string) => void; disabled?: boolean }) {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
-  
-  const filteredOptions = searchTerm 
-    ? codeOptions.filter(option => 
-        option.label.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        option.value.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const filteredOptions = searchTerm
+    ? codeOptions.filter(
+        (option) => option.label.toLowerCase().includes(searchTerm.toLowerCase()) || option.value.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : codeOptions;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
-          {field.value ? codeOptions.find(o => o.value === field.value)?.label : "Select a code"}
+        <Button variant="outline" className="w-full justify-start" disabled={disabled}>
+          {field.value ? codeOptions.find((o) => o.value === field.value)?.label : "Select a code"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -85,9 +73,10 @@ function CodeSelector({ field, onSelect }: { field: any, onSelect: (value: strin
         <div className="flex items-center space-x-2 py-2">
           <Input 
             placeholder="Search code..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            className="flex-1" 
+            disabled={disabled}
           />
         </div>
         <div className="max-h-[300px] overflow-auto">
@@ -103,16 +92,12 @@ function CodeSelector({ field, onSelect }: { field: any, onSelect: (value: strin
                     field.value === option.value ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
                   )}
                   onClick={() => {
-                    onSelect(option.value);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      field.value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
+                    if (!disabled && onSelect) {
+                      onSelect(option.value);
+                      setOpen(false);
+                    }
+                  }}>
+                  <Check className={cn("mr-2 h-4 w-4", field.value === option.value ? "opacity-100" : "opacity-0")} />
                   {option.label}
                 </div>
               ))
@@ -124,31 +109,39 @@ function CodeSelector({ field, onSelect }: { field: any, onSelect: (value: strin
   );
 }
 
-
 export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProps) {
+  const isEditMode = Boolean(metric);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      metricName: metric?.metricName || '',
-      metricDescription: metric?.metricDescription || '',
-      code: metric?.code || '',
-      aggregationType: metric?.aggregationType || 1,
-      aggregationProperty: metric?.aggregationProperty || '',
+      metricName: metric?.metricName || "",
+      metricDescription: metric?.metricDescription || "",
+      code: metric?.code || "",
+      aggregationType: metric?.aggregationType || 5,
+      aggregationProperty: metric?.aggregationProperty || "",
       type: metric?.type || 1,
-      featureCalculator: metric?.featureCalculator || '',
-      featureOnceMax: metric?.featureOnceMax || 1,
-      displayDescription: metric?.displayDescription || '',
+      featureCalculator: metric?.featureCalculator || "",
+      displayDescription: metric?.displayDescription || "",
     },
   });
+
+  // Handle code selection and update featureCalculator accordingly
+  const handleCodeSelect = (code: string) => {
+    const isCodeChanged = form.getValues('code') !== code;
+    form.setValue('code', code);
+    // Only update featureCalculator if it's empty or code has changed
+    if (!form.getValues('featureCalculator') || isCodeChanged) {
+      const calculator = getFeatureCalculator(code);
+      form.setValue('featureCalculator', calculator);
+    }
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const result = metric
-        ? await updateBillableMetric({ ...values, id: metric.id })
-        : await createBillableMetric(values);
+      const result = metric ? await updateBillableMetric({ ...values, id: metric.id }) : await createBillableMetric(values);
 
       if (result.success) {
         toast.success(result.message);
@@ -166,7 +159,7 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
     for (const fieldName in errors) {
       if (errors[fieldName] && errors[fieldName].message) {
         errorMessage += `- ${fieldName}: ${errors[fieldName].message}\n`;
-      } else if (errors[fieldName] && typeof errors[fieldName] === 'object') {
+      } else if (errors[fieldName] && typeof errors[fieldName] === "object") {
         // Handle nested errors for complex objects if any
         for (const nestedFieldName in errors[fieldName]) {
           if (errors[fieldName][nestedFieldName] && errors[fieldName][nestedFieldName].message) {
@@ -201,7 +194,7 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
             <FormItem>
               <FormLabel>Code</FormLabel>
               <FormControl>
-                <CodeSelector field={field} onSelect={field.onChange} />
+                <CodeSelector field={field} onSelect={isEditMode ? undefined : handleCodeSelect} disabled={isEditMode} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -214,7 +207,20 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="A short description" {...field} value={field.value ?? ''} />
+                <Input placeholder="A short description" {...field} value={field.value ?? ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="displayDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Display Description</FormLabel>
+              <FormControl>
+                <Input placeholder="A user-friendly description" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -226,7 +232,11 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
-              <Select onValueChange={(value: string) => field.onChange(parseInt(value, 10))} defaultValue={String(field.value)}>
+              <Select 
+                onValueChange={isEditMode ? undefined : (value: string) => field.onChange(parseInt(value, 10))} 
+                defaultValue={String(field.value)}
+                disabled={isEditMode}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a metric type" />
@@ -250,7 +260,11 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
           render={({ field }) => (
             <FormItem>
               <FormLabel>Aggregation Type</FormLabel>
-              <Select onValueChange={(value: string) => field.onChange(parseInt(value, 10))} defaultValue={String(field.value)}>
+              <Select 
+                onValueChange={isEditMode ? undefined : (value: string) => field.onChange(parseInt(value, 10))} 
+                defaultValue={String(field.value)}
+                disabled={isEditMode}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select an aggregation type" />
@@ -268,19 +282,19 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="aggregationProperty"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Aggregation Property</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. user_id" {...field} value={field.value ?? ''} />
+                <Input placeholder="e.g. user_id" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <FormField
           control={form.control}
           name="featureCalculator"
@@ -294,40 +308,9 @@ export function BillableMetricForm({ metric, onSuccess }: BillableMetricFormProp
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="featureOnceMax"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Feature Once Max</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="e.g. 100"
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-                  value={field.value ?? ''}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="displayDescription"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Display Description</FormLabel>
-              <FormControl>
-                <Input placeholder="A user-friendly description" {...field} value={field.value ?? ''} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? "Saving..." : "Save"}
         </Button>
       </form>
     </FormProvider>

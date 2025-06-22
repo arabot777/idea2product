@@ -46,7 +46,6 @@ export const CODE = {
     Sdxl: 'sdxl',
     SkyReelsV1: 'sky-reels-v1',
     Step1xEdit: 'step1x-edit',
-    TestTestModel: 'test-test-model',
     Uno: 'uno',
     Veo2I2v: 'veo2-i2v',
     Veo2T2v: 'veo2-t2v',

@@ -13,7 +13,6 @@ import { taskCallRecordRevoke } from "@/app/actions/task/task-call-record-revoke
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { BillableMetric } from "@/lib/db/schemas/unibee/billable-metric";
 import { BillableMetricsQuery } from "@/lib/db/crud/unibee/billable-metrics.query";
-import { CODE } from "@/lib/unibean/metric-code";
 import { TaskStatus, TaskStatusType, TaskResultStatus, TaskResultType } from "@/lib/types/task/enum.bean";
 import { WaveSpeedResponse, ModelResult } from "@/sdk/wavespeed/types";
 import { Task } from "@/lib/db/schemas/task/task";

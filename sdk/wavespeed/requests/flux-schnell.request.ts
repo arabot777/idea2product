@@ -18,9 +18,8 @@ const FluxSchnellSchema = z.object({
 
 export class FluxSchnellRequest extends BaseRequest<typeof FluxSchnellSchema> {
   protected schema = FluxSchnellSchema;
-  protected data: z.infer<typeof FluxSchnellSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image?: string,
     mask_image?: string,
@@ -34,8 +33,8 @@ export class FluxSchnellRequest extends BaseRequest<typeof FluxSchnellSchema> {
     enable_safety_checker?: boolean,
     enable_sync_mode?: boolean,
   ) {
-    super();
-    this.data = {
+    const request = new FluxSchnellRequest();
+    request.data = {
       prompt,
       image: image ?? "",
       mask_image,
@@ -49,7 +48,7 @@ export class FluxSchnellRequest extends BaseRequest<typeof FluxSchnellSchema> {
       enable_safety_checker: enable_safety_checker ?? true,
       enable_sync_mode: enable_sync_mode ?? false,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -58,5 +57,15 @@ export class FluxSchnellRequest extends BaseRequest<typeof FluxSchnellSchema> {
 
   getModelType(): string {
     return "text-to-image";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 4,
+      num_images: 1,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "num_images";
   }
 }

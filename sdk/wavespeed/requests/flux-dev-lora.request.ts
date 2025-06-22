@@ -1,17 +1,25 @@
-import { z } from 'zod';
-import { BaseRequest } from '../base';
+import { z } from "zod";
+import { BaseRequest } from "../base";
 
 const LoraWeightSchema = z.object({
-  path: z.string().min(1, { message: 'Path to the LoRA model is required' }).describe("Path to the LoRA model"),
+  path: z.string().min(1, { message: "Path to the LoRA model is required" }).describe("Path to the LoRA model"),
   scale: z.number().min(0.0).max(4.0).describe("Scale of the LoRA model"),
 });
 
 const FluxDevLoraSchema = z.object({
-  prompt: z.string().min(1, {
-    message: 'Input prompt for image generation is required',
-  }).describe("Input prompt for image generation"),
+  prompt: z
+    .string()
+    .min(1, {
+      message: "Input prompt for image generation is required",
+    })
+    .describe("Input prompt for image generation"),
   image: z.string().optional(),
-  mask_image: z.string().optional().describe("The mask image tells the model where to generate new pixels (white) and where to preserve the original image (black). It acts as a stencil or guide for targeted image editing."),
+  mask_image: z
+    .string()
+    .optional()
+    .describe(
+      "The mask image tells the model where to generate new pixels (white) and where to preserve the original image (black). It acts as a stencil or guide for targeted image editing."
+    ),
   strength: z.number().min(0).max(1).default(0.8).optional().describe("Strength indicates extent to transform the reference image"),
   loras: z.array(LoraWeightSchema).max(5).default([]).optional().describe("List of LoRAs to apply (max 5)"),
   size: z.string().default("1024*1024").optional().describe("Output image size"),
@@ -25,9 +33,8 @@ const FluxDevLoraSchema = z.object({
 
 export class FluxDevLoraRequest extends BaseRequest<typeof FluxDevLoraSchema> {
   protected schema = FluxDevLoraSchema;
-  protected data: z.infer<typeof FluxDevLoraSchema>;
 
-  constructor(
+  static create(
     prompt: string,
     image?: string,
     mask_image?: string,
@@ -41,8 +48,8 @@ export class FluxDevLoraRequest extends BaseRequest<typeof FluxDevLoraSchema> {
     enable_base64_output?: boolean,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new FluxDevLoraRequest();
+    request.data = {
       prompt,
       ...(image !== undefined && { image }),
       ...(mask_image !== undefined && { mask_image }),
@@ -56,7 +63,7 @@ export class FluxDevLoraRequest extends BaseRequest<typeof FluxDevLoraSchema> {
       ...(enable_base64_output !== undefined && { enable_base64_output }),
       ...(enable_safety_checker !== undefined && { enable_safety_checker }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -65,5 +72,16 @@ export class FluxDevLoraRequest extends BaseRequest<typeof FluxDevLoraSchema> {
 
   getModelType(): string {
     return "text-to-image";
+  }
+
+  getDefaultParams(): Record<string, any> {
+    return {
+      num_inference_steps: 28,
+      num_images: 1,
+    };
+  }
+
+  getFeatureCalculator(): string {
+    return "num_images";
   }
 }

@@ -4,12 +4,14 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/app/actions/auth/sign-out';
+import { redirect } from 'next/navigation';
 
 export default function ProfileSettingsPage() {
   const t = useTranslations('DashboardProfileSettingsPage');
 
   const handleSignOut = async () => {
     await signOut();
+    redirect('/login');
   };
 
   return (

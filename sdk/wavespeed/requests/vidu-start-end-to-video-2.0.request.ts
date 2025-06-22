@@ -11,33 +11,23 @@ const ViduStartEndToVideo20Schema = z.object({
 
 export class ViduStartEndToVideo20Request extends BaseRequest<typeof ViduStartEndToVideo20Schema> {
   protected schema = ViduStartEndToVideo20Schema;
-  protected data: z.infer<typeof ViduStartEndToVideo20Schema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     images: string[],
     duration?: 4 | 8,
     movement_amplitude?: "auto" | "small" | "medium" | "large",
     seed?: number
   ) {
-    super();
-    const requestData: Partial<z.infer<typeof ViduStartEndToVideo20Schema>> = {
+    const request = new ViduStartEndToVideo20Request();
+    request.data = {
       prompt,
       images,
+      duration: duration ?? 4,
+      movement_amplitude: movement_amplitude ?? "auto",
+      seed: seed ?? 0,
     };
-
-    if (duration !== undefined) {
-      requestData.duration = duration;
-    }
-    if (movement_amplitude !== undefined) {
-      requestData.movement_amplitude = movement_amplitude;
-    }
-    if (seed !== undefined) {
-      requestData.seed = seed;
-    }
-
-    this.data = requestData as z.infer<typeof ViduStartEndToVideo20Schema>;
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -46,5 +36,15 @@ export class ViduStartEndToVideo20Request extends BaseRequest<typeof ViduStartEn
 
   getModelType(): string {
     return "image-to-video";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      duration: 4,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "duration/4";
   }
 }

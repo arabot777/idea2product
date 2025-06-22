@@ -13,9 +13,8 @@ const Step1xEditSchema = z.object({
 
 export class Step1xEditRequest extends BaseRequest<typeof Step1xEditSchema> {
   protected schema = Step1xEditSchema;
-  protected data: z.infer<typeof Step1xEditSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image: string,
     negative_prompt: string = '',
@@ -24,8 +23,8 @@ export class Step1xEditRequest extends BaseRequest<typeof Step1xEditSchema> {
     num_inference_steps: number = 30,
     enable_safety_checker: boolean = true
   ) {
-    super();
-    this.data = {
+    const request = new Step1xEditRequest();
+    request.data = {
       prompt,
       image,
       negative_prompt,
@@ -34,7 +33,7 @@ export class Step1xEditRequest extends BaseRequest<typeof Step1xEditSchema> {
       num_inference_steps,
       enable_safety_checker,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -43,5 +42,15 @@ export class Step1xEditRequest extends BaseRequest<typeof Step1xEditSchema> {
 
   getModelType(): string {
     return "text-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

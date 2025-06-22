@@ -19,9 +19,8 @@ const SdxlSchema = z.object({
 
 export class SdxlRequest extends BaseRequest<typeof SdxlSchema> {
   protected schema = SdxlSchema;
-  protected data: z.infer<typeof SdxlSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     enable_base64_output?: boolean,
     enable_safety_checker?: boolean,
@@ -34,8 +33,8 @@ export class SdxlRequest extends BaseRequest<typeof SdxlSchema> {
     size?: string,
     strength?: number
   ) {
-    super();
-    this.data = {
+    const request = new SdxlRequest();
+    request.data = {
       prompt: prompt,
       enable_base64_output: enable_base64_output ?? false,
       enable_safety_checker: enable_safety_checker ?? true,
@@ -48,7 +47,7 @@ export class SdxlRequest extends BaseRequest<typeof SdxlSchema> {
       size: size ?? "1024*1024",
       strength: strength ?? 0.8
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -57,5 +56,16 @@ export class SdxlRequest extends BaseRequest<typeof SdxlSchema> {
 
   getModelType(): string {
     return "text-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_images: 1,
+      num_inference_steps: 30,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "num_images";
   }
 }

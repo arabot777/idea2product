@@ -83,6 +83,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
     try {
       // Create form data with the roles
       const formData = new FormData();
+      formData.append('id', user.id);
       formData.append('roles', values.roles.join(","));
       
       // Call the server action with the form data

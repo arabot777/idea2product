@@ -1,6 +1,5 @@
 import { pgTable, uuid, text, timestamp, jsonb, pgEnum, index, integer } from "drizzle-orm/pg-core";
 import { profiles } from "../auth/profile";
-import { taskStatusEnum } from "./enum";
 
 export const tasks = pgTable("tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -9,7 +8,7 @@ export const tasks = pgTable("tasks", {
     .references(() => profiles.id, { onDelete: "cascade" }), // Associated user ID
   parentTaskId: uuid("parent_task_id"), // Parent task ID, for task chaining
   type: text("type").notNull(), // Task type
-  status: taskStatusEnum("status").notNull().default("pending"), // Task status
+  status: text("status").notNull().default("pending"), // Task status
   title: text("title"), // Task title
   description: text("description"), // Task description
   progress: integer("progress").notNull().default(0), // Task progress

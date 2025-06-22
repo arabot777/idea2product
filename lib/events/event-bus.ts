@@ -1,147 +1,114 @@
 /**
- * Event Bus Module
- * Provides an event communication mechanism between modules within the application.
+ * Defines the event structure interface.
+ * All events must conform to this structure.
  */
-
-// Event handler type
-type EventHandler = (payload: any) => void;
-
-// Event structure interface
-export interface AppEvent<T = any> {
-  type: string;        // Event type
-  source: string;      // Event source module
-  timestamp: number;   // Event timestamp
-  payload: T;          // Event data
+export interface IEvent {
+  name: string;
+  payload: any;
 }
 
-// Event bus implementation
-class EventBus {
-  private handlers: Record<string, EventHandler[]> = {};
-  
+export type IHandler = (payload: any) => Promise<void>;
+
+/**
+ * Defines the event bus interface.
+ * Provides methods for publishing, subscribing, and unsubscribing events.
+ */
+export interface IEventBus {
   /**
-   * Subscribes to an event.
-   * @param eventName The name of the event.
-   * @param handler The event handler.
-   * @returns A function to unsubscribe.
+   * Publishes an event.
+   * @param event The event object to publish.
+   * @returns A Promise that resolves when the event is published.
    */
-  on(eventName: string, handler: EventHandler): () => void {
-    if (!this.handlers[eventName]) {
-      this.handlers[eventName] = [];
-    }
-    
-    this.handlers[eventName].push(handler);
-    
-    // Returns a function to unsubscribe
-    return () => this.off(eventName, handler);
-  }
-  
+  publish<T extends IEvent>(event: T): Promise<void>;
+
   /**
-   * Unsubscribes from an event.
-   * @param eventName The name of the event.
-   * @param handler The event handler.
+   * Subscribes to a specific event name.
+   * @param eventName The name of the event to subscribe to.
+   * @param callback The callback function to execute when the event is fired.
    */
-  off(eventName: string, handler: EventHandler): void {
-    if (!this.handlers[eventName]) {
-      return;
-    }
-    
-    this.handlers[eventName] = this.handlers[eventName].filter(
-      h => h !== handler
-    );
-  }
-  
+  subscribe<T extends IEvent>(eventName: T['name'], callback: IHandler): void;
+
   /**
-   * Emits an event.
-   * @param eventName The name of the event.
-   * @param payload The event data.
+   * Unsubscribes from a specific event name.
+   * @param eventName The name of the event to unsubscribe from.
+   * @param callback The callback function to remove.
    */
-  emit<T = any>(eventName: string, payload: T, source: string): void {
-    // Create standard event object
-    const event: AppEvent<T> = {
-      type: eventName,
-      source,
-      timestamp: Date.now(),
-      payload,
-    };
-    
-    // If there are no handlers for this event, return.
-    if (!this.handlers[eventName]) {
-      return;
-    }
-    
-    // Call all handlers
-    this.handlers[eventName].forEach(handler => {
-      try {
-        handler(event);
-      } catch (error) {
-        console.error(`Event handler error (${eventName}):`, error);
+  unsubscribe<T extends IEvent>(eventName: T['name'], callback: IHandler): void;
+}
+
+/**
+ * Implements the event bus using direct function calls.
+ * Executes all subscribed callbacks immediately.
+ */
+export class DirectCallEventBus implements IEventBus {
+  private subscribers: Map<string, Set<IHandler>> = new Map();
+
+  /**
+   * Publishes an event.
+   * Executes all subscribed callbacks immediately and resolves the Promise.
+   * @param event The event object to publish.
+   * @returns A Promise that resolves when all callbacks have been executed.
+   */
+  public async publish<T extends IEvent>(event: T): Promise<void> {
+    console.log("Publish event:", event);
+    const callbacks = this.subscribers.get(event.name);
+    console.log("Callback count:", callbacks?.size);
+    if (callbacks) {
+      console.log("Executing callbacks...");
+      for (const callback of callbacks) {
+        console.log("Executing callback:", callback);
+        callback(event.payload).catch((error) => console.error(`Error in event handler for ${event.name}:`, error));
       }
-    });
+    }
+    return Promise.resolve();
   }
-  
+
   /**
-   * Subscribes to an event once.
-   * @param eventName The name of the event.
-   * @param handler The event handler.
+   * Subscribes to a specific event name.
+   * Adds the callback function to the set of subscribers for the event name.
+   * @param eventName The name of the event to subscribe to.
+   * @param callback The callback function to execute when the event is fired.
    */
-  once(eventName: string, handler: EventHandler): void {
-    const onceHandler = (payload: any) => {
-      handler(payload);
-      this.off(eventName, onceHandler);
-    };
-    
-    this.on(eventName, onceHandler);
+  public subscribe<T extends IEvent>(eventName: T['name'], callback: IHandler): void {
+    if (!this.subscribers.has(eventName)) {
+      this.subscribers.set(eventName, new Set());
+    }
+    this.subscribers.get(eventName)?.add(callback);
   }
-  
+
   /**
-   * Clears all handlers for a specific event.
-   * @param eventName The name of the event.
+   * Unsubscribes from a specific event name.
+   * Removes the callback function from the set of subscribers for the event name.
+   * @param eventName The name of the event to unsubscribe from.
+   * @param callback The callback function to remove.
    */
-  clear(eventName: string): void {
-    delete this.handlers[eventName];
-  }
-  
-  /**
-   * Clears all event handlers.
-   */
-  clearAll(): void {
-    this.handlers = {};
+  public unsubscribe<T extends IEvent>(eventName: T['name'], callback: IHandler): void {
+    const callbacks = this.subscribers.get(eventName);
+    if (callbacks) {
+      callbacks.delete(callback);
+      if (callbacks.size === 0) {
+        this.subscribers.delete(eventName);
+      }
+    }
   }
 }
 
-// Create singleton instance
-export const eventBus = new EventBus();
+/**
+ * Exports the singleton instance of the DirectCallEventBus.
+ */
+export const eventBus = new DirectCallEventBus();
 
-// Event naming convention example
-export const AUTH_EVENTS = {
-  LOGIN_SUCCESS: 'auth:login:success',
-  LOGIN_FAILED: 'auth:login:failed',
-  LOGOUT_SUCCESS: 'auth:logout:success',
-  REGISTER_SUCCESS: 'auth:register:success',
-  REGISTER_FAILED: 'auth:register:failed',
-  PASSWORD_RESET_REQUESTED: 'auth:password:resetRequested',
-  PASSWORD_RESET_COMPLETED: 'auth:password:resetCompleted',
-  PASSWORD_CHANGED: 'auth:password:changed',
-  SESSION_REFRESHED: 'auth:session:refreshed',
-  PROFILE_UPDATED: 'auth:profile:updated',
-};
 
-export const PAYMENT_EVENTS = {
-  SUBSCRIPTION_CREATED: 'payment:subscription:created',
-  SUBSCRIPTION_UPDATED: 'payment:subscription:updated',
-  SUBSCRIPTION_CANCELLED: 'payment:subscription:cancelled',
-  PAYMENT_SUCCEEDED: 'payment:charge:succeeded',
-  PAYMENT_FAILED: 'payment:charge:failed',
-};
+// Imports new handlers
+import { wsSyncTaskStatusHandler } from "@/lib/events/handles/ws-sync-task-status";
+import { recordTaskDataHandler } from "@/lib/events/handles/record-task-data";
+import { revokeTaskCallRecordHandler } from "@/lib/events/handles/revoke-task-call-record";
+import { updateTaskHandler } from "@/lib/events/handles/update-task";
+import { updateRemainHandler } from "@/lib/events/handles/update-remain";
 
-export const BILLING_EVENTS = {
-  USAGE_RECORDED: 'billing:usage:recorded',
-  QUOTA_EXCEEDED: 'billing:quota:exceeded',
-  INVOICE_CREATED: 'billing:invoice:created',
-};
-
-export const TOOL_EVENTS = {
-  EXECUTION_STARTED: 'tool:execution:started',
-  EXECUTION_COMPLETED: 'tool:execution:completed',
-  EXECUTION_FAILED: 'tool:execution:failed',
-};
+// Subscribes handlers to events
+eventBus.subscribe("task.sync.status", wsSyncTaskStatusHandler);
+eventBus.subscribe("task.record.data", recordTaskDataHandler);
+eventBus.subscribe("task.revoke.call.record", revokeTaskCallRecordHandler);
+eventBus.subscribe("task.update", updateTaskHandler);
+eventBus.subscribe("task.update.remain", updateRemainHandler);

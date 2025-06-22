@@ -19,12 +19,11 @@ const Wan2114bVaceSchema = z.object({
 
 export class Wan2114bVaceRequest extends BaseRequest<typeof Wan2114bVaceSchema> {
   protected schema = Wan2114bVaceSchema;
-  protected data: z.infer<typeof Wan2114bVaceSchema>;
-
-  constructor(data: z.infer<typeof Wan2114bVaceSchema>) {
-    super();
-    this.data = data;
-    
+  
+  static create(data: z.infer<typeof Wan2114bVaceSchema>) {
+    const request = new Wan2114bVaceRequest();
+    request.data = data;
+    return request;
   }
 
   getModelUuid(): string {
@@ -33,5 +32,17 @@ export class Wan2114bVaceRequest extends BaseRequest<typeof Wan2114bVaceSchema> 
 
   getModelType(): string {
     return "image-to-video";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      enable_fast_mode: false,
+      num_inference_steps: 30,
+      size: "832*480",
+      task: "depth",
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

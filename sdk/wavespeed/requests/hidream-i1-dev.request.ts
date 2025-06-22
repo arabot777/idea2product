@@ -13,24 +13,23 @@ const HidreamI1DevSchema = z.object({
 
 export class HidreamI1DevRequest extends BaseRequest<typeof HidreamI1DevSchema> {
   protected schema = HidreamI1DevSchema;
-  protected data: z.infer<typeof HidreamI1DevSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     size: string = "1024*1024",
     seed: number = -1,
     enable_base64_output: boolean = false,
     enable_safety_checker: boolean = true
   ) {
-    super();
-    this.data = {
+    const request = new HidreamI1DevRequest();
+    request.data = {
       prompt,
       size,
       seed,
       enable_base64_output,
       enable_safety_checker
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -39,5 +38,15 @@ export class HidreamI1DevRequest extends BaseRequest<typeof HidreamI1DevSchema> 
 
   getModelType(): string {
     return "text-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+  
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

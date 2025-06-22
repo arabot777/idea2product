@@ -10,7 +10,7 @@ import { SubscriptionPlanMapper } from "@/lib/mappers/billing/subscription-plan"
 import { getTranslations } from "next-intl/server";
 import { SubscriptionPlanDto } from "@/lib/types/billing/subscription-plan.dto";
 import { SubscriptionPlanQuery } from "@/lib/db/crud/billing/subscription-plan.query";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 import { UserSubscriptionPlanEdit } from "@/lib/db/crud/billing/user-subscription-plan.edit";
@@ -18,7 +18,6 @@ import { BillingStatus } from "@/lib/types/billing/enum.bean";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
 import { UnibeePaymentTimeline, UnibeePaymentTimelineListResponse } from "@/lib/types/unibee";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 // Maps Unibee's status to our internal transaction status.
 const mapUnibeeStatusToLocal = (unibeeTimeline: UnibeePaymentTimeline): string | undefined => {
@@ -40,7 +39,6 @@ const mapUnibeeStatusToLocal = (unibeeTimeline: UnibeePaymentTimeline): string |
  */
 async function syncUnibeeTransactionsInBackground(userContext: UserContext): Promise<void> {
   try {
-    await unibeeSyncUser(userContext);
     // 1. Fetch all local transactions that are not in a final state.
     const localTransactions = await TransactionQuery.getUnfinishedTransactionsByUserId(userContext.id || "");
     if (localTransactions.length === 0) {
@@ -53,7 +51,7 @@ async function syncUnibeeTransactionsInBackground(userContext: UserContext): Pro
     const createTimeStart = Math.floor(firstTransactionTime.getTime() / 1000);
 
     // 3. Fetch payment timelines from Unibee since the earliest transaction.
-    const unibeeResponse = await UnibeanClient.getInstance().getPaymentTimelineList(
+    const unibeeResponse = await UnibeeClient.getInstance().getPaymentTimelineList(
       { userId: userContext.unibeeExternalId, createTimeStart, page: 0, count: 100 }
     );
 

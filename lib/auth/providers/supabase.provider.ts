@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export class SupabaseAuthProvider {
   private supabase?: SupabaseClient;
@@ -27,9 +28,32 @@ export class SupabaseAuthProvider {
   }
 
   async signOut(): Promise<{ error: AuthError | null }> {
-    await this.initSupabase();
-    const { error } = await this.supabase!.auth.signOut();
-    return { error };
+    try {
+      await this.initSupabase();
+      // Call Supabase logout first
+      const { error } = await this.supabase!.auth.signOut();
+      
+      // Clear all Supabase related cookies from the server-side request
+      const cookieStore = await cookies();
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+      const subdomain = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || "";
+      
+      // Get all cookies and delete the ones related to Supabase
+      const allCookies = cookieStore.getAll();
+      for (const cookie of allCookies) {
+        if (cookie.name.startsWith(`sb-${subdomain}`) || 
+            cookie.name === 'sb-auth-token' || 
+            cookie.name.includes('supabase')) {
+          cookieStore.delete(cookie.name);
+        }
+      }
+      
+      console.log("signOut completed", error);
+      return { error };
+    } catch (err) {
+      console.error("Error during sign out:", err);
+      return { error: err as AuthError };
+    }
   }
 
   async verifyEmail(token: string): Promise<{ error: AuthError | null }> {
@@ -81,6 +105,12 @@ export class SupabaseAuthProvider {
     await this.initSupabase();
     const { data, error } = await this.supabase!.auth.getUser();
     return { user: data.user, error };
+  }
+
+  async updateUserRoles(userId: string, roles: string[]): Promise<{ error: AuthError | null }> {
+    await this.initSupabase();
+    const { error } = await this.supabase!.auth.admin.updateUserById(userId, { role: roles.join(",") });
+    return { error };
   }
 
   async signInWithOAuth(provider: 'google' | 'github', redirectTo: string): Promise<{ data: { url: string | null }; error: AuthError | null }> {

@@ -98,13 +98,13 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ plan, currentPlanId
             )}
           </div>
         )}
-        <ul className="space-y-2 text-muted-foreground">
+        {/* <ul className="space-y-2 text-muted-foreground">
           {plan.features && Object.entries(plan.features).map(([key, value]) => (
             <li key={key} className="flex items-center">
               <span className="mr-2">{t("checkMark")}</span> {key}{t("colon")} {value}
             </li>
           ))}
-        </ul>
+        </ul> */}
       </CardHeader>
 
       <CardContent className="space-y-6">

@@ -1,16 +1,15 @@
 "use server";
 
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { cache } from "@/lib/cache";
 import { CacheKeys } from "@/lib/cache/keys";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
-import { CODE } from "@/lib/unibean/metric-code";
+import { CODE } from "@/lib/unibee/metric-code";
 import { UserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserMetricLimitsQuery } from "@/lib/db/crud/unibee/user-metric-limits.query";
 import { UserMetricLimitsEdit } from "@/lib/db/crud/unibee/user-metric-limits.edit";
 import { v4 as uuidv4 } from "uuid";
 import { BillableMetric } from "@/lib/db/schemas/unibee/billable-metric";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 interface CacheData {
   cachedUserMetricLimit: UserMetricLimit;
@@ -26,25 +25,25 @@ export async function taskCallRecord(
   billableMetric: BillableMetric,
   userContext: UserContext
 ): Promise<{
+  externalEventId: string;
   usedAmount: number;
-  metricEventId: number;
   error?: string;
 }> {
-  await unibeeSyncUser(userContext);
   const result: {
+    externalEventId: string;
     usedAmount: number;
-    metricEventId: number;
     error?: string;
   } = {
+    externalEventId: "",
     usedAmount: currentRequestAmount,
-    metricEventId: 0,
   };
   try {
-    const unibeanClient = UnibeanClient.getInstance();
-
-    // 1. Call UnibeanClient's createNewMetricEvent to send to third party
-    const unibeeResponse = await unibeanClient.createNewMetricEvent({
-      externalEventId: uuidv4(), // Generate a unique ID
+    const unibeeClient = UnibeeClient.getInstance();
+    const externalEventId = uuidv4();
+    result.externalEventId = externalEventId;
+    // 1. Call UnibeeClient's createNewMetricEvent to send to third party
+    const unibeeResponse = await unibeeClient.createNewMetricEvent({
+      externalEventId,
       metricCode: code,
       userId: parseInt(userContext.unibeeExternalId!),
       metricProperties: {
@@ -53,11 +52,9 @@ export async function taskCallRecord(
     });
 
     if (unibeeResponse.code !== 0 || !unibeeResponse.data.merchantMetricEvent) {
-      result.error = unibeeResponse.message || "Failed to create metric event in Unibean";
+      result.error = unibeeResponse.message || "Failed to create metric event in Unibee";
       return result;
     }
-    result.metricEventId = unibeeResponse.data.merchantMetricEvent.id;
-
     await UserMetricLimitsEdit.decreaseUsedValue(userContext.id!, code, currentRequestAmount);
 
     const cacheKey = CacheKeys.USER_METRIC_LIMIT(userContext.id || "", code);

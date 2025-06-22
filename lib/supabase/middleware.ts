@@ -1,10 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
-import {
-  AuthStatus,
-  ActiveStatus,
-} from "@/lib/types/permission/permission-config.dto";
+import { AuthStatus, ActiveStatus } from "@/lib/types/permission/permission-config.dto";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,20 +13,7 @@ const UN_USER_CONTEXT = {
 };
 
 const ROUTE_PERMISSIONS = {
-  public: [
-    "/",
-    "/login",
-    "/not-found",
-    "/unauthorized",
-    "/privacy",
-    "/terms",
-    "/auto-login",
-    "/confirm",
-    "/forgot-password",
-    "/register",
-    "/subscribe-plan",
-    "/id-photo",
-  ],
+  public: ["/", "/login", "/not-found", "/unauthorized", "/privacy", "/terms", "/auto-login", "/confirm", "/forgot-password", "/register", "/subscribe-plan", "/id-photo"],
   admin: ["/admin", "/admin/*"],
 };
 
@@ -71,9 +55,7 @@ export async function createSupabaseMiddlewareClient(request: NextRequest) {
   return { supabase, response };
 }
 
-export async function getSessionUser(
-  supabase: SupabaseClient
-): Promise<UserContext> {
+export async function getSessionUser(supabase: SupabaseClient): Promise<UserContext> {
   try {
     const supabaseClient = supabase || (await createClient());
 
@@ -94,10 +76,7 @@ export async function getSessionUser(
 
     // Check if session refresh is needed
     // Refresh session if it doesn't exist or if the refresh token expires within 10 minutes
-    const needsRefresh =
-      currentSession.expires_at &&
-      new Date(currentSession.expires_at * 1000).getTime() - Date.now() <
-        10 * 60 * 1000;
+    const needsRefresh = currentSession.refresh_token && currentSession.expires_at && new Date(currentSession.expires_at * 1000).getTime() - Date.now() < 10 * 60 * 1000;
 
     if (needsRefresh) {
       const refreshResult = await supabaseClient.auth.refreshSession();
@@ -108,7 +87,7 @@ export async function getSessionUser(
     }
     return userContext;
   } catch (error: any) {
-    console.error("Unexpected error in getCachedUser:", error.message || error);
+    console.error("Unexpected error in getSessionUser:", error.message || error);
     return UN_USER_CONTEXT;
   }
 }
@@ -136,7 +115,6 @@ export function isBasicRoute(path: string, routes: string[]) {
  */
 export async function updateSessionAndAuth(request: NextRequest) {
   const { supabase, response } = await createSupabaseMiddlewareClient(request);
-  const userContext = await getSessionUser(supabase);
   const path = request.nextUrl.pathname;
   const method = request.method;
 
@@ -144,6 +122,7 @@ export async function updateSessionAndAuth(request: NextRequest) {
     if (isBasicRoute(path, ROUTE_PERMISSIONS.public)) {
       return response;
     }
+    const userContext = await getSessionUser(supabase);
 
     if (isBasicRoute(path, ROUTE_PERMISSIONS.admin)) {
       if (userContext.roles.includes("system_admin")) {

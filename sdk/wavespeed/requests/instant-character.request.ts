@@ -15,9 +15,8 @@ const InstantCharacterSchema = z.object({
 
 export class InstantCharacterRequest extends BaseRequest<typeof InstantCharacterSchema> {
   protected schema = InstantCharacterSchema;
-  protected data: z.infer<typeof InstantCharacterSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image: string,
     size: string = '1024*1024',
@@ -28,8 +27,8 @@ export class InstantCharacterRequest extends BaseRequest<typeof InstantCharacter
     num_images: number = 1,
     enable_safety_checker: boolean = true
   ) {
-    super();
-    this.data = {
+    const request = new InstantCharacterRequest();
+    request.data = {
       prompt,
       image,
       size,
@@ -40,7 +39,7 @@ export class InstantCharacterRequest extends BaseRequest<typeof InstantCharacter
       num_images,
       enable_safety_checker,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -49,5 +48,16 @@ export class InstantCharacterRequest extends BaseRequest<typeof InstantCharacter
 
   getModelType(): string {
     return "image-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 28,
+      num_images: 1,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "num_images";
   }
 }

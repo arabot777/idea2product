@@ -13,9 +13,8 @@ const FluxReduxDevSchema = z.object({
 
 export class FluxReduxDevRequest extends BaseRequest<typeof FluxReduxDevSchema> {
   protected schema = FluxReduxDevSchema;
-  protected data: z.infer<typeof FluxReduxDevSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     size: string = '1024*1024',
     num_inference_steps: number = 28,
@@ -24,8 +23,8 @@ export class FluxReduxDevRequest extends BaseRequest<typeof FluxReduxDevSchema> 
     num_images: number = 1,
     enable_safety_checker: boolean = true
   ) {
-    super();
-    this.data = {
+    const request = new FluxReduxDevRequest();
+    request.data = {
       image,
       size,
       num_inference_steps,
@@ -34,7 +33,7 @@ export class FluxReduxDevRequest extends BaseRequest<typeof FluxReduxDevSchema> 
       num_images,
       enable_safety_checker,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -43,5 +42,16 @@ export class FluxReduxDevRequest extends BaseRequest<typeof FluxReduxDevSchema> 
 
   getModelType(): string {
     return "image-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 28,
+      num_images: 1,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "num_images";
   }
 }

@@ -1,69 +1,118 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, Filter, ImageIcon } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import ReactPaginate from "react-paginate"
 
 import { TaskResultDto } from "@/lib/types/task/task-result.dto";
 import { TaskResultTypeType } from "@/lib/types/task/enum.bean";
 import { TaskResultType } from "@/lib/types/task/enum.bean";
-import { TaskResultCard } from "./task-result-card"; // Import the new component
+import { TaskResultCard } from "./task-result-card";
+import { getTaskResults } from "@/app/actions/task/get-task-results";
 
-interface TaskResultGridClientProps {
-  taskResults: TaskResultDto[];
-  total: number;
-  currentPage: number;
-  currentType?: TaskResultTypeType; // Changed from currentStatus to currentType for task results
-  currentSearch?: string;
-  itemsPerPage: number;
-  isLoading?: boolean;
-  error?: string;
-}
+const ITEMS_PER_PAGE = 12;
 
-export function TaskResultGridClient({
-  isLoading,
-  error,
-  taskResults,
-  total,
-  currentPage,
-  currentType,
-  currentSearch,
-  itemsPerPage,
-}: TaskResultGridClientProps) {
-  const t = useTranslations("TaskResultGridClient") // New translation key
+interface TaskResultGridClientProps {}
+
+export function TaskResultGridClient({}: TaskResultGridClientProps) {
+  const t = useTranslations("TaskResultGridClient")
   const locale = useLocale()
   const router = useRouter()
-  const [searchTerm, setSearchTerm] = useState(currentSearch||"")
+  const searchParams = useSearchParams()
+  
+  // State management
+  const [taskResults, setTaskResults] = useState<TaskResultDto[]>([])
+  const [total, setTotal] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const searchStringRef = useRef<string | null>(null)
 
-  const totalPages = Math.ceil(total / itemsPerPage);
+  // Parse URL parameters
+  const currentPage = parseInt(searchParams.get("page") || "1")
+  const currentSearch = searchParams.get("search") || undefined
+  const currentType = searchParams.get("type") as TaskResultTypeType | undefined
+  const taskId = searchParams.get("taskId") as string | undefined
+
+  // Initialize search term from URL
+  useEffect(() => {
+    setSearchTerm(currentSearch || "")
+  }, [currentSearch])
+
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE)
+
+  // Update URL without page reload
+  const updateURL = useCallback((params: Record<string, string | null | undefined>) => {
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([_, value]) => value !== null && value !== undefined)
+    )
+    const queryParams = new URLSearchParams()
+    Object.entries(filteredParams).forEach(([key, value]) => {
+      queryParams.set(key, value as string)
+    })
+    const newURL = `/task/result?${queryParams.toString()}`
+    window.history.pushState({}, "", newURL)
+  }, [locale])
+
+  // Fetch task results
+  const fetchTaskResults = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const { data, total } = await getTaskResults({
+        page: currentPage,
+        pageSize: ITEMS_PER_PAGE,
+        search: currentSearch,
+        filter: {
+          taskId,
+          type: currentType,
+        },
+      })
+      setTaskResults(data)
+      setTotal(total)
+    } catch (err) {
+      console.error("Error fetching task results:", err)
+      setError(t("error.fetchingData") || "Failed to load data. Please try again later.")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentPage, currentSearch, currentType, taskId, t])
+
+  // Fetch data when URL parameters change
+  useEffect(() => {
+    const newSearchString = searchParams.toString()
+    if (searchStringRef.current === newSearchString) {
+      return
+    }
+    searchStringRef.current = newSearchString
+    fetchTaskResults()
+  }, [searchParams, fetchTaskResults])
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push(
-      queryAppender({
-        type: currentType,
-        search: searchTerm,
-        page: "1",
-      })
-    );
-  };
+    e.preventDefault()
+    updateURL({
+      type: currentType,
+      search: searchTerm,
+      page: "1",
+    })
+  }
 
   const queryAppender = (params: Record<string, string | null | undefined>) => {
     const filteredParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== null && value !== undefined)
-    );
-    const queryParams = new URLSearchParams();
+    )
+    const queryParams = new URLSearchParams()
     Object.entries(filteredParams).forEach(([key, value]) => {
-      queryParams.set(key, value as string);
-    });
-    return `/${locale}/task/result?${queryParams.toString()}`;
-  };
+      queryParams.set(key, value as string)
+    })
+    return `/task/result?${queryParams.toString()}`
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -93,7 +142,7 @@ export function TaskResultGridClient({
             </Button>
           </form>
 
-          <DropdownMenu  modal={false}>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" />
@@ -102,20 +151,28 @@ export function TaskResultGridClient({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-gray-100 text-black border-gray-200">
               <DropdownMenuItem>
-                <Link href={`/${locale}/task/result?page=1`} className="block w-full h-full px-2 py-1.5 hover:bg-gray-200">
+                <button 
+                  onClick={() => updateURL({ search: searchTerm, page: "1" })}
+                  className="block w-full h-full px-2 py-1.5 hover:bg-gray-200 text-left"
+                >
                   {t("all")}
-                </Link>
+                </button>
               </DropdownMenuItem>
-              {/* Add more filter options based on TaskResultType if needed */}
               <DropdownMenuItem>
-                <Link href={queryAppender({ type: TaskResultType.IMAGE, search: searchTerm, page: "1" })} className="block w-full h-full px-2 py-1.5 hover:bg-gray-200">
+                <button 
+                  onClick={() => updateURL({ type: TaskResultType.IMAGE, search: searchTerm, page: "1" })}
+                  className="block w-full h-full px-2 py-1.5 hover:bg-gray-200 text-left"
+                >
                   {t("image")}
-                </Link>
+                </button>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={queryAppender({ type: TaskResultType.VIDEO, search: searchTerm, page: "1" })} className="block w-full h-full px-2 py-1.5 hover:bg-gray-200">
+                <button 
+                  onClick={() => updateURL({ type: TaskResultType.VIDEO, search: searchTerm, page: "1" })}
+                  className="block w-full h-full px-2 py-1.5 hover:bg-gray-200 text-left"
+                >
                   {t("video")}
-                </Link>
+                </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -152,7 +209,7 @@ export function TaskResultGridClient({
           <Button 
             variant="outline" 
             className="mt-4"
-            onClick={() => window.location.reload()}
+            onClick={() => fetchTaskResults()}
           >
             {t('retry') || 'Retry'}
           </Button>
@@ -169,9 +226,9 @@ export function TaskResultGridClient({
             <div className="text-center py-16">
               <ImageIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-400 mb-2">
-                {searchTerm ? t("noMatchingRecords") : t("noRecordsYet")}
+                {currentSearch ? t("noMatchingRecords") : t("noRecordsYet")}
               </h3>
-              <p className="text-gray-500">{searchTerm ? t("tryDifferentKeywords") : t("startYourFirstCreation")}</p>
+              <p className="text-gray-500">{currentSearch ? t("tryDifferentKeywords") : t("startYourFirstCreation")}</p>
             </div>
           )}
         </>
@@ -187,7 +244,7 @@ export function TaskResultGridClient({
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
           onPageChange={({ selected }) => {
-            router.push(queryAppender({ type: currentType, search: searchTerm, page: String(selected + 1) }));
+            updateURL({ type: currentType, search: currentSearch, page: String(selected + 1) })
           }}
           containerClassName={"flex justify-center items-center space-x-2 mt-8"}
           pageClassName={"px-3 py-1 rounded-md text-gray-300 hover:bg-gray-700"}

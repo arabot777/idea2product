@@ -11,20 +11,19 @@ const Veo2T2vSchema = z.object({
 
 export class Veo2T2vRequest extends BaseRequest<typeof Veo2T2vSchema> {
   protected schema = Veo2T2vSchema;
-  protected data: z.infer<typeof Veo2T2vSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     aspect_ratio: "16:9" | "9:16" = "16:9",
     duration: "5s" | "6s" | "7s" | "8s" = "5s"
   ) {
-    super();
-    this.data = {
+    const request = new Veo2T2vRequest();
+    request.data = {
       prompt,
       aspect_ratio,
       duration,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -33,5 +32,15 @@ export class Veo2T2vRequest extends BaseRequest<typeof Veo2T2vSchema> {
 
   getModelType(): string {
     return "text-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      duration: "5s",
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return `duration=="5s"?1:duration=="6s"?2:duration=="7s"?3:4`;
   }
 }

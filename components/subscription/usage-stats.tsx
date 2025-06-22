@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 // import { getUsageStats } from '@/app/actions/billing/get-usage-stats';
 import { AppError } from '@/lib/types/app.error';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
 interface UsageStatsData {
@@ -19,7 +19,6 @@ interface UsageStatsData {
 export function UsageStats() {
   const [stats, setStats] = useState<UsageStatsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const t = useTranslations('UsageStats');
 
   useEffect(() => {
@@ -40,11 +39,7 @@ export function UsageStats() {
         error instanceof AppError
           ? error.message
           : t('errorLoadingUsageStats');
-      toast({
-        title: t('error'),
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

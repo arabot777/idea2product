@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { autoLogin } from "@/app/actions/auth/auto-login";
 import { Loader2, Zap, ArrowLeft } from "lucide-react";
@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { toast } from "sonner";
 import useSWR from "swr";
-import { getCurrentUserProfile } from '@/app/actions/auth/get-user-info';
+import { getCurrentUserProfile } from "@/app/actions/auth/get-user-info";
 
 export default function AutoLogin() {
   const router = useRouter();
@@ -19,74 +19,88 @@ export default function AutoLogin() {
 
   const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [countdown, setCountdown] = useState(3); // Countdown 3 seconds
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const loginAttempted = useRef(false);
 
-  useEffect(() => {
-    if (isUserLoading) return;
+  const performAutoLogin = useCallback(async () => {
+    const type = searchParams.get("type");
+    const code = searchParams.get("code");
+    const token_hash = searchParams.get("token_hash");
 
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get("type");
-    const timeWait = type === "social-google" ? 2000 : 4000;
+    const loginData: any = { type };
 
-    const performAutoLogin = async () => {
-      const loginData: any = {
-        type,
-      };
-
-      if (type === "social-google" || type === "social-github") {
-        loginData.code = params.get("code");
-        if (!loginData.code) {
-          const hash = window.location.hash;
-          const hashWithoutHash = hash.substring(1);
-          const ext_params = new URLSearchParams(hashWithoutHash);
-          loginData.access_token = ext_params.get("access_token");
-          loginData.refresh_token = ext_params.get("refresh_token");
-          if (!loginData.access_token || !loginData.refresh_token) {
-            setError(t("invalidParams"));
-            setIsPending(false);
-            return;
-          }
-        }
-      } else {
-        loginData.token_hash = params.get("token_hash");
-        if (!loginData.token_hash) {
+    if (type === "social-google" || type === "social-github") {
+      loginData.code = code;
+      if (!loginData.code) {
+        const hash = window.location.hash.substring(1);
+        const hashParams = new URLSearchParams(hash);
+        loginData.access_token = hashParams.get("access_token");
+        loginData.refresh_token = hashParams.get("refresh_token");
+        if (!loginData.access_token || !loginData.refresh_token) {
           setError(t("invalidParams"));
           setIsPending(false);
           return;
         }
       }
+    } else {
+      loginData.token_hash = token_hash;
+      if (!loginData.token_hash) {
+        setError(t("invalidParams"));
+        setIsPending(false);
+        return;
+      }
+    }
 
-      setIsPending(true);
-      setError(undefined);
-      try {
-        const result = await autoLogin({}, loginData);
-        if (result.success && result.profile) {
-          mutate();
-          // Login successful, start countdown
-          let count = 3;
-          setCountdown(count);
-          const timer = setInterval(() => {
-            count--;
-            setCountdown(count);
-            if (count === 0) {
-              clearInterval(timer);
-              router.push("/");
-            }
-          }, 1000);
-        } else {
-          setError(result.error?.message || t("autoLoginFailed"));
-          setIsPending(false);
-        }
-      } catch (err: any) {
-        setError(err.error?.message || t("anErrorOccurred"));
+    setIsPending(true);
+    setError(undefined);
+    try {
+      const result = await autoLogin({}, loginData);
+      if (result.success && result.profile) {
+        await mutate();
+        setIsPending(false);
+        setLoginSuccess(true);
+      } else {
+        setError(result.error?.message || t("autoLoginFailed"));
         setIsPending(false);
       }
-    };
+    } catch (err: any) {
+      setError(err.error?.message || t("anErrorOccurred"));
+      setIsPending(false);
+    }
+  }, [searchParams, t, mutate]);
 
-    const timer = setTimeout(performAutoLogin, timeWait);
+  useEffect(() => {
+    if (isUserLoading) {
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [isUserLoading, user, router, searchParams, t]);
+    if (loginAttempted.current) {
+      return;
+    }
+    loginAttempted.current = true;
+
+    const type = searchParams.get("type");
+    const timeWait = type === "social-google" ? 2000 : 4000;
+    const loginTimer = setTimeout(performAutoLogin, timeWait);
+
+    return () => clearTimeout(loginTimer);
+  }, [isUserLoading, performAutoLogin, searchParams]);
+
+  useEffect(() => {
+    if (!loginSuccess) return;
+
+    if (countdown <= 0) {
+      router.push("/");
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [loginSuccess, countdown, router]);
 
   if (isUserLoading) {
     return (
@@ -121,10 +135,10 @@ export default function AutoLogin() {
                   <div className="text-lg text-slate-300">{t("loggingIn")}</div>
                 </>
               )}
-              {!isPending && !error && countdown > 0 && (
+              {loginSuccess && countdown > 0 && (
                 <>
                   <Zap className="w-12 h-12 text-green-500 mb-4" />
-                  <div className="text-xl font-semibold text-white mb-2">{t("autoLoginSuccess", { count: countdown })}</div>
+                  <div className="text-xl font-semibold text-white mb-2 text-center">{t("autoLoginSuccess", { count: countdown })}</div>
                 </>
               )}
               {!isPending && error && (

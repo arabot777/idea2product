@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { updatePassword } from '@/app/actions/auth/reset-password';
 
 export default function ProfileSecurityPage() {
   const t = useTranslations('DashboardProfileSecurityPage');
-  const { toast } = useToast();
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -20,11 +19,7 @@ export default function ProfileSecurityPage() {
 
   const handleUpdatePassword = async () => {
     if (newPassword !== confirmNewPassword) {
-      toast({
-        title: t('passwordMismatchTitle'),
-        description: t('passwordMismatchDescription'),
-        variant: 'destructive',
-      });
+      toast.error(t('passwordMismatchDescription'));
       return;
     }
 
@@ -37,11 +32,7 @@ export default function ProfileSecurityPage() {
       const result = await updatePassword({}, formData);
       
       if (result && result.success) {
-        toast({
-          title: t('passwordUpdateSuccessTitle'),
-          description: t('passwordUpdateSuccessDescription'),
-          variant: 'default',
-        });
+        toast.success(t('passwordUpdateSuccessDescription'));
         setOldPassword('');
         setNewPassword('');
         setConfirmNewPassword('');
@@ -49,11 +40,7 @@ export default function ProfileSecurityPage() {
         throw new Error(result?.message || t('passwordUpdateErrorDescription'));
       }
     } catch (error: any) {
-      toast({
-        title: t('passwordUpdateErrorTitle'),
-        description: error.message || t('passwordUpdateErrorDescription'),
-        variant: 'destructive',
-      });
+      toast.error(error.message || t('passwordUpdateErrorDescription'));
       console.error('Error updating password:', error);
     } finally {
       setLoading(false);

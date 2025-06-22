@@ -16,9 +16,8 @@ const Magi124bSchema = z.object({
 
 export class Magi124bRequest extends BaseRequest<typeof Magi124bSchema> {
   protected schema = Magi124bSchema;
-  protected data: z.infer<typeof Magi124bSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     image?: string,
     num_frames?: number,
@@ -28,8 +27,8 @@ export class Magi124bRequest extends BaseRequest<typeof Magi124bSchema> {
     enable_safety_checker?: boolean,
     aspect_ratio?: "auto" | "16:9" | "9:16" | "1:1"
   ) {
-    super();
-    this.data = {
+    const request = new Magi124bRequest();
+    request.data = {
       prompt,
       ... (image !== undefined && { image }),
       ... (num_frames !== undefined && { num_frames }),
@@ -39,7 +38,7 @@ export class Magi124bRequest extends BaseRequest<typeof Magi124bSchema> {
       ... (enable_safety_checker !== undefined && { enable_safety_checker }),
       ... (aspect_ratio !== undefined && { aspect_ratio }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -48,5 +47,16 @@ export class Magi124bRequest extends BaseRequest<typeof Magi124bSchema> {
 
   getModelType(): string {
     return "image-to-video";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_frames: 81,
+      frames_per_second: 5,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

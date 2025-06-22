@@ -24,9 +24,8 @@ const Wan21T2v480pLoraUltraFastSchema = z.object({
 
 export class Wan21T2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21T2v480pLoraUltraFastSchema> {
   protected schema = Wan21T2v480pLoraUltraFastSchema;
-  protected data: z.infer<typeof Wan21T2v480pLoraUltraFastSchema>;
-
-  constructor(
+  
+  static create(
     prompt: string,
     negative_prompt?: string,
     loras?: z.infer<typeof LoraWeightSchema>[],
@@ -38,8 +37,8 @@ export class Wan21T2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21T2
     seed?: number,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new Wan21T2v480pLoraUltraFastRequest();
+    request.data = {
       prompt,
       negative_prompt: negative_prompt ?? "",
       loras: loras ?? [],
@@ -51,7 +50,7 @@ export class Wan21T2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21T2
       seed: seed ?? -1,
       enable_safety_checker: enable_safety_checker ?? true
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -60,5 +59,15 @@ export class Wan21T2v480pLoraUltraFastRequest extends BaseRequest<typeof Wan21T2
 
   getModelType(): string {
     return "text-to-video";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      num_inference_steps: 30,
+      duration: 5,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "duration/5";
   }
 }

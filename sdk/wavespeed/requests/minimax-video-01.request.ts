@@ -9,15 +9,14 @@ const MinimaxVideo01Schema = z.object({
 
 export class MinimaxVideo01Request extends BaseRequest<typeof MinimaxVideo01Schema> {
   protected schema = MinimaxVideo01Schema;
-  protected data: z.infer<typeof MinimaxVideo01Schema>;
-
-  constructor(prompt: string, image?: string, enable_prompt_expansion: boolean = true) {
-    super();
-    this.data = { prompt, enable_prompt_expansion };
+  
+  static create(prompt: string, image?: string, enable_prompt_expansion: boolean = true) {
+    const request = new MinimaxVideo01Request();
+    request.data = { prompt, enable_prompt_expansion };
     if (image !== undefined) {
-      this.data.image = image;
+      request.data.image = image;
     }
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -26,5 +25,15 @@ export class MinimaxVideo01Request extends BaseRequest<typeof MinimaxVideo01Sche
 
   getModelType(): string {
     return "image-to-video";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

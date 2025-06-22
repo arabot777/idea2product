@@ -5,7 +5,7 @@ import { BillableMetricsQuery } from "@/lib/db/crud/unibee/billable-metrics.quer
 import { UserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { BillableMetric } from "@/lib/db/schemas/unibee/billable-metric";
 import { calculateFormula } from "@/lib/utils";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { UserMetricLimitMapper } from "@/lib/mappers/unibee/user-metric-limit";
 import { UserMetricLimitDto } from "@/lib/types/unibee/user-metric-limit-dto";
 import { UserMetricLimitsEdit } from "@/lib/db/crud/unibee/user-metric-limits.edit";
@@ -13,7 +13,6 @@ import { NewUserMetricLimit } from "@/lib/db/schemas/unibee/user-metric-limit";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { cache } from "@/lib/cache";
 import { CacheKeys, CacheTags } from "@/lib/cache/keys";
-import { unibeeSyncUser } from "@/app/actions/unibee/unibee-sync-user";
 
 interface ToolCallParams {
   // Definition of tool call parameters
@@ -44,7 +43,6 @@ export async function taskCallCheck(
   currentRequestAmount?: number;
   error?: string;
 }> {
-  await unibeeSyncUser(userContext);
   const cacheKey = CacheKeys.USER_METRIC_LIMIT(userContext.id || "", code);
   const cacheData: CacheData | undefined = await cache.get(cacheKey);
   if (cacheData && cacheData.cachedUserMetricLimit && cacheData.billableMetric) {
@@ -79,15 +77,12 @@ export async function taskCallCheck(
   }
 
   // 3. Unibee synchronization logic
-  const featureOnceMax = billableMetric.featureOnceMax || 1; // Assuming featureOnceMax exists in billableMetric
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
   let userMetricLimit = userMetricLimitList?.find((item) => item.code === code);
-  if (
-    !(userMetricLimit && userMetricLimit.updatedAt && new Date(userMetricLimit.updatedAt) > oneHourAgo && userMetricLimit.currentUsedValue > featureOnceMax)
-  ) {
+  if (!(userMetricLimit && userMetricLimit.updatedAt && new Date(userMetricLimit.updatedAt) > oneHourAgo)) {
     // Trigger unibee synchronization
-    const unibeeClient = UnibeanClient.getInstance();
+    const unibeeClient = UnibeeClient.getInstance();
     const metricResponse = await unibeeClient.getUserMetric({ userId: parseInt(userContext.unibeeExternalId || "", 0) });
 
     if (metricResponse && metricResponse.data && metricResponse.data.userMetric && metricResponse.data.userMetric.limitStats) {

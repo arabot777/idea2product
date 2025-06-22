@@ -20,34 +20,23 @@ const Wan21V2v720pLoraUltraFastSchema = z.object({
 
 export class Wan21V2v720pLoraUltraFastRequest extends BaseRequest<typeof Wan21V2v720pLoraUltraFastSchema> {
   protected schema = Wan21V2v720pLoraUltraFastSchema;
-  protected data: z.infer<typeof Wan21V2v720pLoraUltraFastSchema>;
-
-  constructor({ video, prompt, loras, negative_prompt, num_inference_steps, duration, strength, guidance_scale, flow_shift, seed, enable_safety_checker }: { video: string, prompt: string, loras?: Array<{ path: string; scale: number }>, negative_prompt?: string, num_inference_steps?: number, duration?: number, strength?: number, guidance_scale?: number, flow_shift?: number, seed?: number, enable_safety_checker?: boolean }) {
-    super();
-    this.data = {
+  
+  static create({ video, prompt, loras, negative_prompt, num_inference_steps, duration, strength, guidance_scale, flow_shift, seed, enable_safety_checker }: { video: string, prompt: string, loras?: Array<{ path: string; scale: number }>, negative_prompt?: string, num_inference_steps?: number, duration?: number, strength?: number, guidance_scale?: number, flow_shift?: number, seed?: number, enable_safety_checker?: boolean }) {
+    const request = new Wan21V2v720pLoraUltraFastRequest();
+    request.data = {
       video,
       prompt,
       loras,
       negative_prompt,
       num_inference_steps,
-      duration,
-      strength,
-      guidance_scale,
-      flow_shift,
-      seed,
-      enable_safety_checker,
-    } as z.infer<typeof Wan21V2v720pLoraUltraFastSchema>;
-    this.data.enable_safety_checker = enable_safety_checker ?? true;
-    this.data.flow_shift = flow_shift ?? 3;
-    this.data.guidance_scale = guidance_scale ?? 5;
-    this.data.loras = loras ?? [{"path":"motimalu/wan-flat-color-v2","scale":1}];
-    this.data.negative_prompt = negative_prompt ?? "";
-    this.data.num_inference_steps = num_inference_steps ?? 30;
-    this.data.seed = seed ?? -1;
-    this.data.strength = strength ?? 0.9;
-    this.data.duration = duration ?? 5;
-
-    
+      duration: duration ?? 5,
+      strength: strength ?? 0.9,
+      guidance_scale: guidance_scale ?? 5,
+      flow_shift: flow_shift ?? 3,
+      seed: seed ?? -1,
+      enable_safety_checker: enable_safety_checker ?? true,
+    };
+    return request;
   }
 
   getModelUuid(): string {
@@ -56,5 +45,15 @@ export class Wan21V2v720pLoraUltraFastRequest extends BaseRequest<typeof Wan21V2
 
   getModelType(): string {
     return "video-to-video";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+      num_inference_steps: 30,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "duration/5";
   }
 }

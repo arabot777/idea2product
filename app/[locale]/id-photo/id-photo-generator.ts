@@ -4,6 +4,8 @@ import { wsKcontext, wsKcontextStatus, WSKcontextParams, TaskInfo } from "@/app/
 import { UserContext } from "@/lib/types/auth/user-context.bean";
 import { TaskStatus } from "@/lib/types/task/enum.bean";
 import { ID_PHOTO_SPECS, ID_PHOTO_BACKGROUNDS } from "./constants";
+import { toolCall } from "@/app/actions/tool/tool-call";
+import { CODE } from "@/lib/unibee/metric-code";
 
 // ID照片生成参数接口
 export interface IdPhotoGeneratorParams {
@@ -125,7 +127,11 @@ export const generateIdPhoto = async (
     const kcontextParams = preprocessIdPhotoParams(params);
     
     // 2. 调用底层工具 (userContext会被dataActionWithPermission自动注入)
-    const taskInfo = await wsKcontext(kcontextParams);
+    const taskInfo = await toolCall({
+      code: CODE.FluxDev,
+      requestData: kcontextParams,
+    });
+
     
     // 3. 后处理：添加业务相关的元数据
     return postprocessIdPhotoResult(taskInfo, params);

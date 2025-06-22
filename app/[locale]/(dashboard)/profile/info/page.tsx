@@ -10,15 +10,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getCurrentUserProfile } from '@/app/actions/auth/get-user-info';
 import { updateAccount } from '@/app/actions/auth/update-profile';
 import { uploadFile } from '@/app/actions/common/upload';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import useSWR from "swr";
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function ProfileInfoPage() {
   const t = useTranslations('ProfileInfo');
-  const { toast } = useToast();
-
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileDTO | null>(null);
   const [originalProfile, setOriginalProfile] = useState<ProfileDTO | null>(null);
@@ -49,17 +47,9 @@ export default function ProfileInfoPage() {
       });
       await mutate(); // Revalidate data after successful update
       setIsEditing(false);
-      toast({
-        title: t('updateSuccessTitle'),
-        description: t('updateSuccessDescription'),
-        variant: 'default',
-      });
+      toast(`${t('updateSuccessTitle')} ${t('updateSuccessDescription')}`);
     } catch (err: any) {
-      toast({
-        title: t('updateErrorTitle'),
-        description: err.message || t('updateErrorDescription'),
-        variant: 'destructive',
-      });
+      toast(`${t('updateErrorTitle')} ${err.message || t('updateErrorDescription')}`);
     } finally {
       setIsSaving(false);
     }
@@ -97,11 +87,7 @@ export default function ProfileInfoPage() {
     // Check file size (2MB limit)
     const maxSize = 2 * 1024 * 1024; // 2MB in bytes
     if (file.size > maxSize) {
-      toast({
-        title: t('uploadErrorTitle'),
-        description: t('fileSizeExceedsLimit'),
-        variant: 'destructive',
-      });
+      toast(`${t('uploadErrorTitle')} ${t('fileSizeExceedsLimit')}`);
       return;
     }
 
@@ -157,18 +143,10 @@ export default function ProfileInfoPage() {
           ...prevProfile,
           avatar_url: result.data.publicUrl,
         } : null));
-        toast({
-          title: t('uploadSuccessTitle'),
-          description: t('uploadSuccessDescription'),
-          variant: 'default',
-        });
+        toast(`${t('uploadSuccessTitle')} ${t('uploadSuccessDescription')}`);
       }
     } catch (err: any) {
-      toast({
-        title: t('uploadErrorTitle'),
-        description: err.message || t('uploadErrorDescription'),
-        variant: 'destructive',
-      });
+      toast(`${t('uploadErrorTitle')} ${err.message || t('uploadErrorDescription')}`);
     } finally {
       setIsSaving(false);
     }

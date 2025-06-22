@@ -11,20 +11,19 @@ const Wan14bTrainerSchema = z.object({
 
 export class Wan14bTrainerRequest extends BaseRequest<typeof Wan14bTrainerSchema> {
   protected schema = Wan14bTrainerSchema;
-  protected data: z.infer<typeof Wan14bTrainerSchema>;
-
-  constructor(
+  
+  static create(
     data: string,
     trigger_word?: string,
     steps?: number
   ) {
-    super();
-    this.data = {
+    const request = new Wan14bTrainerRequest();
+    request.data = {
       data,
       trigger_word: trigger_word === undefined ? 'p3r5on' : trigger_word,
       steps: steps === undefined ? 2000 : steps,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -33,5 +32,14 @@ export class Wan14bTrainerRequest extends BaseRequest<typeof Wan14bTrainerSchema
 
   getModelType(): string {
     return "training";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      steps: 2000,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "steps";
   }
 }

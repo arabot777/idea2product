@@ -11,7 +11,7 @@ import { ActivityLogEdit } from "@/lib/db/crud/activity/activity-log.edit";
 import { TransactionEdit } from "@/lib/db/crud/payment/transaction.edit";
 import { TransactionStatus } from "@/lib/types/payment/transaction.dto";
 import { UserSubscriptionPlanQuery } from "@/lib/db/crud/billing/user-subscription-plan.query";
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { ProfileEdit } from "@/lib/db/crud/auth/profile.edit";
 
 export const unibeeCheckoutUrl = dataActionWithPermission(
@@ -53,10 +53,10 @@ export const unibeeCheckoutUrl = dataActionWithPermission(
         metadata: {},
       });
 
-      const sessionResponse = await UnibeanClient.getInstance().createClientSession(
+      const sessionResponse = await UnibeeClient.getInstance().createClientSession(
         {
           email: userContext.email,
-          externalUserId: userContext.id,
+          externalUserId: userContext.email,
           cancelUrl: `${process.env.NEXT_PUBLIC_URL || ""}/subscribe-plan/confirm?transactionId=${transaction.id}`,
           returnUrl: `${process.env.NEXT_PUBLIC_URL || ""}/subscribe-plan/confirm?transactionId=${transaction.id}`,
         }

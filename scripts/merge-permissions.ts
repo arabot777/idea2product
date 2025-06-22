@@ -178,53 +178,11 @@ export class PermissionCollector {
       if (!existsSync(outputDir)) {
         mkdirSync(outputDir, { recursive: true });
       }
-
       // Writes the merged configuration
       writeFileSync(this.outputPath, JSON.stringify(mergedConfig, null, 2));
-
-      console.log(`✅ Permission configuration merged to: ${this.outputPath}`);
-      console.log(`📊 Total ${mergedConfig.totalConfigs} permission configurations`);
     } catch (error) {
       console.error("❌ Failed to generate merged permission configuration:", error);
       throw error;
-    }
-  }
-
-  /**
-   * Watches for changes in permission configuration files (development environment)
-   */
-  async watchPermissionFiles(): Promise<void> {
-    if (process.env.NODE_ENV !== "development") {
-      return;
-    }
-
-    try {
-      const { watch } = await import("chokidar");
-      const pattern = join(this.rootDir, "**/*.permission.json");
-
-      const watcher = watch(pattern, {
-        ignored: (path) => {
-          const relativePath = relative(this.rootDir, path);
-          return IGNORE_PATTERNS.some((pattern) => {
-            const regex = new RegExp(pattern.replace(/\*\*/g, ".*"));
-            return regex.test(relativePath);
-          });
-        },
-        persistent: true,
-        ignoreInitial: true,
-      });
-
-      const handleChange = async (path: string, event: string) => {
-        console.log(`${event === "add" ? "➕" : event === "unlink" ? "➖" : "🔄"} ${event} permission configuration file: ${path}`);
-        await this.generateMergedConfig();
-      };
-
-      watcher
-        .on("change", (path) => handleChange(path, "change"))
-        .on("add", (path) => handleChange(path, "add"))
-        .on("unlink", (path) => handleChange(path, "delete"));
-    } catch (error) {
-      console.warn("⚠️  Failed to start file watcher, please recompile manually:", error);
     }
   }
 }

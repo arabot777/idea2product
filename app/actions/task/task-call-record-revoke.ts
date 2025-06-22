@@ -1,6 +1,6 @@
 "use server";
 
-import { UnibeanClient } from "@/lib/unibean/client";
+import { UnibeeClient } from "@/lib/unibee/client";
 import { cache } from "@/lib/cache";
 import { CacheKeys } from "@/lib/cache/keys";
 import { UserContext } from "@/lib/types/auth/user-context.bean";
@@ -16,7 +16,7 @@ interface CacheData {
 const CACHE_TTL = 30 * 60 * 1000;
 
 export async function taskCallRecordRevoke(
-  metricEventId: number,
+  metricEventId: string,
   currentRequestAmount: number,
   code: string,
   billableMetric: BillableMetric,
@@ -32,15 +32,16 @@ export async function taskCallRecordRevoke(
     success: false,
   };
   try {
-    const unibeanClient = UnibeanClient.getInstance();
+    const unibeeClient = UnibeeClient.getInstance();
 
-    // 1. Call UnibeanClient's deleteMetric to revoke the third-party event
-    const unibeeResponse = await unibeanClient.deleteMetric({
-      metricId: metricEventId,
+    // 1. Call UnibeeClient's deleteMetric to revoke the third-party event
+    const unibeeResponse = await unibeeClient.deleteMetricEvent({
+      externalEventId: metricEventId,
+      metricCode: code,
     });
 
     if (unibeeResponse.code !== 0) {
-      result.error = unibeeResponse.message || "Failed to delete metric event in Unibean";
+      result.error = unibeeResponse.message || "Failed to delete metric event in Unibee";
       return result;
     }
 

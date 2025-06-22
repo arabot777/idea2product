@@ -11,12 +11,11 @@ const KwaivgiKlingV16I2vStandardSchema = z.object({
 
 export class KwaivgiKlingV16I2vStandardRequest extends BaseRequest<typeof KwaivgiKlingV16I2vStandardSchema> {
   protected schema = KwaivgiKlingV16I2vStandardSchema;
-  protected data: z.infer<typeof KwaivgiKlingV16I2vStandardSchema>;
-
-  constructor(image: string, prompt?: string, negative_prompt?: string, guidance_scale?: number, duration?: '5' | '10') {
-    super();
-    this.data = { image, prompt: prompt ?? "The woman driving a red convertible supercar along a scenic Mediterranean coastal road. The video begins with a slow cinematic drone shot from high above, capturing the winding cliffside highway and sparkling ocean below. The drone then swoops down, transitioning into a smooth pan along the car’s body. A close-up reveals the woman’s confident face behind chic sunglasses, her hair flowing in the wind. As the car speeds ahead, the camera follows from behind, revealing the sunlit coastline stretching into the horizon. Golden hour lighting, elegant, aspirational tone, smooth camera motion, cinematic drone transitions", negative_prompt: negative_prompt ?? undefined, guidance_scale: guidance_scale ?? 0.5, duration: duration ?? "5" };
-    
+  
+  static create(image: string, prompt?: string, negative_prompt?: string, guidance_scale?: number, duration?: '5' | '10') {
+    const request = new KwaivgiKlingV16I2vStandardRequest();
+    request.data = { image, prompt: prompt ?? "The woman driving a red convertible supercar along a scenic Mediterranean coastal road. The video begins with a slow cinematic drone shot from high above, capturing the winding cliffside highway and sparkling ocean below. The drone then swoops down, transitioning into a smooth pan along the car’s body. A close-up reveals the woman’s confident face behind chic sunglasses, her hair flowing in the wind. As the car speeds ahead, the camera follows from behind, revealing the sunlit coastline stretching into the horizon. Golden hour lighting, elegant, aspirational tone, smooth camera motion, cinematic drone transitions", negative_prompt: negative_prompt ?? undefined, guidance_scale: guidance_scale ?? 0.5, duration: duration ?? "5" };
+    return request;
   }
 
   getModelUuid(): string {
@@ -25,5 +24,15 @@ export class KwaivgiKlingV16I2vStandardRequest extends BaseRequest<typeof Kwaivg
 
   getModelType(): string {
     return "image-to-video";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "duration/5";
   }
 }

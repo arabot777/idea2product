@@ -95,13 +95,25 @@ describe('calculateFormula', () => {
     expect(() => calculateFormula("a + b", data)).toThrow("Missing value for variable: b");
   });
 
-  test('should throw an error when a variable value is not a number', () => {
+  test('should throw an error for invalid operations with mixed types', () => {
     const data = { a: 10, b: "hello" };
-    expect(() => calculateFormula("a + b", data)).toThrow("Variable b must be a number");
+    expect(() => calculateFormula("a + b", data)).toThrow("Error in formula calculation: Invalid calculation result");
   });
 
   test('should throw an error when the calculation result is not a number or not finite', () => {
     expect(() => calculateFormula("1 / 0", {})).toThrow("Error in formula calculation: Invalid calculation result");
     expect(() => calculateFormula("Math.sqrt(-1)", {})).toThrow("Error in formula calculation: Invalid calculation result");
   });
+
+  test('should correctly calculate complex fee formulas based on model and resolution', () => {
+    // 使用单行三元运算符表达式，避免换行符
+    const formula = "model === 'seedance-v1-pro' ? (resolution === '1080p' ? (duration/5) * 0.6 : resolution === '720p' ? (duration/5) * 0.3 : (duration/5) * 0.15) : (resolution === '1080p' ? (duration/5) * 0.45 : resolution === '720p' ? (duration/5) * 0.16 : (duration/5) * 0.08)";
+  
+    const data = { model: 'seedance-v1-pro', resolution: '1080p', duration: 10 };
+    expect(calculateFormula(formula, data)).toBe(1.2);
+    
+    const data2 = { model: 'seedance-v1-lite', resolution: '720p', duration: 5 };
+    expect(calculateFormula(formula, data2)).toBe(0.16);
+  });
+
 });

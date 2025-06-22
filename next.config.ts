@@ -4,37 +4,38 @@ import withNextIntl from "next-intl/plugin";
 import { mergeAllLocales } from "./scripts/merge-locales";
 import { permissionCollector } from "./scripts/merge-permissions";
 
+let hasRunBuildTimeSetup = false;
+
 /**
- * 开发环境设置
- * 监听本地化文件和权限配置的变化
+ * Development environment setup
+ * Monitor changes in localization files and permission configurations
  */
 const setupDevelopment = () => {
-  console.log("Development environment setup started");
-  // 初始化并监听本地化文件变化
+  hasRunBuildTimeSetup = true;
+  // Initialize and monitor localization file changes
   mergeAllLocales().catch(console.error);
 
-  // 初始化并监听权限配置变化
+  // Initialize and monitor permission configuration changes
   permissionCollector.generateMergedConfig().catch((error) => {
     console.error("❌ Failed to start permission config monitoring:", error);
   });
 };
 
-// 如果是开发环境，立即执行开发环境设置
-// 生产环境设置已移至webpack entry函数中
+// If it's a development environment, execute the development environment setup immediately
+// Production environment setup has been moved to the webpack entry function
 if (process.env.NODE_ENV === "development") {
   setupDevelopment();
 }
-let hasRunBuildTimeSetup = false;
 
 const nextConfig: NextConfig = {
-  // 图片域名配置
+  // Image domain configuration
   images: {
-    domains: ["d2p7pge43lyniu.cloudfront.net", "d2g64w682n9w0w.cloudfront.net"],
+    domains: ["kpkfvxxvdgwdbvpthqqr.supabase.co", "localhost", "127.0.0.1"],
   },
-  // 实验性功能
+  // Experimental features
   experimental: {
-    ppr: true,
-    // clientSegmentCache: true,
+    ppr: false,
+    clientSegmentCache: true,
     // forceSwcTransforms: true,
   },
   onDemandEntries: {
@@ -43,30 +44,29 @@ const nextConfig: NextConfig = {
     // Number of pages to preload simultaneously
     pagesBufferLength: 5,
   },
-  // 移至顶层配置（修复警告）
+  // Moved to top-level configuration (fix warning)
   serverExternalPackages: ["sharp"],
-  // TypeScript配置
+  // TypeScript configuration
   typescript: {
     ignoreBuildErrors: false,
   },
-  // ESLint配置
+  // ESLint configuration
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Vercel部署优化
+  // Vercel deployment optimization
   output: "standalone",
   poweredByHeader: false,
   compress: true,
-  // Webpack配置
+  // Webpack configuration
   webpack: (config: any, { dev, isServer }: WebpackConfigContext) => {
-    // 保存原始entry函数
+    // Save the original entry function
     const originalEntry = config.entry;
-    // 重写entry函数以执行初始化任务
+    // Rewrite the entry function to perform initialization tasks
     config.entry = async () => {
       const entries = await originalEntry();
       if ((dev && isServer && !hasRunBuildTimeSetup) || (!dev && !hasRunBuildTimeSetup)) {
         try {
-          console.log("Running build-time setup...");
           await mergeAllLocales();
           await permissionCollector.generateMergedConfig();
           hasRunBuildTimeSetup = true;

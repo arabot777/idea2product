@@ -11,24 +11,23 @@ const LtxVideoV097I2v480pSchema = z.object({
 
 export class LtxVideoV097I2v480pRequest extends BaseRequest<typeof LtxVideoV097I2v480pSchema> {
   protected schema = LtxVideoV097I2v480pSchema;
-  protected data: z.infer<typeof LtxVideoV097I2v480pSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     prompt: string,
     negative_prompt?: string,
     size?: "832*480" | "480*832",
     seed?: number
   ) {
-    super();
-    this.data = {
+    const request = new LtxVideoV097I2v480pRequest();
+    request.data = {
       image,
       prompt,
       ...(negative_prompt !== undefined && { negative_prompt }),
       ...(size !== undefined && { size }),
       ...(seed !== undefined && { seed }),
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -37,5 +36,15 @@ export class LtxVideoV097I2v480pRequest extends BaseRequest<typeof LtxVideoV097I
 
   getModelType(): string {
     return "image-to-video";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1";
   }
 }

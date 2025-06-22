@@ -22,11 +22,10 @@ const Wan21I2v720pLoraUltraFastSchema = z.object({
 
 export class Wan21I2v720pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2v720pLoraUltraFastSchema> {
   protected schema = Wan21I2v720pLoraUltraFastSchema;
-  protected data: z.infer<typeof Wan21I2v720pLoraUltraFastSchema>;
-
-  constructor({ image, prompt, negativePrompt, loras, size, numInferenceSteps, duration, guidanceScale, flowShift, seed, enableSafetyChecker }: { image: string, prompt: string, negativePrompt?: string | undefined, loras?: Array<{ path: string; scale: number }> | undefined, size?: "1280*720" | "720*1280" | undefined, numInferenceSteps?: number | undefined, duration?: number | undefined, guidanceScale?: number | undefined, flowShift?: number | undefined, seed?: number | undefined, enableSafetyChecker?: boolean | undefined }) {
-    super();
-    this.data = {
+  
+  static create({ image, prompt, negativePrompt, loras, size, numInferenceSteps, duration, guidanceScale, flowShift, seed, enableSafetyChecker }: { image: string, prompt: string, negativePrompt?: string | undefined, loras?: Array<{ path: string; scale: number }> | undefined, size?: "1280*720" | "720*1280" | undefined, numInferenceSteps?: number | undefined, duration?: number | undefined, guidanceScale?: number | undefined, flowShift?: number | undefined, seed?: number | undefined, enableSafetyChecker?: boolean | undefined }) {
+    const request = new Wan21I2v720pLoraUltraFastRequest();
+    request.data = {
       image: image,
       prompt: prompt,
       negative_prompt: negativePrompt ?? "",
@@ -39,7 +38,7 @@ export class Wan21I2v720pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2
       seed: seed ?? -1,
       enable_safety_checker: enableSafetyChecker ?? true,
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -48,5 +47,15 @@ export class Wan21I2v720pLoraUltraFastRequest extends BaseRequest<typeof Wan21I2
 
   getModelType(): string {
     return "image-to-video";
+  }
+  getDefaultParams(): Record<string,any> {
+    return {
+      duration: 5,
+      num_inference_steps: 30,
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "duration/5";
   }
 }

@@ -14,7 +14,7 @@ export const taskResults = pgTable(
       .notNull()
       .references(() => tasks.id, { onDelete: "cascade" }),
     parentTaskId: uuid("parent_task_id"), // Parent task ID, for task chaining
-    type: taskResultTypeEnum("type").notNull(), // Result type
+    type: text("type").notNull(), // Result type
     status: taskResultStatusEnum("status").notNull().default("pending"), // Result status
     message: text("message"), // Task message
 

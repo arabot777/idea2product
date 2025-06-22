@@ -9,20 +9,19 @@ const GhibliSchema = z.object({
 
 export class GhibliRequest extends BaseRequest<typeof GhibliSchema> {
   protected schema = GhibliSchema;
-  protected data: z.infer<typeof GhibliSchema>;
-
-  constructor(
+  
+  static create(
     image: string,
     enable_base64_output?: boolean,
     enable_safety_checker?: boolean
   ) {
-    super();
-    this.data = {
+    const request = new GhibliRequest();
+    request.data = {
       image,
       enable_base64_output: enable_base64_output ?? false,
       enable_safety_checker: enable_safety_checker ?? true
     };
-    
+    return request;
   }
 
   getModelUuid(): string {
@@ -31,5 +30,14 @@ export class GhibliRequest extends BaseRequest<typeof GhibliSchema> {
 
   getModelType(): string {
     return "image-to-image";
+  }
+
+  getDefaultParams(): Record<string,any> {
+    return {
+    }
+  }
+
+  getFeatureCalculator(): string {
+    return "1"; // Assuming 1 unit per image generation
   }
 }
