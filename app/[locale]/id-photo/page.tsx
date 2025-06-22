@@ -867,7 +867,7 @@ export default function IdPhotoPage() {
               </div>
 
               {/* Image display area */}
-              <div className="flex items-center justify-center bg-gray-50/50 rounded-xl backdrop-blur-md border border-white/50 min-h-[500px]">
+              <div className="flex items-center justify-center bg-gray-200/100 rounded-xl backdrop-blur-md border border-gray-200/50 min-h-[600px]">
                 {!uploadedImage ? (
                   <div className="text-center text-gray-500">
                     <Camera className="w-16 h-16 mx-auto mb-4 text-gray-300" />
