@@ -143,71 +143,7 @@ const getCroppedImg = async (
   return canvas.toDataURL('image/jpeg', 0.8);
 };
 
-// Polling interface
-interface IdPhotoPollingCallbacks {
-  onProgress?: (progress: number) => void;
-  onSuccess?: (result: any) => void;
-  onError?: (error: string) => void;
-  onStatusUpdate?: (status: string) => void;
-}
 
-const startIdPhotoPolling = (
-  taskId: string,
-  callbacks: IdPhotoPollingCallbacks
-): (() => void) => {
-  let isPolling = true;
-  let pollCount = 0;
-  const maxPollCount = 120;
-  
-  const poll = async () => {
-    if (!isPolling || pollCount >= maxPollCount) {
-      if (pollCount >= maxPollCount) {
-        callbacks.onError?.('Task timeout');
-      }
-      return;
-    }
-    
-    try {
-      const taskInfo = await getIdPhotoTaskStatus(taskId);
-      pollCount++;
-      
-      callbacks.onStatusUpdate?.(taskInfo.status);
-      
-      const progressMap: { [key: string]: number } = {
-        [TaskStatus.PENDING]: 5,
-        [TaskStatus.PROCESSING]: 60,
-        [TaskStatus.COMPLETED]: 100,
-        [TaskStatus.FAILED]: 0
-      };
-      
-      const progress = progressMap[taskInfo.status] || 0;
-      callbacks.onProgress?.(progress);
-      
-      if (taskInfo.status === TaskStatus.COMPLETED) {
-        isPolling = false;
-        callbacks.onSuccess?.(taskInfo);
-        return;
-      }
-      
-      if (taskInfo.status === TaskStatus.FAILED) {
-        isPolling = false;
-        callbacks.onError?.(taskInfo.message || 'Processing failed');
-        return;
-      }
-      
-      setTimeout(poll, 1000);
-    } catch (error) {
-      console.error('Polling error:', error);
-      setTimeout(poll, 3000);
-    }
-  };
-  
-  poll();
-  
-  return () => {
-    isPolling = false;
-  };
-};
 
 export default function IdPhotoPage() {
   const t = useTranslations('HomePage.idPhoto');
@@ -241,6 +177,7 @@ export default function IdPhotoPage() {
 
   // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Add cropper styles
   useEffect(() => {
@@ -281,6 +218,11 @@ export default function IdPhotoPage() {
     
     return () => {
       document.head.removeChild(style);
+      // Clean up polling on unmount
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
     };
   }, []);
 
@@ -369,26 +311,13 @@ export default function IdPhotoPage() {
         backgroundColor: selectedBgColor
       });
             
-      const stopPolling = startIdPhotoPolling(response.id, {
-        onProgress: setGenerationProgress,
-        onSuccess: (result) => {
-          let imageUrl = '';
-          if (result.output_url) {
-            imageUrl = result.output_url;
-          } else if (result.result && result.result.length > 0) {
-            imageUrl = result.result[0];
-          }
-          setProcessedImage(imageUrl);
-          setOriginalProcessedImage(imageUrl);
-          setIsProcessing(false);
-          setShowCropper(false); // Hide cropper after successful generation
-          toast.success(t('generateSuccess'));
-        },
-        onError: (error) => {
-          toast.error(error);
-          setIsProcessing(false);
-        }
-      });
+      // Start polling task status
+      if (response.id) {
+        startPolling(response.id);
+      } else {
+        setIsProcessing(false);
+        toast.error(response.message || "Failed to start ID photo generation");
+      }
       
     } catch (error) {
       console.error('Generation failed:', error);
@@ -526,6 +455,79 @@ export default function IdPhotoPage() {
     link.href = processedImage;
     link.download = `id-photo-${selectedSpec.id}.jpg`;
     link.click();
+  };
+
+  // Start polling task status
+  const startPolling = async (id: string) => {
+    // Clear any existing polling
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+
+    // Ensure generation status is set to true before starting polling
+    setIsProcessing(true);
+
+    // Set polling interval
+    pollingRef.current = setInterval(async () => {
+      try {
+        const taskInfo = await getIdPhotoTaskStatus(id);
+
+        if (taskInfo.progress !== undefined) {
+          setGenerationProgress(taskInfo.progress);
+        } else {
+          // Set progress based on status
+          const progressMap: { [key: string]: number } = {
+            [TaskStatus.PENDING]: 5,
+            [TaskStatus.PROCESSING]: 60,
+            [TaskStatus.TRANSFER_START]: 30,
+            [TaskStatus.TRANSFERING]: 50,
+            [TaskStatus.COMPLETED]: 100,
+            [TaskStatus.FAILED]: 0,
+          };
+          const progress = progressMap[taskInfo.status] || 0;
+          setGenerationProgress(progress);
+        }
+
+        // If task is completed or failed, stop polling
+        if (taskInfo.status === TaskStatus.COMPLETED || taskInfo.status === TaskStatus.FAILED || taskInfo.status === TaskStatus.CANCELLED) {
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
+
+          if (taskInfo.status === TaskStatus.COMPLETED && taskInfo.result) {
+            // Process successful result
+            if (taskInfo.result.length > 0) {
+              const imageUrl = taskInfo.result[0];
+              setProcessedImage(imageUrl);
+              setOriginalProcessedImage(imageUrl);
+              setIsProcessing(false);
+              setShowCropper(false); // Hide cropper after successful generation
+              toast.success(t('generateSuccess'));
+            } else {
+              setIsProcessing(false);
+              toast.error('Generation completed but no result found');
+            }
+          } else if (taskInfo.status === TaskStatus.FAILED) {
+            // Handle failure
+            setIsProcessing(false);
+            toast.error(taskInfo.message || 'Processing failed');
+          } else if (taskInfo.status === TaskStatus.CANCELLED) {
+            // Handle cancellation
+            setIsProcessing(false);
+            toast.error(taskInfo.message || 'Processing cancelled');
+          }
+        }
+      } catch (error) {
+        console.error("Failed to poll task status:", error);
+        // Don't stop polling on failure, continue waiting for status updates
+        toast.error("Error getting image generation status, but will keep trying", {
+          duration: 3000,
+          id: "polling-error",
+        });
+      }
+    }, 2000); // Poll every 2 seconds
   };
 
   return (

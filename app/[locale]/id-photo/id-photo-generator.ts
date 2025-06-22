@@ -1,15 +1,14 @@
 "use server";
 
-import { wsKcontext, wsKcontextStatus, WSKcontextParams, TaskInfo } from "@/app/actions/tool/ws-kcontext";
-import { UserContext } from "@/lib/types/auth/user-context.bean";
-import { TaskStatus } from "@/lib/types/task/enum.bean";
-import { ID_PHOTO_SPECS, ID_PHOTO_BACKGROUNDS } from "./constants";
 import { toolCall } from "@/app/actions/tool/tool-call";
+import { toolStatus } from "@/app/actions/tool/tool-status";
+import { TaskStatus, TaskStatusType } from "@/lib/types/task/enum.bean";
+import { TaskInfo } from "@/lib/types/task/task.bean";
 import { CODE } from "@/lib/unibee/metric-code";
 
 // ID照片生成参数接口
 export interface IdPhotoGeneratorParams {
-  image: string; // 原始图片URL
+  image: string; // 原始图片URL或base64
   photoSpec: {
     id: string;
     width: number;
@@ -24,10 +23,10 @@ export interface IdPhotoGeneratorParams {
   enhanceQuality?: boolean; // 是否增强质量
 }
 
-// 任务信息接口 - 直接复用原有的TaskInfo
+// 任务信息接口 - 直接使用TaskInfo
 export interface IdPhotoTaskInfo extends TaskInfo {}
 
-// 证件照专用prompt生成器 - 针对Kcontext模型优化
+// 证件照专用prompt生成器
 const generateIdPhotoPrompt = (params: IdPhotoGeneratorParams): string => {
   const { photoSpec, backgroundColor, enhanceQuality } = params;
   
@@ -86,8 +85,8 @@ The photo should have:
   return basePrompt;
 };
 
-// 证件照参数预处理 - 将业务参数转换为Kcontext参数
-const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams): WSKcontextParams => {
+// 证件照参数预处理 - 将业务参数转换为FluxDev参数
+const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams) => {
   // 生成优化的prompt
   const optimizedPrompt = generateIdPhotoPrompt(params);
   
@@ -98,64 +97,61 @@ const preprocessIdPhotoParams = (params: IdPhotoGeneratorParams): WSKcontextPara
     seed: -1,
     guidance_scale: 4.0, // 适中的引导比例
     safety_tolerance: "2", // 安全级别设置为中等
-  };
-};
-
-// 证件照结果后处理 - 添加业务相关的元数据和验证
-const postprocessIdPhotoResult = (taskInfo: TaskInfo, originalParams: IdPhotoGeneratorParams): IdPhotoTaskInfo => {
-  // 这里可以添加证件照特有的后处理逻辑
-  // 比如：尺寸验证、质量检查、格式转换等
-  
-  // 目前直接返回，保持与原TaskInfo的兼容性
-  return {
-    ...taskInfo,
-    // 可以在这里添加证件照特有的字段
-    // photoSpec: originalParams.photoSpec,
-    // backgroundColor: originalParams.backgroundColor,
+    width: params.photoSpec.width,
+    height: params.photoSpec.height,
+    num_inference_steps: 28, // 推理步数
+    strength: 0.8, // 图生图强度
   };
 };
 
 /**
- * ID照片生成服务 - 业务层封装
+ * ID照片生成服务 - 使用新的toolCall架构
  * @param params ID照片生成参数
  */
 export const generateIdPhoto = async (
   params: IdPhotoGeneratorParams
 ): Promise<IdPhotoTaskInfo> => {
   try {
-    // 1. 前处理：将业务参数转换为Kcontext参数
-    const kcontextParams = preprocessIdPhotoParams(params);
+    // 1. 前处理：将业务参数转换为FluxDev参数
+    const requestData = preprocessIdPhotoParams(params);
     
-    // 2. 调用底层工具 (userContext会被dataActionWithPermission自动注入)
+    // 2. 调用toolCall启动任务
     const taskInfo = await toolCall({
-      code: CODE.FluxDev,
-      requestData: kcontextParams,
+      code: CODE.FluxKontextPro,
+      requestData: requestData,
     });
-
     
-    // 3. 后处理：添加业务相关的元数据
-    return postprocessIdPhotoResult(taskInfo, params);
+    // 3. 返回任务信息
+    if (taskInfo.id) {
+      return taskInfo;
+    } else {
+      return {
+        id: "",
+        status: TaskStatus.FAILED,
+        message: taskInfo.message || "Failed to submit ID photo generation request",
+      };
+    }
     
   } catch (error) {
-    console.error("生成证件照失败:", error);
+    console.error("generateIdPhoto failed:", error);
     return {
       id: "",
       status: TaskStatus.FAILED,
-      message: error instanceof Error ? error.message : "未知错误",
+      message: error instanceof Error ? error.message : "Unknown error",
     };
   }
 };
 
 /**
- * 查询ID照片生成任务状态 - 业务层封装
+ * 查询ID照片生成任务状态 - 使用新的toolStatus架构
  * @param taskId 任务ID
  */
 export const getIdPhotoTaskStatus = async (
   taskId: string
 ): Promise<IdPhotoTaskInfo> => {
   try {
-    // 直接调用底层工具 (userContext会被dataActionWithPermission自动注入)
-    const taskInfo = await wsKcontextStatus(taskId);
+    // 直接调用toolStatus查询任务状态
+    const taskInfo = await toolStatus(taskId);
     
     // 可以在这里添加证件照特有的状态处理逻辑
     // 比如：进度描述本地化、结果验证等
@@ -164,11 +160,11 @@ export const getIdPhotoTaskStatus = async (
     return taskInfo;
     
   } catch (error) {
-    console.error("查询证件照任务状态失败:", error);
+    console.error("check picture status failed:", error);
     return {
       id: taskId,
       status: TaskStatus.FAILED,
-      message: error instanceof Error ? error.message : "查询失败",
+      message: error instanceof Error ? error.message : "check picture status failed",
     };
   }
 };

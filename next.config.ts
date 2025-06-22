@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === "development") {
 const nextConfig: NextConfig = {
   // Image domain configuration
   images: {
-    domains: ["kpkfvxxvdgwdbvpthqqr.supabase.co", "localhost", "127.0.0.1"],
+    domains: ["kpkfvxxvdgwdbvpthqqr.supabase.co", "localhost", "127.0.0.1", "d2p7pge43lyniu.cloudfront.net"],
   },
   // Experimental features
   experimental: {
