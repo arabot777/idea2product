@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/drizzle";
 import { subscriptionPlans, SubscriptionPlan, NewSubscriptionPlan } from "@/lib/db/schemas/billing/subscription-plan";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export class SubscriptionPlanQuery {
   static async getById(id: string): Promise<SubscriptionPlan | null> {
@@ -19,7 +19,7 @@ export class SubscriptionPlanQuery {
   }
 
   static async getAllActive(): Promise<SubscriptionPlan[]> {
-    const allSubscriptionPlans = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.isActive, true));
+    const allSubscriptionPlans = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.isActive, true)).orderBy(asc(subscriptionPlans.price));
     return allSubscriptionPlans;
   }
 

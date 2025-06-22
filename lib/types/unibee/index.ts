@@ -10,6 +10,10 @@ export interface UnibeePlan {
   status: number; // 1-Editing, 2-Active, 3-InActive, 4-SoftArchive, 5-HardArchive
   type: number; // 1-main plan, 2-addon plan, 3-onetime
   createTime: number; // timestamp
+  metricLimits: {
+    metricLimit: number;
+    metricId: number;
+  }[];
 }
 
 export interface UnibeePlanListResponse {
