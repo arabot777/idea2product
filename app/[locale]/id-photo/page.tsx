@@ -518,36 +518,7 @@ export default function IdPhotoPage() {
           </div>
         </div>
 
-            {/* Action Buttons in Header */}
-            <div className="flex gap-3">
-              <Button
-                onClick={handleProcess}
-                disabled={!uploadedImage || isProcessing}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50"
-                      >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t('generating')} {generationProgress > 0 && `${generationProgress}%`}
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="w-4 h-4 mr-2" />
-                    {t('generateIdPhoto')}
-                  </>
-                )}
-              </Button>
-              
-              {processedImage && (
-                <Button
-                  onClick={handleDownloadWithSpec}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {t('download')}
-                </Button>
-              )}
-                          </div>
+
                         </div>
         </section>
 
@@ -564,13 +535,14 @@ export default function IdPhotoPage() {
                   gradient: 'from-blue-500 to-blue-600',
                   disabled: false,
                 },
-                {
-                  id: 'backgroundChange',
-                  icon: Palette,
-                  title: t('functions.backgroundChange'),
-                  gradient: 'from-purple-500 to-purple-600',
-                  disabled: !originalProcessedImage,
-                },
+                // TODO: add background change function
+                // {
+                //   id: 'backgroundChange',
+                //   icon: Palette,
+                //   title: t('functions.backgroundChange'),
+                //   gradient: 'from-purple-500 to-purple-600',
+                //   disabled: !originalProcessedImage,
+                // },
                 {
                   id: 'sizeAdjust',
                   icon: Maximize2,
@@ -864,19 +836,33 @@ export default function IdPhotoPage() {
 
             {/* Lower section: preview area */}
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">{t('idPhotoResult')}</h2>
-                {(processedImage || croppedImage || layoutImage) && (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleDownloadWithSpec}
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      {t('common.download')}
-                    </Button>
-                  </div>
+              <div className="flex items-center gap-3 mb-4">
+                <Button
+                  onClick={handleProcess}
+                  disabled={!uploadedImage || isProcessing}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {t('generating')} {generationProgress > 0 && `${generationProgress}%`}
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      {t('generateIdPhoto')}
+                    </>
+                  )}
+                </Button>
+                
+                {processedImage && (
+                  <Button
+                    onClick={handleDownloadWithSpec}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    {t('download')}
+                  </Button>
                 )}
               </div>
 
@@ -915,11 +901,11 @@ export default function IdPhotoPage() {
                         alt="Processed ID Photo"
                         width={isInLayoutMode ? 800 : 400}
                         height={isInLayoutMode ? 600 : 500}
-                        className={`rounded-xl shadow-2xl object-contain ${
-                          isInLayoutMode 
-                            ? 'max-w-[calc(100%-3rem)] max-h-[calc(100vh-350px)]' 
-                            : 'max-w-[70%] max-h-[70%]'
-                        }`}
+                        // className={`rounded-xl shadow-2xl object-contain ${
+                        //   isInLayoutMode 
+                        //     ? 'max-w-[calc(100%-3rem)] max-h-[calc(100vh-350px)]' 
+                        //     : 'max-w-[70%] max-h-[70%]'
+                        // }`}
                       />
                     </Watermark>
                   </div>

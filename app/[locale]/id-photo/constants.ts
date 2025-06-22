@@ -92,16 +92,16 @@ export const LAYOUT_SIZES = [
     mmWidth: 152,
     mmHeight: 102
   },
-  { 
-    id: 'a4', 
-    nameKey: 'a4Paper', 
-    name: 'A4 Paper',
-    width: 2480, 
-    height: 3508, 
-    description: '210×297mm',
-    mmWidth: 210,
-    mmHeight: 297
-  }
+  // { 
+  //   id: 'a4', 
+  //   nameKey: 'a4Paper', 
+  //   name: 'A4 Paper',
+  //   width: 2480, 
+  //   height: 3508, 
+  //   description: '210×297mm',
+  //   mmWidth: 210,
+  //   mmHeight: 297
+  // }
 ]; 
 
 // Helper function to get localized text
