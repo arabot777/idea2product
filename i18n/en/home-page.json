@@ -431,6 +431,31 @@
     },
     "singlePhoto": "Single Photo",
     "removeLayout": "Remove layout, show single photo",
-    "supportLayoutBackground": "Support layout background replacement"
+    "supportLayoutBackground": "Support layout background replacement",
+    "functions": {
+      "idPhotoMaker": "ID Photo Maker",
+      "backgroundChange": "Background Change", 
+      "sizeAdjust": "Size Adjustment",
+      "layoutArrange": "Layout Arrangement"
+    },
+    "backgroundColorOptions": "Background Color Options",
+    "photoSpecs": "Photo Specifications",
+    "selectSpecification": "Select Specification",
+    "fileTooLarge": "File size too large (max 10MB)",
+    "uploadError": "Upload failed",
+    "cropError": "Crop failed",
+    "selectPhotoFirst": "Please select a photo first",
+    "generateFailed": "Generation failed",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "uploadToStart": "Upload a photo to get started",
+    "changePhoto": "Change Photo",
+    "backToOriginal": "Restored to original image", 
+    "layoutComplete": " layout completed",
+    "idPhotoResult": "ID Photo Result",
+    "functionTempUnavailable": "Function temporarily unavailable",
+    "common": {
+      "download": "Download"
+    }
   }
 }

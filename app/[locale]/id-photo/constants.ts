@@ -1,81 +1,81 @@
-// 证件照规格常量 - 按类别分组
+// ID photo specification constants - grouped by category
 export const ID_PHOTO_CATEGORIES = {
   common: {
     nameKey: 'common',
-    name: '普通寸照', // 向后兼容
+    name: 'Common Photos', // backward compatibility
     specs: [
-      { id: '1inch', width: 295, height: 413, nameKey: 'oneInch', name: '一寸照', description: '25×35mm', usage: 'ID Card, Resume', mmWidth: 25, mmHeight: 35 },
-      { id: '2inch', width: 413, height: 579, nameKey: 'twoInch', name: '二寸照', description: '35×49mm', usage: 'Resume, Documents', mmWidth: 35, mmHeight: 49 },
-      { id: 'small1inch', width: 260, height: 378, nameKey: 'smallOneInch', name: '小一寸', description: '22×32mm', usage: 'Student ID, Work ID', mmWidth: 22, mmHeight: 32 },
-      { id: 'large1inch', width: 390, height: 567, nameKey: 'largeOneInch', name: '大一寸', description: '33×48mm', usage: 'Resume, Documents', mmWidth: 33, mmHeight: 48 },
+      { id: '1inch', width: 295, height: 413, nameKey: 'oneInch', name: '1-Inch Photo', description: '25×35mm', usage: 'ID Card, Resume', mmWidth: 25, mmHeight: 35 },
+      { id: '2inch', width: 413, height: 579, nameKey: 'twoInch', name: '2-Inch Photo', description: '35×49mm', usage: 'Resume, Documents', mmWidth: 35, mmHeight: 49 },
+      { id: 'small1inch', width: 260, height: 378, nameKey: 'smallOneInch', name: 'Small 1-Inch', description: '22×32mm', usage: 'Student ID, Work ID', mmWidth: 22, mmHeight: 32 },
+      { id: 'large1inch', width: 390, height: 567, nameKey: 'largeOneInch', name: 'Large 1-Inch', description: '33×48mm', usage: 'Resume, Documents', mmWidth: 33, mmHeight: 48 },
     ]
   },
   passport: {
     nameKey: 'passport',
-    name: '护照签证', // 向后兼容
+    name: 'Passport & Visa', // backward compatibility
     specs: [
-      { id: 'passport-cn', width: 390, height: 567, nameKey: 'passportChina', name: '中国护照', description: '33×48mm', usage: 'China Passport', mmWidth: 33, mmHeight: 48 },
-      { id: 'passport-us', width: 600, height: 600, nameKey: 'passportUS', name: '美国护照', description: '51×51mm', usage: 'US Passport', mmWidth: 51, mmHeight: 51 },
-      { id: 'visa-us', width: 600, height: 600, nameKey: 'visaUS', name: '美国签证', description: '51×51mm', usage: 'US Visa', mmWidth: 51, mmHeight: 51 },
-      { id: 'visa-guide', width: 285, height: 385, nameKey: 'tourGuide', name: '导游证', description: '24×33mm', usage: 'Tour Guide', mmWidth: 24, mmHeight: 33 },
+      { id: 'passport-cn', width: 390, height: 567, nameKey: 'passportChina', name: 'China Passport', description: '33×48mm', usage: 'China Passport', mmWidth: 33, mmHeight: 48 },
+      { id: 'passport-us', width: 600, height: 600, nameKey: 'passportUS', name: 'US Passport', description: '51×51mm', usage: 'US Passport', mmWidth: 51, mmHeight: 51 },
+      { id: 'visa-us', width: 600, height: 600, nameKey: 'visaUS', name: 'US Visa', description: '51×51mm', usage: 'US Visa', mmWidth: 51, mmHeight: 51 },
+      { id: 'visa-guide', width: 285, height: 385, nameKey: 'tourGuide', name: 'Tour Guide License', description: '24×33mm', usage: 'Tour Guide', mmWidth: 24, mmHeight: 33 },
     ]
   },
   exam: {
     nameKey: 'exam',
-    name: '考试照片', // 向后兼容
+    name: 'Exam Photos', // backward compatibility
     specs: [
-      { id: 'exam-teacher', width: 295, height: 413, nameKey: 'teacherLicense', name: '教师资格证', description: '25×35mm', usage: 'Teacher License', mmWidth: 25, mmHeight: 35 },
-      { id: 'exam-cpa', width: 413, height: 531, nameKey: 'cpaExam', name: '注册会计师', description: '35×45mm', usage: 'CPA Exam', mmWidth: 35, mmHeight: 45 },
-      { id: 'exam-law', width: 413, height: 626, nameKey: 'lawExam', name: '国家司法考试', description: '35×53mm', usage: 'Law Exam', mmWidth: 35, mmHeight: 53 },
-      { id: 'exam-civil', width: 295, height: 413, nameKey: 'civilService', name: '公务员考试', description: '25×35mm', usage: 'Civil Service', mmWidth: 25, mmHeight: 35 },
+      { id: 'exam-teacher', width: 295, height: 413, nameKey: 'teacherLicense', name: 'Teacher License', description: '25×35mm', usage: 'Teacher License', mmWidth: 25, mmHeight: 35 },
+      { id: 'exam-cpa', width: 413, height: 531, nameKey: 'cpaExam', name: 'CPA Exam', description: '35×45mm', usage: 'CPA Exam', mmWidth: 35, mmHeight: 45 },
+      { id: 'exam-law', width: 413, height: 626, nameKey: 'lawExam', name: 'Law Exam', description: '35×53mm', usage: 'Law Exam', mmWidth: 35, mmHeight: 53 },
+      { id: 'exam-civil', width: 295, height: 413, nameKey: 'civilService', name: 'Civil Service', description: '25×35mm', usage: 'Civil Service', mmWidth: 25, mmHeight: 35 },
     ]
   }
 };
 
-// 扁平化的规格数组（向后兼容）
+// Flattened specs array (backward compatibility)
 export const ID_PHOTO_SPECS = [
   ...ID_PHOTO_CATEGORIES.common.specs,
   ...ID_PHOTO_CATEGORIES.passport.specs,
   ...ID_PHOTO_CATEGORIES.exam.specs,
 ];
 
-// AI生图用的背景颜色（参与生图过程）
+// AI background colors for generation (participate in generation process)
 export const AI_BACKGROUNDS = [
-  { nameKey: 'white', name: '白色', value: '#FFFFFF', textColor: '#000000' },
-  { nameKey: 'blue', name: '蓝色', value: '#2072B8', textColor: '#FFFFFF' },
-  { nameKey: 'red', name: '红色', value: '#E30E19', textColor: '#FFFFFF' },
-  { nameKey: 'gray', name: '灰色', value: '#CCCCCC', textColor: '#000000' },
-  { nameKey: 'green', name: '绿色', value: '#009944', textColor: '#FFFFFF' },
-  { nameKey: 'pink', name: '粉色', value: '#FFC0CB', textColor: '#000000' },
+  { nameKey: 'white', name: 'White', value: '#FFFFFF', textColor: '#000000' },
+  { nameKey: 'blue', name: 'Blue', value: '#2072B8', textColor: '#FFFFFF' },
+  { nameKey: 'red', name: 'Red', value: '#E30E19', textColor: '#FFFFFF' },
+  { nameKey: 'gray', name: 'Gray', value: '#CCCCCC', textColor: '#000000' },
+  { nameKey: 'green', name: 'Green', value: '#009944', textColor: '#FFFFFF' },
+  { nameKey: 'pink', name: 'Pink', value: '#FFC0CB', textColor: '#000000' },
 ];
 
-// 前端替换用的背景颜色（更多选择）
+// Frontend background colors for replacement (more choices)
 export const FRONTEND_BACKGROUNDS = [
-  { nameKey: 'pureWhite', name: '纯白', value: '#FFFFFF', textColor: '#000000' },
-  { nameKey: 'ivoryWhite', name: '象牙白', value: '#FFFEF7', textColor: '#000000' },
-  { nameKey: 'standardBlue', name: '标准蓝', value: '#2072B8', textColor: '#FFFFFF' },
-  { nameKey: 'darkBlue', name: '深蓝', value: '#1C4B82', textColor: '#FFFFFF' },
-  { nameKey: 'skyBlue', name: '天蓝', value: '#5DADE2', textColor: '#000000' },
-  { nameKey: 'standardRed', name: '标准红', value: '#E30E19', textColor: '#FFFFFF' },
-  { nameKey: 'darkRed', name: '深红', value: '#B71C1C', textColor: '#FFFFFF' },
-  { nameKey: 'lightGray', name: '浅灰', value: '#CCCCCC', textColor: '#000000' },
-  { nameKey: 'mediumGray', name: '中灰', value: '#9E9E9E', textColor: '#000000' },
-  { nameKey: 'darkGray', name: '深灰', value: '#424242', textColor: '#FFFFFF' },
-  { nameKey: 'standardGreen', name: '标准绿', value: '#009944', textColor: '#FFFFFF' },
-  { nameKey: 'darkGreen', name: '深绿', value: '#1B5E20', textColor: '#FFFFFF' },
-  { nameKey: 'pink', name: '粉色', value: '#FFC0CB', textColor: '#000000' },
-  { nameKey: 'lightPink', name: '浅粉', value: '#F8BBD9', textColor: '#000000' },
+  { nameKey: 'pureWhite', name: 'Pure White', value: '#FFFFFF', textColor: '#000000' },
+  { nameKey: 'ivoryWhite', name: 'Ivory White', value: '#FFFEF7', textColor: '#000000' },
+  { nameKey: 'standardBlue', name: 'Standard Blue', value: '#2072B8', textColor: '#FFFFFF' },
+  { nameKey: 'darkBlue', name: 'Dark Blue', value: '#1C4B82', textColor: '#FFFFFF' },
+  { nameKey: 'skyBlue', name: 'Sky Blue', value: '#5DADE2', textColor: '#000000' },
+  { nameKey: 'standardRed', name: 'Standard Red', value: '#E30E19', textColor: '#FFFFFF' },
+  { nameKey: 'darkRed', name: 'Dark Red', value: '#B71C1C', textColor: '#FFFFFF' },
+  { nameKey: 'lightGray', name: 'Light Gray', value: '#CCCCCC', textColor: '#000000' },
+  { nameKey: 'mediumGray', name: 'Medium Gray', value: '#9E9E9E', textColor: '#000000' },
+  { nameKey: 'darkGray', name: 'Dark Gray', value: '#424242', textColor: '#FFFFFF' },
+  { nameKey: 'standardGreen', name: 'Standard Green', value: '#009944', textColor: '#FFFFFF' },
+  { nameKey: 'darkGreen', name: 'Dark Green', value: '#1B5E20', textColor: '#FFFFFF' },
+  { nameKey: 'pink', name: 'Pink', value: '#FFC0CB', textColor: '#000000' },
+  { nameKey: 'lightPink', name: 'Light Pink', value: '#F8BBD9', textColor: '#000000' },
 ];
 
-// 向后兼容
+// Backward compatibility
 export const ID_PHOTO_BACKGROUNDS = AI_BACKGROUNDS;
 
-// 排版尺寸（相纸规格）
+// Layout sizes (photo paper specifications)
 export const LAYOUT_SIZES = [
   { 
     id: '5inch', 
     nameKey: 'fiveInchPaper', 
-    name: '5寸相纸',
+    name: '5-Inch Paper',
     width: 1500, 
     height: 1050, 
     description: '127×89mm',
@@ -85,7 +85,7 @@ export const LAYOUT_SIZES = [
   { 
     id: '6inch', 
     nameKey: 'sixInchPaper', 
-    name: '6寸相纸',
+    name: '6-Inch Paper',
     width: 1800, 
     height: 1200, 
     description: '152×102mm',
@@ -95,7 +95,7 @@ export const LAYOUT_SIZES = [
   { 
     id: 'a4', 
     nameKey: 'a4Paper', 
-    name: 'A4纸张',
+    name: 'A4 Paper',
     width: 2480, 
     height: 3508, 
     description: '210×297mm',
@@ -104,14 +104,14 @@ export const LAYOUT_SIZES = [
   }
 ]; 
 
-// 获取本地化文本的辅助函数
+// Helper function to get localized text
 export const getLocalizedText = (t: any, item: any, fallbackName?: string) => {
   if (item.nameKey) {
-    // 尝试不同的命名空间
+    // Try different namespaces
     try {
       return t(`categories.${item.nameKey}`) || t(`colors.${item.nameKey}`) || t(`sizes.${item.nameKey}`) || fallbackName || item.name || item.nameKey;
     } catch (error) {
-      // 如果国际化失败，返回备用名称
+      // If internationalization fails, return fallback name
       return fallbackName || item.name || item.nameKey;
     }
   }

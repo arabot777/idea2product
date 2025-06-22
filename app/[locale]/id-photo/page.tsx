@@ -42,7 +42,7 @@ import {
 } from './constants';
 import { TaskStatus } from '@/lib/types/task/enum.bean';
 
-// 水印组件
+// Watermark component
 const Watermark = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations('HomePage.idPhoto');
   return (
@@ -84,7 +84,7 @@ const Watermark = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// 工具函数
+// Utility functions
 const getBase64Size = (base64String: string): number => {
   const base64Data = base64String.split(',')[1] || base64String;
   const padding = (base64Data.match(/=/g) || []).length;
@@ -143,7 +143,7 @@ const getCroppedImg = async (
   return canvas.toDataURL('image/jpeg', 0.8);
 };
 
-// 轮询接口
+// Polling interface
 interface IdPhotoPollingCallbacks {
   onProgress?: (progress: number) => void;
   onSuccess?: (result: any) => void;
@@ -162,7 +162,7 @@ const startIdPhotoPolling = (
   const poll = async () => {
     if (!isPolling || pollCount >= maxPollCount) {
       if (pollCount >= maxPollCount) {
-        callbacks.onError?.('任务超时');
+        callbacks.onError?.('Task timeout');
       }
       return;
     }
@@ -191,13 +191,13 @@ const startIdPhotoPolling = (
       
       if (taskInfo.status === TaskStatus.FAILED) {
         isPolling = false;
-        callbacks.onError?.(taskInfo.message || '处理失败');
+        callbacks.onError?.(taskInfo.message || 'Processing failed');
         return;
       }
       
       setTimeout(poll, 1000);
     } catch (error) {
-      console.error('轮询错误:', error);
+      console.error('Polling error:', error);
       setTimeout(poll, 3000);
     }
   };
@@ -213,7 +213,7 @@ export default function IdPhotoPage() {
   const t = useTranslations('HomePage.idPhoto');
   const router = useRouter();
   
-  // 基础状态
+  // Basic state
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [originalProcessedImage, setOriginalProcessedImage] = useState<string | null>(null);
@@ -223,27 +223,27 @@ export default function IdPhotoPage() {
   const [generationProgress, setGenerationProgress] = useState(0);
   const [originalImageSize, setOriginalImageSize] = useState<{ width: number; height: number } | null>(null);
 
-  // 功能选择状态
+  // Function selection state
   const [activeTab, setActiveTab] = useState('idPhotoMaker');
   const [showSidePanel, setShowSidePanel] = useState<string | null>('idPhotoMaker');
   const [isInLayoutMode, setIsInLayoutMode] = useState(false);
 
-  // 选择状态
+  // Selection state
   const [selectedSpec, setSelectedSpec] = useState(ID_PHOTO_SPECS[0]);
   const [selectedBgColor, setSelectedBgColor] = useState('#FFFFFF');
   const [selectedLayout, setSelectedLayout] = useState(LAYOUT_SIZES[0]);
 
-  // 裁剪相关
+  // Cropping related
   const [showCropper, setShowCropper] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // 文件上传ref
+  // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 获取图片尺寸
+  // Get image dimensions
   const getImageDimensions = (src: string): Promise<{ width: number; height: number }> => {
     return new Promise((resolve, reject) => {
       const img = document.createElement('img');
@@ -255,7 +255,7 @@ export default function IdPhotoPage() {
     });
   };
 
-  // 处理文件上传
+  // Handle file upload
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -279,14 +279,14 @@ export default function IdPhotoPage() {
         setZoom(1);
         setRotation(0);
         
-        // 重新上传时自动打开idPhotoMaker
+        // Automatically open idPhotoMaker when re-uploading
         setShowSidePanel('idPhotoMaker');
         
         const dimensions = await getImageDimensions(imageSrc);
         setOriginalImageSize(dimensions);
         
-        // 提示可以重新选择背景色进行生图
-        toast.success(t('uploadSuccess') + '，可以重新选择背景色进行生图');
+        // Prompt that you can reselect background color to generate image
+        toast.success(t('uploadSuccess'));
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -295,7 +295,7 @@ export default function IdPhotoPage() {
     }
   };
 
-  // 裁剪回调
+  // Crop callback
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
@@ -314,7 +314,7 @@ export default function IdPhotoPage() {
     }
   }, [uploadedImage, croppedAreaPixels, rotation, t]);
         
-  // 处理生成
+  // Handle generation
   const handleProcess = async () => {
     if (!uploadedImage) {
       toast.error(t('selectPhotoFirst'));
@@ -353,13 +353,13 @@ export default function IdPhotoPage() {
       });
       
     } catch (error) {
-      console.error('生成失败:', error);
+      console.error('Generation failed:', error);
       toast.error(t('generateFailed'));
       setIsProcessing(false);
     }
   };
 
-  // 按选择的规格裁剪图片
+  // Crop image to selected specification
   const cropToSelectedSpec = async (imageUrl: string, spec: typeof ID_PHOTO_SPECS[0]): Promise<string> => {
     const img = await createImage(imageUrl);
     
@@ -406,7 +406,7 @@ export default function IdPhotoPage() {
     return canvas.toDataURL('image/jpeg', 0.95);
   };
 
-  // 创建证件照排版
+  // Create ID photo layout
   const createPhotoLayout = async (photoUrl: string, layoutSize: typeof LAYOUT_SIZES[0], photoSpec: typeof ID_PHOTO_SPECS[0]): Promise<string> => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -442,7 +442,7 @@ export default function IdPhotoPage() {
     return canvas.toDataURL('image/jpeg', 0.95);
   };
 
-  // 统一的图片更新函数
+  // Unified image update function
   const updateImageWithCurrentSettings = async (
     newSpec?: typeof ID_PHOTO_SPECS[0],
     newLayoutSize?: typeof LAYOUT_SIZES[0] | null
@@ -456,12 +456,12 @@ export default function IdPhotoPage() {
       
       let workingImage = baseImage;
       
-      // 按规格裁剪
+      // Crop to specification
       const croppedImg = await cropToSelectedSpec(workingImage, currentSpec);
       
       let finalImage = croppedImg;
 
-      // 应用排版
+      // Apply layout
       if (currentLayout) {
         finalImage = await createPhotoLayout(finalImage, currentLayout, currentSpec);
         setIsInLayoutMode(true);
@@ -476,8 +476,8 @@ export default function IdPhotoPage() {
       if (newSpec) setSelectedSpec(newSpec);
       
     } catch (error) {
-      console.error('图片更新失败:', error);
-      toast.error('图片更新失败，请重试');
+      console.error('Image update failed:', error);
+      toast.error(t('generateFailed'));
     }
   };
 
@@ -551,9 +551,9 @@ export default function IdPhotoPage() {
                         </div>
         </section>
 
-        {/* Main Content Area - 左右布局 */}
+        {/* Main Content Area - left-right layout */}
         <div className="flex-1 flex min-h-0">
-          {/* 左侧功能菜单栏 */}
+          {/* Left function menu bar */}
           <div className="w-20 bg-white/30 backdrop-blur-xl border-r border-white/50 shadow-xl">
             <div className="p-4 space-y-4">
               {[
@@ -597,7 +597,7 @@ export default function IdPhotoPage() {
                       ? `bg-gradient-to-r ${func.gradient} text-white shadow-xl`
                       : 'bg-white/60 hover:bg-white/80 text-gray-700'
                   }`}
-                  title={func.disabled ? '请先生成证件照' : func.title}
+                  title={func.disabled ? t('selectPhotoFirst') : func.title}
                 >
                   <func.icon className="w-5 h-5" />
                 </button>
@@ -605,7 +605,7 @@ export default function IdPhotoPage() {
             </div>
           </div>
 
-          {/* 中间功能面板 */}
+          {/* Middle function panel */}
           {showSidePanel && (
             <div className="w-80 bg-white/20 backdrop-blur-xl border-r border-white/30 shadow-xl">
               {showSidePanel === 'idPhotoMaker' && (
@@ -636,7 +636,7 @@ export default function IdPhotoPage() {
                               className="w-8 h-8 rounded-full border-2 border-white shadow-md"
                               style={{ backgroundColor: color.value }}
                             />
-                            <span className="text-sm font-medium text-gray-900">{color.name}</span>
+                            <span className="text-sm font-medium text-gray-900">{t(`categories.${color.nameKey}`)}</span>
                           </div>
                           {selectedBgColor === color.value && (
                             <Check className="w-5 h-5 text-blue-600" />
@@ -662,8 +662,8 @@ export default function IdPhotoPage() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
                         <Palette className="w-8 h-8 text-gray-400" />
                       </div>
-                      <p className="text-gray-500 text-sm mb-2">功能暂时不可用</p>
-                      <p className="text-gray-400 text-xs">请先生成证件照后再使用此功能</p>
+                      <p className="text-gray-500 text-sm mb-2">{t('functionTempUnavailable')}</p>
+                      <p className="text-gray-400 text-xs">{t('selectPhotoFirst')}</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-3 gap-3">
@@ -677,7 +677,7 @@ export default function IdPhotoPage() {
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                           style={{ backgroundColor: color.value }}
-                          title={color.name}
+                          title={t(`categories.${color.nameKey}`)}
                         />
                       ))}
                     </div>
@@ -699,29 +699,40 @@ export default function IdPhotoPage() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
                         <Maximize2 className="w-8 h-8 text-gray-400" />
                       </div>
-                      <p className="text-gray-500 text-sm mb-2">功能暂时不可用</p>
-                      <p className="text-gray-400 text-xs">请先生成证件照后再使用此功能</p>
+                      <p className="text-gray-500 text-sm mb-2">{t('functionTempUnavailable')}</p>
+                      <p className="text-gray-400 text-xs">{t('selectPhotoFirst')}</p>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      {ID_PHOTO_SPECS.slice(0, 12).map((spec) => (
-                        <button
-                          key={spec.id}
-                          onClick={async () => {
-                            setSelectedSpec(spec);
-                            if (originalProcessedImage) {
-                              await updateImageWithCurrentSettings(spec);
-                            }
-                          }}
-                          className={`w-full p-3 text-left rounded-lg border transition-all duration-200 backdrop-blur-md ${
-                            selectedSpec?.id === spec.id
-                              ? 'border-blue-500 bg-blue-50/80'
-                              : 'border-gray-200 bg-white/30 hover:bg-white/50'
-                          }`}
-                        >
-                          <div className="font-medium text-sm text-gray-900">{spec.name}</div>
-                          <div className="text-xs text-gray-500">{spec.description}</div>
-                        </button>
+                    <div className="space-y-4">
+                      {Object.entries(ID_PHOTO_CATEGORIES).map(([categoryKey, category]) => (
+                        <div key={categoryKey} className="space-y-2">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-gray-200 pb-1">
+                            {t(`categories.${category.nameKey}`)}
+                          </h4>
+                          <div className="space-y-2">
+                            {category.specs.map((spec) => (
+                              <button
+                                key={spec.id}
+                                onClick={async () => {
+                                  setSelectedSpec(spec);
+                                  if (originalProcessedImage) {
+                                    await updateImageWithCurrentSettings(spec);
+                                  }
+                                }}
+                                className={`w-full p-3 text-left rounded-lg border transition-all duration-200 backdrop-blur-md ${
+                                  selectedSpec?.id === spec.id
+                                    ? 'border-blue-500 bg-blue-50/80'
+                                    : 'border-gray-200 bg-white/30 hover:bg-white/50'
+                                }`}
+                              >
+                                <div className="font-medium text-sm text-gray-900">
+                                  {t(`categories.${spec.nameKey}`)}
+                                </div>
+                                <div className="text-xs text-gray-500">{spec.description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -742,8 +753,8 @@ export default function IdPhotoPage() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
                         <Grid className="w-8 h-8 text-gray-400" />
                       </div>
-                      <p className="text-gray-500 text-sm mb-2">功能暂时不可用</p>
-                      <p className="text-gray-400 text-xs">请先生成证件照后再使用此功能</p>
+                      <p className="text-gray-500 text-sm mb-2">{t('functionTempUnavailable')}</p>
+                      <p className="text-gray-400 text-xs">{t('selectPhotoFirst')}</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -751,7 +762,7 @@ export default function IdPhotoPage() {
                         onClick={async () => {
                           if (originalProcessedImage) {
                             await updateImageWithCurrentSettings(undefined, null);
-                            toast.success('恢复原图');
+                            toast.success(t('backToOriginal'));
                           }
                         }}
                         className={`w-full p-4 rounded-xl transition-all border-2 ${
@@ -762,8 +773,8 @@ export default function IdPhotoPage() {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900">单张照片</div>
-                            <div className="text-xs text-gray-600">移除排版</div>
+                            <div className="font-medium text-gray-900">{t('singlePhoto')}</div>
+                            <div className="text-xs text-gray-600">{t('removeLayout')}</div>
                           </div>
                           <RotateCcw className="w-5 h-5 text-blue-600" />
                         </div>
@@ -776,7 +787,7 @@ export default function IdPhotoPage() {
                             onClick={async () => {
                               if (originalProcessedImage) {
                                 await updateImageWithCurrentSettings(undefined, layout);
-                                toast.success(`${layout.name}排版完成`);
+                                toast.success(`${layout.name}${t('layoutComplete')}`);
                               }
                             }}
                             className={`w-full p-3 text-left rounded-lg border transition-all duration-200 backdrop-blur-md ${
@@ -797,9 +808,9 @@ export default function IdPhotoPage() {
             </div>
           )}
 
-          {/* 右侧工作区 - 上下布局 */}
+          {/* Right workspace - vertical layout */}
           <div className="flex-1 flex flex-col min-h-0 p-6 gap-4">
-            {/* 上半部分：上传区域 */}
+            {/* Upper section: upload area */}
             <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-4 shadow-lg flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -851,10 +862,10 @@ export default function IdPhotoPage() {
                         </div>
                           </div>
 
-            {/* 下半部分：预览区域 */}
+            {/* Lower section: preview area */}
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">ID Photo Result</h2>
+                <h2 className="text-xl font-semibold text-gray-900">{t('idPhotoResult')}</h2>
                 {(processedImage || croppedImage || layoutImage) && (
                   <div className="flex gap-2">
                     <Button
@@ -869,7 +880,7 @@ export default function IdPhotoPage() {
                 )}
               </div>
 
-              {/* 图片显示区域 */}
+              {/* Image display area */}
               <div className="flex items-center justify-center bg-gray-50/50 rounded-xl backdrop-blur-md border border-white/50 min-h-[500px]">
                 {!uploadedImage ? (
                   <div className="text-center text-gray-500">
