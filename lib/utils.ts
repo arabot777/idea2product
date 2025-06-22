@@ -42,15 +42,12 @@ export function calculateFormula(
   const mathPattern = new RegExp(`Math\\.(${allowedMathFunctions.join('|')})\\(`, 'g');
   const mathCalls = formula.match(mathPattern) || [];
   let tempFormula = formula;
-  console.log("Original formula:", formula);
-  console.log("Math calls:", mathCalls);
   for (const call of mathCalls) {
     tempFormula = tempFormula.replace(call, 'M'.repeat(call.length));
   }
-  console.log("Temp formula after Math replacement:", tempFormula);
 
-  // Validate basic characters
-  const validPattern = /^[0-9\s\.\+\-\*\/\(\)\w\s,]+$/;
+  // Validate basic characters (allow ?: for ternary operators, ' for string literals, and = for comparison)
+  const validPattern = /^[0-9\s\.\+\-\*\/\(\)\w\s,?:=']+$/;
   if (!validPattern.test(tempFormula)) {
     throw new Error("Formula contains invalid characters");
   }
@@ -99,17 +96,20 @@ export function calculateFormula(
       return undefined; // Not found in either
     };
 
-    // 1. Extract all potential variable names (including cascaded paths)
-    const variableRegex = /\b([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*)\b/g; // Match 'varName' or 'obj.prop.nested'
+    // 1. Extract all unique variable paths from the formula
+    // Note: This regex is simple and may not cover all edge cases, but is sufficient for this scenario
+    // First, remove string literals to avoid extracting variables from them
+    const stringLiteralPattern = /'[^']*'|"[^"']*"/g;
+    const formulaWithoutStrings = formula.replace(stringLiteralPattern, ' ');
+
+    const variablePattern = /[a-zA-Z_][a-zA-Z0-9_.]*/g;
+    const allMatches = formulaWithoutStrings.match(variablePattern) || [];
     const extractedVariables = new Set<string>();
-    let match;
-    while ((match = variableRegex.exec(formula)) !== null) {
-      const varName = match[1];
-      // Exclude Math. function calls and pure numbers
-      if (!varName.startsWith('Math.') && isNaN(Number(varName))) {
+    allMatches.forEach(varName => {
+      if (!varName.startsWith('Math') && isNaN(Number(varName))) {
         extractedVariables.add(varName);
       }
-    }
+    });
 
     // 2. Parse variable values and build arguments to pass to Function
     const functionArgs: string[] = []; // Parameter names like '_var0', '_var1'
@@ -123,8 +123,8 @@ export function calculateFormula(
       if (value === undefined) {
         throw new Error(`Missing value for variable: ${varPath}`);
       }
-      if (typeof value !== "number") {
-        throw new Error(`Variable ${varPath} must be a number`);
+      if (typeof value !== 'number' && typeof value !== 'string') {
+        throw new Error(`Variable ${varPath} must be a number or a string`);
       }
 
       const argName = `_var${varIndex++}`;
