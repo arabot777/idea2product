@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "module": "unibee",
+    "description": "Unibee Module Permission Configuration",
+    "owner": "unibee-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-23"
+  },
+  "permissions": {
+    "action": {
+      "listBillableMetrics": {
+        "title": "List Billable Metrics",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "List Billable Metrics"
+      },
+      "createBillableMetric": {
+        "title": "Create Billable Metric",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Create Billable Metric"
+      },
+      "deleteBillableMetric": {
+        "title": "Delete Billable Metric",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Delete Billable Metric"
+      },
+      "updateBillableMetric": {
+        "title": "Update Billable Metric",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update Billable Metric"
+      }
+    }
+  }
+}

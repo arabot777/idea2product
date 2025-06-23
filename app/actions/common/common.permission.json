@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "module": "common",
+    "description": "Common Module Permission Configuration",
+    "owner": "common-team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-23"
+  },
+  "permissions": {
+    "action": {
+      "uploadFile": {
+        "title": "Upload File",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Upload File"
+      }
+    }
+  }
+}

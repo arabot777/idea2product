@@ -21,6 +21,13 @@
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "Get task result list"
+      },
+      "taskCallRemain": {
+        "title": "taskCallRemain",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "taskCallRemain"
       }
     },
     "component": {}
