@@ -43,6 +43,13 @@
         "rejectAction": "throw",
         "description": "Update user account information"
       },
+      "updateAccountByAdmin": {
+        "title": "Update Account By Admin",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Update user account by admin"
+      },
       "deleteAccount": {
         "title": "Delete Account",
         "authStatus": "authenticated",
@@ -50,35 +57,35 @@
         "rejectAction": "throw",
         "description": "Delete user account"
       },
-      "register": {
+      "register_user": {
         "title": "User Registration",
         "authStatus": "anonymous",
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "New user account registration"
       },
-      "verifyEmail": {
+      "verify_email": {
         "title": "Verify Email",
         "authStatus": "anonymous",
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "Verify user registration email"
       },
-      "requestPasswordReset": {
+      "request_password_reset": {
         "title": "Request Password Reset",
         "authStatus": "anonymous",
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "Request user password reset"
       },
-      "updatePasswordFromReset": {
+      "update_password_from_reset": {
         "title": "Update Password via Reset Token",
         "authStatus": "anonymous",
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "Update user password using reset token"
       },
-      "updatePassword": {
+      "update_password": {
         "title": "Update Password",
         "authStatus": "anonymous",
         "activeStatus": "inactive",

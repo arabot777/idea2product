@@ -84,6 +84,41 @@
         "activeStatus": "inactive",
         "rejectAction": "throw",
         "description": "Get user transaction records"
+      },
+      "getUserSubscriptionPlan": {
+        "title": "Get User Subscription Plan",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Get User Subscription Plan"
+      },
+      "unibeeCheckoutUrl": {
+        "title": "Unibee Checkout Url",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Unibee Checkout Url"
+      },
+      "unibeeSyncSubscriptionPlan": {
+        "title": "Unibee Sync Subscription Plan",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Unibee Sync Subscription Plan"
+      },
+      "unibeeSyncTransactionStatus": {
+        "title": "Unibee Sync Transaction Status",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Unibee Sync Transaction Status"
+      },
+      "listActiveSubscriptionPlans": {
+        "title": "List Active Subscription Plans",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "List Active Subscription Plans"
       }
     },
     "component": {}

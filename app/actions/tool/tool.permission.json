@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "module": "Tool Module",
+    "description": "Tool Module Permission Configuration",
+    "owner": "Tool Module Team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-23"
+  },
+  "permissions": {
+    "action": {
+      "toolCall": {
+        "title": "Tool Call",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Call Tool"
+      },
+      "toolStatus": {
+        "title": "Tool Status Query",
+        "authStatus": "authenticated",
+        "activeStatus": "inactive",
+        "rejectAction": "throw",
+        "description": "Query Tool Status"
+      }
+    }
+  }
+}
